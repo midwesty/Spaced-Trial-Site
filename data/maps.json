@@ -537,7 +537,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel",
+      "prop": "barrel_up",
       "fx": "sparks"
      }
     },
@@ -609,7 +609,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -1089,7 +1089,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel",
+      "prop": "barrel_up",
       "fx": "sparks"
      }
     },
@@ -1257,7 +1257,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -1441,7 +1441,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -1807,7 +1807,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -2066,7 +2066,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -2089,7 +2089,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle",
+      "prop": "hanging_cables",
       "fx": "steam_vent"
      }
     },
@@ -2102,7 +2102,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "debris"
+      "prop": "small_crate"
      }
     },
     {
@@ -2255,7 +2255,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -2266,7 +2266,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "debris",
+      "prop": "small_crate",
       "fx": "steam_vent"
      }
     },
@@ -2371,7 +2371,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -2478,7 +2478,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -2851,7 +2851,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -2885,7 +2885,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -3102,7 +3102,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -3342,7 +3342,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "debris"
+      "prop": "small_crate"
      }
     },
     {
@@ -3387,7 +3387,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "chem_tank",
+      "prop": "barrel_tip",
       "fx": "red_light",
       "decal": "hazard_strip"
      }
@@ -3513,7 +3513,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "debris"
+      "prop": "small_crate"
      }
     },
     {
@@ -3641,7 +3641,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -3652,7 +3652,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -3725,7 +3725,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate",
+      "prop": "large_crate",
       "decal": "hazard_strip"
      }
     },
@@ -3749,7 +3749,7 @@
      "zone": "restricted_impound",
      "visual": {
       "floor": "metal_plate",
-      "prop": "chem_tank",
+      "prop": "barrel_tip",
       "fx": "steam_vent"
      }
     },
@@ -4199,7 +4199,7 @@
      "zone": "transition_ac",
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -8027,7 +8027,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_grate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -8178,7 +8178,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_grate",
-      "prop": "sign_neon",
+      "prop": "bar_stool",
       "decal": "boot_prints"
      }
     },
@@ -8300,7 +8300,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -8384,7 +8384,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "terminal"
+      "prop": "bottle_rack"
      }
     },
     {
@@ -8489,7 +8489,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -9263,7 +9263,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -9294,7 +9294,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_grate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -9908,7 +9908,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_grate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -10103,7 +10103,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -10156,7 +10156,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -10518,7 +10518,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "debris"
+      "prop": "small_crate"
      }
     },
     {
@@ -10529,7 +10529,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -10550,7 +10550,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -10571,7 +10571,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "chem_tank"
+      "prop": "barrel_tip"
      }
     },
     {
@@ -10937,7 +10937,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -11467,7 +11467,7 @@
      "interact": false,
      "visual": {
       "floor": "stained",
-      "prop": "terminal"
+      "prop": "bottle_rack"
      }
     },
     {
@@ -12351,7 +12351,7 @@
      "zone": "hostile_reaver",
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -12870,7 +12870,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -12971,7 +12971,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -13378,7 +13378,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -13756,7 +13756,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -13787,7 +13787,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -13808,7 +13808,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "debris"
+      "prop": "small_crate"
      }
     },
     {
@@ -14141,7 +14141,7 @@
      "zone": "hostile_reaver",
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel"
+      "prop": "barrel_up"
      }
     },
     {
@@ -14544,7 +14544,7 @@
      "zone": "hostile_reaver",
      "visual": {
       "floor": "metal_plate",
-      "prop": "cable_bundle"
+      "prop": "hanging_cables"
      }
     },
     {
@@ -14628,7 +14628,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "crate"
+      "prop": "large_crate"
      }
     },
     {
@@ -14649,7 +14649,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "chem_tank"
+      "prop": "barrel_tip"
      }
     },
     {
@@ -14700,7 +14700,7 @@
      "interact": false,
      "visual": {
       "floor": "metal_plate",
-      "prop": "barrel",
+      "prop": "barrel_up",
       "decal": "hazard_strip"
      }
     },

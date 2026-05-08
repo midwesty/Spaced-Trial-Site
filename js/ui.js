@@ -1,4 +1,4 @@
-import { initMapRenderer, renderMapCanvas, renderEntitiesCanvas, startMapRenderLoop, stopMapRenderLoop } from './MapRenderer.js';
+import { initMapRenderer, startMapRenderLoop, stopMapRenderLoop } from './MapRenderer.js';
 import { $, $$, clamp, createEl, formatTime, getById } from './utils.js';
 
 // ─── PANEL DRAG ───────────────────────────────────────────────────────────────
@@ -188,44 +188,37 @@ function hideTileTooltip() {
 }
 
 // ─── MAP RENDER ───────────────────────────────────────────────────────────────
-// Canvas renderer state — module-level so renderMap can update live refs
-let _canvasInitialized = false;
-let _lastMapId = null;
+// ─── CANVAS RENDERER STATE ────────────────────────────────────────────────────
+let _mapCanvasInit = false;
+let _lastCanvasMapId = null;
 let _liveState = null, _liveData = null, _liveApi = null;
 
 export function renderMap(state, data, api) {
   const map = currentMap(state, data);
   const tileLayer   = $('#tileLayer');
   const entityLayer = $('#entityLayer');
+  tileLayer.innerHTML = ''; entityLayer.innerHTML = '';
   if (!map) return;
 
   const size = data.config.map.tileSize;
   document.documentElement.style.setProperty('--tile', `${size}px`);
 
-  // Keep live refs updated every frame — the animation loop reads these
+  // ── Update live refs for canvas loop ─────────────────────────────────────
   _liveState = state; _liveData = data; _liveApi = api;
 
-  // ── Init canvas renderer once (or when map changes) ───────────────────────
-  if (!_canvasInitialized || state.mapId !== _lastMapId) {
+  // ── Init or reinit canvas renderer on map change ──────────────────────────
+  const tileLayer = $('#tileLayer');
+  if (!_mapCanvasInit || state.mapId !== _lastCanvasMapId) {
     initMapRenderer(tileLayer);
-    _canvasInitialized = true;
-    _lastMapId = state.mapId;
+    _mapCanvasInit = true;
+    _lastCanvasMapId = state.mapId;
     startMapRenderLoop(() => ({
-      map: currentMap(_liveState, _liveData),
+      map: _liveData?.maps?.find(m => m.id === _liveState?.mapId),
       state: _liveState,
-      data: _liveData,
-      api: _liveApi
+      data:  _liveData,
+      api:   _liveApi,
     }));
   }
-
-  // ── Hide entity layer — actors are drawn on canvas ─────────────────────────
-  entityLayer.style.opacity = '0';
-  entityLayer.style.pointerEvents = 'auto'; // still handles entity clicks
-
-  // ── Build invisible click-target tiles (0% opacity, handles clicks only) ──
-  tileLayer.innerHTML = '';
-  tileLayer.style.opacity = '0';
-  tileLayer.style.pointerEvents = 'auto';
 
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
