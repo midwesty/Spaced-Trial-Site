@@ -2,117 +2,183 @@
   {
     "id": "port_sable_industrial",
     "name": "Port Sable Industrial",
-    "description": "Rusted trade station built into a canyon asteroid. Corrugated metal, exposed pipes, neon signage, grime.",
     "biome": "industrial_station",
+    "tileSize": 56,
+    "assetPath": "assets/",
 
     "floors": {
-      "metal_plate":    { "label": "Metal Plate",      "css": "vs-floor-metal",    "desc": "Riveted steel deck plating, worn smooth by decades of boot traffic." },
-      "metal_grate":    { "label": "Metal Grate",      "css": "vs-floor-grate",    "desc": "Open grate flooring. You can see the conduit bundles underneath." },
-      "concrete":       { "label": "Concrete",         "css": "vs-floor-concrete", "desc": "Poured asteroid-dust concrete, cracked at the seams." },
-      "stained":        { "label": "Stained Metal",    "css": "vs-floor-stained",  "desc": "Dark stains and oil patches. Nobody cleans this side of the dock." },
-      "civic_tile":     { "label": "Civic Tile",       "css": "vs-floor-civic",    "desc": "Official station floor tile. Still clean. Somehow." },
-      "void":           { "label": "Void/Space",       "css": "vs-floor-void",     "desc": "Open space between sections. Cold and honest about it." }
+      "metal_plate":  { "label":"Metal Plate",   "image":"floors/metal_plate.png",  "css":"vs-floor-metal",    "desc":"Riveted steel deck plating." },
+      "metal_grate":  { "label":"Metal Grate",   "image":"floors/metal_grate.png",  "css":"vs-floor-grate",    "desc":"Open grate over conduit runs." },
+      "concrete":     { "label":"Concrete",      "image":"floors/concrete.png",     "css":"vs-floor-concrete", "desc":"Cracked asteroid-dust concrete." },
+      "stained":      { "label":"Stained Metal", "image":"floors/stained.png",      "css":"vs-floor-stained",  "desc":"Oil and grime." },
+      "civic_tile":   { "label":"Civic Tile",    "image":"floors/civic_tile.png",   "css":"vs-floor-civic",    "desc":"Authority-issue floor tile." },
+      "void":         { "label":"Void",          "image":null,                       "css":"vs-floor-void",     "desc":"Open space." }
     },
 
     "walls": {
-      "hull_plate":     { "label": "Hull Plate",       "css": "vs-wall-hull",      "desc": "Thick outer hull plating, bolted and welded." },
-      "corrugated":     { "label": "Corrugated",       "css": "vs-wall-corrugated","desc": "Corrugated metal dividers, cheap and effective." },
-      "pipe_bundle":    { "label": "Pipe Bundle",      "css": "vs-wall-pipes",     "desc": "A dense cluster of pipes, conduits, and ductwork forming a wall." },
-      "rock":           { "label": "Rock/Asteroid",    "css": "vs-wall-rock",      "desc": "Raw asteroid rock, reinforced with spray-foam seal." },
-      "civic_block":    { "label": "Civic Block",      "css": "vs-wall-civic",     "desc": "Poured authority-issue concrete with worn civic markings." }
+      "hull_plate":   { "label":"Hull Plate",    "imageH":"walls/wall_hull_h.png",     "imageV":"walls/wall_hull_v.png",         "desc":"Thick outer hull." },
+      "corrugated":   { "label":"Corrugated",    "imageH":"walls/wall_corrugated_h.png","imageV":"walls/wall_corrugated_v.png",   "desc":"Corrugated metal divider." },
+      "pipe_bundle":  { "label":"Pipe Bundle",   "imageH":"walls/wall_pipes_h.png",    "imageV":"walls/wall_pipes_v.png",        "desc":"Dense pipes and conduit." },
+      "rock":         { "label":"Rock",          "imageH":"walls/wall_rock_h.png",     "imageV":"walls/wall_rock_v.png",         "desc":"Raw asteroid rock." },
+      "civic_block":  { "label":"Civic Block",   "imageH":"walls/wall_civic_h.png",    "imageV":"walls/wall_civic_v.png",        "desc":"Authority concrete block." }
     },
 
     "props": {
-      "barrel":         { "label": "Barrel",           "icon": "⬡", "css": "vs-prop-barrel",   "desc": "A sealed industrial drum. Could be fuel, waste, or something else." },
-      "crate":          { "label": "Crate",            "icon": "▩", "css": "vs-prop-crate",    "desc": "A stamped cargo crate. Marked with a destination nobody can read anymore." },
-      "terminal":       { "label": "Terminal",         "icon": "▦", "css": "vs-prop-terminal", "desc": "A wall-mounted data terminal. Screen flickers between info and static." },
-      "pipe_vent":      { "label": "Pipe Vent",        "icon": "◎", "css": "vs-prop-vent",     "desc": "A large steam vent. Hisses periodically." },
-      "cable_bundle":   { "label": "Cable Bundle",     "icon": "≋", "css": "vs-prop-cables",   "desc": "Bundles of power and data cables zip-tied to the wall." },
-      "bunk":           { "label": "Bunk",             "icon": "▭", "css": "vs-prop-bunk",     "desc": "A fold-down bunk, stained and utilitarian." },
-      "counter":        { "label": "Counter/Bar",      "icon": "▬", "css": "vs-prop-counter",  "desc": "A long service counter, scratched and worn." },
-      "locker":         { "label": "Locker",           "icon": "▪", "css": "vs-prop-locker",   "desc": "A bolted storage locker with a cheap padlock." },
-      "sign_neon":      { "label": "Neon Sign",        "icon": "◈", "css": "vs-prop-sign",     "desc": "A hand-wired neon sign. Half the letters still work." },
-      "debris":         { "label": "Debris",           "icon": "·", "css": "vs-prop-debris",   "desc": "Scattered scrap, broken components, and general station grime." },
-      "chem_tank":      { "label": "Chem Tank",        "icon": "◉", "css": "vs-prop-chemtank", "desc": "A pressurized chemical tank, labeled with faded hazard marks." }
+      "bar_counter_h":   { "label":"Bar Counter (H)",     "image":"props/bar_counter_h.png",   "icon":"▬", "desc":"Horizontal bar counter section." },
+      "bar_counter_v":   { "label":"Bar Counter (V)",     "image":"props/bar_counter_v.png",   "icon":"▮", "desc":"Vertical bar counter section." },
+      "bar_stool":       { "label":"Bar Stool",           "image":"props/bar_stool.png",       "icon":"⊙", "desc":"A battered bar stool." },
+      "round_table":     { "label":"Round Table",         "image":"props/round_table.png",     "icon":"◯", "desc":"A round drinking table." },
+      "chair_s":         { "label":"Chair",               "image":"props/chair_s.png",         "icon":"⊓", "desc":"A scuffed chair." },
+      "bottle_rack":     { "label":"Bottle Rack",         "image":"props/bottle_rack.png",     "icon":"≡", "desc":"Wall-mounted bottle shelf." },
+      "pool_table":      { "label":"Pool Table",          "image":"props/pool_table.png",      "icon":"◈", "desc":"Void billiards table." },
+      "slot_machine":    { "label":"Slot Machine",        "image":"props/slot_machine.png",    "icon":"⬡", "desc":"Classic space slots." },
+      "card_table":      { "label":"Card Table",          "image":"props/card_table.png",      "icon":"◆", "desc":"Felt-top card table." },
+      "bunk_bed":        { "label":"Bunk Bed",            "image":"props/bunk_bed.png",        "icon":"▭", "desc":"Fold-down bunk bed." },
+      "footlocker":      { "label":"Footlocker",          "image":"props/footlocker.png",      "icon":"▪", "desc":"Storage chest." },
+      "wall_locker_c":   { "label":"Locker (Closed)",     "image":"props/wall_locker_c.png",   "icon":"▪", "desc":"Metal wall locker, closed." },
+      "wall_locker_o":   { "label":"Locker (Open)",       "image":"props/wall_locker_o.png",   "icon":"▫", "desc":"Metal wall locker, open." },
+      "duffel_bag":      { "label":"Duffel Bag",          "image":"props/duffel_bag.png",      "icon":"∈", "desc":"Duffel bag on floor." },
+      "backpack":        { "label":"Backpack",            "image":"props/backpack.png",        "icon":"∈", "desc":"Backpack dropped on floor." },
+      "cot":             { "label":"Cot/Bedroll",         "image":"props/cot.png",             "icon":"▭", "desc":"Utilitarian cot." },
+      "side_table":      { "label":"Side Table",          "image":"props/side_table.png",      "icon":"□", "desc":"Small side table." },
+      "desk":            { "label":"Desk",                "image":"props/desk.png",            "icon":"▬", "desc":"Work desk." },
+      "desk_terminal":   { "label":"Desk w/ Terminal",    "image":"props/desk_terminal.png",   "icon":"▦", "desc":"Desk with mounted terminal." },
+      "large_crate":     { "label":"Large Crate",         "image":"props/large_crate.png",     "icon":"▩", "desc":"Large cargo crate." },
+      "small_crate":     { "label":"Small Crate",         "image":"props/small_crate.png",     "icon":"▪", "desc":"Small cargo crate." },
+      "barrel_up":       { "label":"Barrel (Upright)",    "image":"props/barrel_up.png",       "icon":"⬡", "desc":"Industrial drum, upright." },
+      "barrel_tip":      { "label":"Barrel (Tipped)",     "image":"props/barrel_tip.png",      "icon":"⬡", "desc":"Tipped-over drum." },
+      "pallet_crates":   { "label":"Pallet w/ Crates",   "image":"props/pallet_crates.png",   "icon":"▩", "desc":"Stacked crates on pallet." },
+      "cargo_door":      { "label":"Cargo Door",          "image":"props/cargo_door.png",      "icon":"▶", "desc":"Large cargo container door." },
+      "toolbox_open":    { "label":"Toolbox (Open)",      "image":"props/toolbox_open.png",    "icon":"▫", "desc":"Open toolbox." },
+      "toolbox_closed":  { "label":"Toolbox (Closed)",    "image":"props/toolbox_closed.png",  "icon":"▪", "desc":"Closed toolbox." },
+      "welding_equip":   { "label":"Welding Equipment",   "image":"props/welding_equip.png",   "icon":"◎", "desc":"Welding gear." },
+      "fire_ext":        { "label":"Fire Extinguisher",   "image":"props/fire_ext.png",        "icon":"◉", "desc":"Wall-mount fire extinguisher." },
+      "fusebox":         { "label":"Fusebox",             "image":"props/fusebox.png",         "icon":"▦", "desc":"Breaker panel." },
+      "junction_box":    { "label":"Junction Box",        "image":"props/junction_box.png",    "icon":"▪", "desc":"Electrical junction." },
+      "med_cabinet_c":   { "label":"Med Cabinet (Closed)","image":"props/med_cabinet_c.png",   "icon":"✚", "desc":"Medical cabinet." },
+      "med_cabinet_o":   { "label":"Med Cabinet (Open)",  "image":"props/med_cabinet_o.png",   "icon":"✚", "desc":"Open medical cabinet." },
+      "gurney":          { "label":"Gurney",              "image":"props/gurney.png",          "icon":"▭", "desc":"Medical gurney." },
+      "iv_stand":        { "label":"IV Stand",            "image":"props/iv_stand.png",        "icon":"†", "desc":"IV drip stand." },
+      "med_scanner":     { "label":"Med Scanner",         "image":"props/med_scanner.png",     "icon":"▦", "desc":"Medical scanner terminal." },
+      "civic_desk":      { "label":"Civic Desk",          "image":"props/civic_desk.png",      "icon":"▬", "desc":"Authority office desk." },
+      "filing_cabinet":  { "label":"Filing Cabinet",      "image":"props/filing_cabinet.png",  "icon":"▪", "desc":"Filing cabinet." },
+      "evidence_lockbox":{ "label":"Evidence Lockbox",    "image":"props/evidence_lockbox.png","icon":"▪", "desc":"Locked evidence box." },
+      "holding_door":    { "label":"Holding Cell Door",   "image":"props/holding_door.png",    "icon":"▮", "desc":"Barred cell door." },
+      "security_terminal":{"label":"Security Terminal",   "image":"props/security_terminal.png","icon":"▦","desc":"Security control terminal." },
+      "wanted_poster":   { "label":"Wanted Poster",       "image":"props/wanted_poster.png",   "icon":"◈", "desc":"Wanted poster on wall." },
+      "civic_plaque":    { "label":"Civic Plaque",        "image":"props/civic_plaque.png",    "icon":"◈", "desc":"Authority signage." },
+      "engine_housing":  { "label":"Engine Housing",      "image":"props/engine_housing.png",  "icon":"⬡", "desc":"Ship engine unit." },
+      "reactor_core":    { "label":"Reactor Core",        "image":"props/reactor_core.png",    "icon":"◎", "desc":"Reactor core panel." },
+      "nav_console":     { "label":"Nav Console",         "image":"props/nav_console.png",     "icon":"▦", "desc":"Navigation console." },
+      "pilot_seat":      { "label":"Pilot Seat",          "image":"props/pilot_seat.png",      "icon":"⊓", "desc":"Pilot seat." },
+      "copilot_seat":    { "label":"Co-Pilot Seat",       "image":"props/copilot_seat.png",    "icon":"⊓", "desc":"Co-pilot seat." },
+      "overhead_rack":   { "label":"Overhead Rack",       "image":"props/overhead_rack.png",   "icon":"≡", "desc":"Overhead storage rack." },
+      "cargo_net":       { "label":"Cargo Net",           "image":"props/cargo_net.png",       "icon":"⋈", "desc":"Cargo net on floor." },
+      "smuggler_hatch_c":{ "label":"Smuggler Hatch (C)",  "image":"props/smuggler_hatch_c.png","icon":"▪", "desc":"Hidden floor hatch, closed." },
+      "smuggler_hatch_o":{ "label":"Smuggler Hatch (O)",  "image":"props/smuggler_hatch_o.png","icon":"▫", "desc":"Hidden floor hatch, open." },
+      "hanging_cables":  { "label":"Hanging Cables",      "image":"props/hanging_cables.png",  "icon":"≋", "desc":"Wiring loom." },
+      "crate":           { "label":"Crate",               "image":"props/small_crate.png",     "icon":"▩", "desc":"Cargo crate." },
+      "barrel":          { "label":"Barrel",              "image":"props/barrel_up.png",       "icon":"⬡", "desc":"Industrial drum." },
+      "terminal":        { "label":"Terminal",            "image":"props/desk_terminal.png",   "icon":"▦", "desc":"Data terminal." },
+      "cable_bundle":    { "label":"Cable Bundle",        "image":"props/hanging_cables.png",  "icon":"≋", "desc":"Cable bundle." },
+      "sign_neon":       { "label":"Neon Sign",           "image":null,                         "icon":"◈", "desc":"Neon sign." },
+      "debris":          { "label":"Debris",              "image":null,                         "icon":"·", "desc":"Debris pile." },
+      "chem_tank":       { "label":"Chem Tank",           "image":"props/engine_housing.png",  "icon":"◉", "desc":"Chemical tank." },
+      "locker":          { "label":"Locker",              "image":"props/wall_locker_c.png",   "icon":"▪", "desc":"Storage locker." }
     },
 
     "fx": {
-      "steam_vent":     { "label": "Steam Vent",       "css": "vs-fx-steam",       "desc": "Periodic steam release from overhead ductwork." },
-      "neon_glow":      { "label": "Neon Glow",        "css": "vs-fx-neon",        "desc": "Ambient neon light bleed from nearby signage." },
-      "flicker":        { "label": "Flickering Light", "css": "vs-fx-flicker",     "desc": "An overhead light cycling between dim and functional." },
-      "haze":           { "label": "Smoke Haze",       "css": "vs-fx-haze",        "desc": "Thin atmospheric haze, part chemical, part cigarette." },
-      "drip":           { "label": "Water Drip",       "css": "vs-fx-drip",        "desc": "A slow drip from a ceiling seal. The station is not watertight." },
-      "sparks":         { "label": "Sparks",           "css": "vs-fx-sparks",      "desc": "Occasional electrical sparks from damaged conduit." },
-      "red_light":      { "label": "Red Warning Light","css": "vs-fx-redlight",    "desc": "A pulsing red warning light in restricted zones." }
+      "steam_vent":  { "label":"Steam Vent",        "frames":"fx/steam_vent_f{n}.png", "frameCount":4, "fps":8,  "desc":"Steam vent puffing." },
+      "drip":        { "label":"Drip",              "frames":"fx/drip_f{n}.png",       "frameCount":4, "fps":6,  "desc":"Dripping pipe." },
+      "sparks":      { "label":"Sparks",            "frames":"fx/sparks_f{n}.png",     "frameCount":4, "fps":12, "desc":"Electrical sparks." },
+      "flicker":     { "label":"Flickering Light",  "frames":"fx/flicker_f{n}.png",    "frameCount":4, "fps":4,  "desc":"Overhead light flicker." },
+      "neon_glow":   { "label":"Neon Glow",         "frames":null,                     "frameCount":1, "fps":0,  "desc":"Ambient neon light bleed." },
+      "red_light":   { "label":"Red Warning Light", "frames":null,                     "frameCount":1, "fps":0,  "desc":"Red warning pulse." },
+      "haze":        { "label":"Smoke Haze",        "frames":null,                     "frameCount":1, "fps":0,  "desc":"Thin smoke haze." }
     },
 
-    "decals": {
-      "worn_number":    { "label": "Worn Number",      "css": "vs-decal-number",   "desc": "A faded berth or section number stenciled on the floor." },
-      "civic_stripe":   { "label": "Civic Stripe",     "css": "vs-decal-civic",    "desc": "An authority yellow stripe marking jurisdiction." },
-      "blood_stain":    { "label": "Blood Stain",      "css": "vs-decal-blood",    "desc": "Something happened here. Nobody filed a report." },
-      "graffiti":       { "label": "Graffiti",         "css": "vs-decal-graffiti", "desc": "Hand-tagged letters, a symbol, or a threat." },
-      "hazard_strip":   { "label": "Hazard Strip",     "css": "vs-decal-hazard",   "desc": "Black-and-yellow hazard marking, faded but legible." },
-      "boot_prints":    { "label": "Boot Prints",      "css": "vs-decal-boots",    "desc": "Repeated footprints worn into grime." }
+    "actors": {
+      "marshal":   { "image":"actors/marshal.png",   "walkFrames":4 },
+      "voidseer":  { "image":"actors/voidseer.png",  "walkFrames":4 },
+      "raider":    { "image":"actors/raider.png",    "walkFrames":4 },
+      "salvager":  { "image":"actors/salvager.png",  "walkFrames":4 },
+      "vexa_sorn": { "image":"actors/vexa_sorn.png", "walkFrames":4 },
+      "talon":     { "image":"actors/talon.png",     "walkFrames":4 },
+      "boobo":     { "image":"actors/boobo.png",     "walkFrames":4 },
+      "torsh":     { "image":"actors/torsh.png",     "walkFrames":4 },
+      "shady_sam": { "image":"actors/shady_sam.png", "walkFrames":4 },
+      "rook_vey":  { "image":"actors/rook_vey.png",  "walkFrames":4 }
+    },
+
+    "lighting": {
+      "ambientColor": "#0a0e16",
+      "ambientIntensity": 0.85
     }
   },
 
   {
     "id": "ember_hollow_ash",
     "name": "Ember Hollow Ash Fields",
-    "description": "Scorched mining moon. Plasma dust, ash plains, reinforced outpost walls.",
     "biome": "ash_frontier",
+    "tileSize": 56,
+    "assetPath": "assets/",
     "floors": {
-      "ash_dirt":  { "label": "Ash Dirt",   "css": "vs-floor-ash",   "desc": "Compacted ash and mineral dust." },
-      "sand_rock": { "label": "Sand Rock",  "css": "vs-floor-sand",  "desc": "Loose rock and sand, unstable underfoot." },
-      "outpost":   { "label": "Outpost",    "css": "vs-floor-metal", "desc": "Prefab outpost decking, bolted to the rock." }
+      "ash_dirt":  { "label":"Ash Dirt",  "image":null, "css":"vs-floor-ash",   "desc":"Compacted ash." },
+      "sand_rock": { "label":"Sand Rock", "image":null, "css":"vs-floor-sand",  "desc":"Loose rock." },
+      "outpost":   { "label":"Outpost",   "image":"floors/metal_plate.png", "css":"vs-floor-metal","desc":"Prefab decking." }
     },
     "walls": {
-      "rock":      { "label": "Rock",       "css": "vs-wall-rock",   "desc": "Hollow rock face, heat-scored." },
-      "outpost":   { "label": "Outpost",    "css": "vs-wall-hull",   "desc": "Prefab reinforced outpost wall." }
+      "rock":    { "label":"Rock",    "imageH":"walls/wall_rock_h.png", "imageV":"walls/wall_rock_v.png", "desc":"Hollow rock." },
+      "outpost": { "label":"Outpost", "imageH":"walls/wall_hull_h.png", "imageV":"walls/wall_hull_v.png", "desc":"Prefab wall." }
     },
     "props": {},
     "fx": {
-      "ash_drift": { "label": "Ash Drift",  "css": "vs-fx-haze",     "desc": "Drifting ash particles in the wind." }
+      "haze": { "label":"Ash Drift", "frames":null, "frameCount":1, "fps":0, "desc":"Drifting ash." }
     },
-    "decals": {}
+    "actors": {},
+    "lighting": { "ambientColor": "#1a0e08", "ambientIntensity": 0.7 }
   },
 
   {
     "id": "glassreef_flooded",
     "name": "Glassreef Flooded Arcology",
-    "description": "Sunken city. Standing water, bioluminescent growth, crumbling transit infrastructure.",
     "biome": "sunken_arcology",
+    "tileSize": 56,
+    "assetPath": "assets/",
     "floors": {
-      "wet_tile":  { "label": "Wet Tile",   "css": "vs-floor-stained","desc": "Flooded pre-collapse tile, algae-coated." },
-      "toxic":     { "label": "Toxic Pool", "css": "vs-floor-void",   "desc": "Standing toxic water. Don't wade through it." }
+      "wet_tile": { "label":"Wet Tile", "image":null, "css":"vs-floor-stained", "desc":"Flooded tile." },
+      "toxic":    { "label":"Toxic",    "image":null, "css":"vs-floor-void",    "desc":"Toxic standing water." }
     },
     "walls": {
-      "ruin":      { "label": "Ruin Wall",  "css": "vs-wall-rock",    "desc": "Crumbled arcology structure, half-collapsed." }
+      "ruin": { "label":"Ruin", "imageH":"walls/wall_rock_h.png", "imageV":"walls/wall_rock_v.png", "desc":"Crumbled structure." }
     },
     "props": {},
     "fx": {
-      "biolume":   { "label": "Bioluminescence","css": "vs-fx-neon",  "desc": "Glowing biological growth on submerged surfaces." }
+      "neon_glow": { "label":"Bioluminescence", "frames":null, "frameCount":1, "fps":0, "desc":"Bioluminescent growth." }
     },
-    "decals": {}
+    "actors": {},
+    "lighting": { "ambientColor": "#081418", "ambientIntensity": 0.9 }
   },
 
   {
     "id": "wake_interior_ship",
     "name": "Scavenger's Wake Interior",
-    "description": "Cramped modular smuggler ship. Patched hull, narrow corridors, salvaged fittings.",
     "biome": "ship_interior",
+    "tileSize": 56,
+    "assetPath": "assets/",
     "floors": {
-      "deck":      { "label": "Ship Deck",  "css": "vs-floor-metal",  "desc": "Textured anti-slip ship decking." },
-      "grate":     { "label": "Grate",      "css": "vs-floor-grate",  "desc": "Grate flooring over the ship's cable runs." }
+      "deck":  { "label":"Ship Deck", "image":"floors/metal_plate.png", "css":"vs-floor-metal", "desc":"Anti-slip decking." },
+      "grate": { "label":"Grate",     "image":"floors/metal_grate.png", "css":"vs-floor-grate", "desc":"Grate flooring." }
     },
     "walls": {
-      "hull":      { "label": "Hull",       "css": "vs-wall-hull",    "desc": "Inner hull plating, patched in several places." },
-      "pipes":     { "label": "Pipes",      "css": "vs-wall-pipes",   "desc": "Exposed ship piping and conduit." }
+      "hull":  { "label":"Hull",  "imageH":"walls/wall_hull_h.png",  "imageV":"walls/wall_hull_v.png",  "desc":"Inner hull plating." },
+      "pipes": { "label":"Pipes", "imageH":"walls/wall_pipes_h.png", "imageV":"walls/wall_pipes_v.png", "desc":"Exposed piping." }
     },
     "props": {},
     "fx": {
-      "hum":       { "label": "Engine Hum", "css": "vs-fx-flicker",   "desc": "The low vibration of the ship's drives." }
+      "flicker": { "label":"Engine Hum", "frames":null, "frameCount":1, "fps":0, "desc":"Engine vibration." }
     },
-    "decals": {}
+    "actors": {},
+    "lighting": { "ambientColor": "#0a0c14", "ambientIntensity": 0.8 }
   }
 ]
