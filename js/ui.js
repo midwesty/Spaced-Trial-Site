@@ -207,7 +207,6 @@ export function renderMap(state, data, api) {
   _liveState = state; _liveData = data; _liveApi = api;
 
   // ── Init or reinit canvas renderer on map change ──────────────────────────
-  const tileLayer = $('#tileLayer');
   if (!_mapCanvasInit || state.mapId !== _lastCanvasMapId) {
     initMapRenderer(tileLayer);
     _mapCanvasInit = true;
