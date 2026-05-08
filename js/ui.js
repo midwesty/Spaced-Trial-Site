@@ -1,3 +1,4 @@
+import { initMapRenderer, renderMapCanvas, renderEntitiesCanvas, startMapRenderLoop, stopMapRenderLoop } from './MapRenderer.js';
 import { $, $$, clamp, createEl, formatTime, getById } from './utils.js';
 
 // ─── PANEL DRAG ───────────────────────────────────────────────────────────────
@@ -187,25 +188,41 @@ function hideTileTooltip() {
 }
 
 // ─── MAP RENDER ───────────────────────────────────────────────────────────────
+// Canvas renderer state
+let _canvasInitialized = false;
+let _lastMapId = null;
+
 export function renderMap(state, data, api) {
   const map = currentMap(state, data);
   const tileLayer   = $('#tileLayer');
   const entityLayer = $('#entityLayer');
-  tileLayer.innerHTML = ''; entityLayer.innerHTML = '';
   if (!map) return;
 
   const size = data.config.map.tileSize;
   document.documentElement.style.setProperty('--tile', `${size}px`);
 
-  // Load tileset definition for visual kit lookup
-  const tileset = (data.tilesets || []).find(ts => ts.id === map.tileset);
+  // ── Init canvas renderer once (or when map changes) ───────────────────────
+  if (!_canvasInitialized || state.mapId !== _lastMapId) {
+    initMapRenderer(tileLayer);
+    _canvasInitialized = true;
+    _lastMapId = state.mapId;
+    // Start animation loop — supplies live state each frame
+    startMapRenderLoop(() => ({
+      map: currentMap(state, data),
+      state, data, api
+    }));
+  }
+
+  // ── Build invisible click-target divs over the canvas ─────────────────────
+  // These are transparent — canvas draws the visuals, divs handle clicks
+  tileLayer.innerHTML = '';
+  tileLayer.style.opacity = '0';   // invisible but interactive
 
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const t = map.tiles[y]?.[x];
       if (!t) continue;
       const revealed = api.isTileRevealed(x, y);
-      const v = t.visual || {};
 
       let cls = `tile ${t.type}`;
       if (!revealed) {
@@ -215,45 +232,23 @@ export function renderMap(state, data, api) {
         if (t.locked)   cls += ' tile-locked';
         if (t.smoke > 0) cls += ' smoky';
         if (t.stasis > 0) cls += ' stasis-field';
-        if (t.gameTable)   cls += ' game-table';
-        if (t.jukebox)     cls += ' tile-jukebox';
-        if (t.transition)  cls += ' tile-door';
-        else if (t.loot)   cls += ' tile-loot';
-        else if (t.interact) cls += ' tile-interact';
-        // Visual kit classes — floor, wall, decal, fx all add CSS
-        if (v.floor) cls += ` ${v.floor}`;
-        if (v.wall)  cls += ` ${v.wall}`;
-        if (v.decal) cls += ` ${v.decal}`;
-        if (v.fx)    cls += ` ${v.fx}`;
+        if (t.gameTable)       cls += ' game-table';
+        if (t.jukebox)         cls += ' tile-jukebox';
+        if (t.transition)      cls += ' tile-door';
+        else if (t.loot)       cls += ' tile-loot';
+        else if (t.interact)   cls += ' tile-interact';
       }
 
       const tile = createEl('div', { class: cls });
       tile.style.left = `${x * size}px`; tile.style.top = `${y * size}px`;
       tile.dataset.x  = x; tile.dataset.y = y;
 
-      if (revealed) {
-        // Wall depth accent elements
-        if (t.type === 'wall') {
-          tile.appendChild(createEl('span', { class: 'vs-wall-top' }));
-          tile.appendChild(createEl('span', { class: 'vs-wall-depth' }));
-        }
-        // Prop overlay (decorative, non-interactive)
-        if (v.prop && tileset?.props?.[v.prop]) {
-          const pd = tileset.props[v.prop];
-          const propEl = createEl('span', { class: `vs-prop ${pd.css || ''}` });
-          propEl.textContent = pd.icon || '·';
-          tile.appendChild(propEl);
-        }
-        // FX animated layer
-        if (v.fx) {
-          tile.appendChild(createEl('span', { class: `vs-fx-layer` }));
-        }
-      }
-
       if (revealed && (t.transition || t.loot || t.interact || t.gameTable || t.jukebox)) {
         const iconSpan = createEl('span', { class: 'tile-icon' });
         iconSpan.textContent = getTileIcon(t);
         tile.appendChild(iconSpan);
+
+        // Hover tooltip
         const tipText = buildTileTooltip(t);
         tile.addEventListener('mouseenter', e => showTileTooltip(tipText, e.clientX, e.clientY));
         tile.addEventListener('mousemove',  e => showTileTooltip(tipText, e.clientX, e.clientY));
@@ -283,6 +278,7 @@ export function renderMap(state, data, api) {
   }
 
   // ── Entities ──
+  const roleIcon   = { player: '★', ally: '◉', enemy: '✕', neutral: '◆' };
   const actorsHere = state.roster.filter(a => a.mapId === state.mapId && !a.dead);
   actorsHere.forEach(actor => {
     const revealed = api.isTileRevealed(actor.x, actor.y);
@@ -290,36 +286,22 @@ export function renderMap(state, data, api) {
 
     const isAI      = state.combat.aiActingId === actor.id;
     const isCurrent = state.combat.active && state.combat.turnOrder[state.combat.currentTurnIndex] === actor.id;
-    const mapDef = data.maps.find(m => m.id === state.mapId);
-    const actorTile = mapDef?.tiles[actor.y]?.[actor.x];
+    const map = data.maps.find(m => m.id === state.mapId);
+    const actorTile = map?.tiles[actor.y]?.[actor.x];
     const inSmoke = actorTile?.smoke > 0;
-    const isParty = state.party.includes(actor.id);
-    const isSelected = state.selectedActorId === actor.id;
-
     let cls = `entity ${actor.role}`;
     if (actor.downed)                         cls += ' down';
-    if (isSelected)                           cls += ' selected';
+    if (state.selectedActorId === actor.id)   cls += ' selected';
     if (actor.statuses.includes('stealthed')) cls += ' stealthed';
     if (inSmoke)                              cls += ' in-smoke';
     if (isAI)                                 cls += ' ai-acting';
     if (isCurrent && !isAI)                   cls += ' current-turn';
-    if (actor.classId)                        cls += ` actor-${actor.classId}`;
 
     const ent = createEl('div', { class: cls });
     ent.style.left = `${actor.x * size}px`; ent.style.top = `${actor.y * size}px`;
     ent.dataset.actorid = actor.id;
-
-    // ── Actor visual: silhouette SVG + HP bar + name bubble ──
-    const hpPct   = Math.max(0, Math.min(100, (actor.hp / actor.hpMax) * 100));
-    const hpColor = hpPct > 60 ? '#4aff9a' : hpPct > 30 ? '#ffcc5a' : '#ff5a5a';
-    const initials = actor.name.split(' ').map(w => w[0]).slice(0,2).join('');
-    const roleGlyph = getActorGlyph(actor);
-    ent.innerHTML = `
-      <div class="actor-body">
-        <div class="actor-silhouette">${roleGlyph}</div>
-        <div class="actor-hp-bar"><div class="actor-hp-fill" style="width:${hpPct}%;background:${hpColor}"></div></div>
-      </div>
-      <div class="bubble">${actor.name}${actor.downed ? ' [DOWN]' : ''}</div>`;
+    const icon = roleIcon[actor.role] || actor.name.split(' ').map(w => w[0]).slice(0,2).join('');
+    ent.innerHTML = `<span class="icon">${icon}</span><div class="bubble">${actor.name}</div>`;
 
     // Entity tooltip — shows attack preview in combat
     ent.addEventListener('mouseenter', e => {
@@ -476,45 +458,6 @@ function buildTileTooltip(t) {
   const type = t.transition ? 'Door/Transition' : t.loot ? 'Container' : 'Interact';
   const lock = t.locked ? ' 🔒' : '';
   return `[${type}]${lock} ${name}`;
-}
-
-// ─── ACTOR VISUAL GLYPH ──────────────────────────────────────────────────────
-// Returns an SVG silhouette string based on role/class.
-// Placeholders — replace with sprite img tags when real assets exist.
-function getActorGlyph(actor) {
-  const role = actor.role;
-  const cls  = actor.classId || '';
-
-  if (actor.downed) {
-    return `<svg viewBox="0 0 24 24" class="glyph-downed"><ellipse cx="12" cy="16" rx="8" ry="4" fill="currentColor" opacity=".7"/><circle cx="12" cy="9" r="4" fill="currentColor" opacity=".5"/></svg>`;
-  }
-
-  // Player / party members — distinct bright silhouette
-  if (role === 'player' || (role === 'ally' && actor.id?.startsWith('comp_'))) {
-    if (cls === 'marshal')  return `<svg viewBox="0 0 24 24" class="glyph-player"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M6 22 Q7 13 12 13 Q17 13 18 22Z" fill="currentColor"/><line x1="7" y1="14" x2="4" y2="20" stroke="currentColor" stroke-width="2"/><line x1="17" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="2"/></svg>`;
-    if (cls === 'voidseer') return `<svg viewBox="0 0 24 24" class="glyph-player"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M6 22 Q7 13 12 13 Q17 13 18 22Z" fill="currentColor"/><path d="M9 10 Q12 7 15 10" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="12" cy="4" r="1" fill="currentColor" opacity=".7"/></svg>`;
-    if (cls === 'raider')   return `<svg viewBox="0 0 24 24" class="glyph-player"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M6 22 Q7 13 12 13 Q17 13 18 22Z" fill="currentColor"/><rect x="4" y="12" width="4" height="2" fill="currentColor" opacity=".8" transform="rotate(-20 6 13)"/></svg>`;
-    if (cls === 'salvager') return `<svg viewBox="0 0 24 24" class="glyph-player"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M6 22 Q7 13 12 13 Q17 13 18 22Z" fill="currentColor"/><rect x="16" y="10" width="5" height="2" fill="currentColor" opacity=".8"/></svg>`;
-    // Generic player
-    return `<svg viewBox="0 0 24 24" class="glyph-player"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M6 22 Q7 13 12 13 Q17 13 18 22Z" fill="currentColor"/></svg>`;
-  }
-
-  // Neutral NPC — rounder, softer
-  if (role === 'neutral') {
-    return `<svg viewBox="0 0 24 24" class="glyph-neutral"><circle cx="12" cy="6" r="3" fill="currentColor"/><path d="M7 21 Q8 14 12 14 Q16 14 17 21Z" fill="currentColor"/></svg>`;
-  }
-
-  // Ally (non-companion) — similar to neutral but slightly larger
-  if (role === 'ally') {
-    return `<svg viewBox="0 0 24 24" class="glyph-ally"><circle cx="12" cy="6" r="3.2" fill="currentColor"/><path d="M7 22 Q8 13 12 13 Q16 13 17 22Z" fill="currentColor"/></svg>`;
-  }
-
-  // Enemy — angular, threatening silhouette
-  if (cls === 'raider') {
-    return `<svg viewBox="0 0 24 24" class="glyph-enemy"><polygon points="12,2 16,8 20,7 15,13 17,21 12,17 7,21 9,13 4,7 8,8" fill="currentColor"/></svg>`;
-  }
-  // Generic enemy
-  return `<svg viewBox="0 0 24 24" class="glyph-enemy"><circle cx="12" cy="6" r="3.5" fill="currentColor"/><path d="M5 22 L8 13 L12 11 L16 13 L19 22Z" fill="currentColor"/></svg>`;
 }
 
 function getTileIcon(t) {
