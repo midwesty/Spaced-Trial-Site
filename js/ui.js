@@ -188,9 +188,10 @@ function hideTileTooltip() {
 }
 
 // ─── MAP RENDER ───────────────────────────────────────────────────────────────
-// Canvas renderer state
+// Canvas renderer state — module-level so renderMap can update live refs
 let _canvasInitialized = false;
 let _lastMapId = null;
+let _liveState = null, _liveData = null, _liveApi = null;
 
 export function renderMap(state, data, api) {
   const map = currentMap(state, data);
@@ -201,22 +202,30 @@ export function renderMap(state, data, api) {
   const size = data.config.map.tileSize;
   document.documentElement.style.setProperty('--tile', `${size}px`);
 
+  // Keep live refs updated every frame — the animation loop reads these
+  _liveState = state; _liveData = data; _liveApi = api;
+
   // ── Init canvas renderer once (or when map changes) ───────────────────────
   if (!_canvasInitialized || state.mapId !== _lastMapId) {
     initMapRenderer(tileLayer);
     _canvasInitialized = true;
     _lastMapId = state.mapId;
-    // Start animation loop — supplies live state each frame
     startMapRenderLoop(() => ({
-      map: currentMap(state, data),
-      state, data, api
+      map: currentMap(_liveState, _liveData),
+      state: _liveState,
+      data: _liveData,
+      api: _liveApi
     }));
   }
 
-  // ── Build invisible click-target divs over the canvas ─────────────────────
-  // These are transparent — canvas draws the visuals, divs handle clicks
+  // ── Hide entity layer — actors are drawn on canvas ─────────────────────────
+  entityLayer.style.opacity = '0';
+  entityLayer.style.pointerEvents = 'auto'; // still handles entity clicks
+
+  // ── Build invisible click-target tiles (0% opacity, handles clicks only) ──
   tileLayer.innerHTML = '';
-  tileLayer.style.opacity = '0';   // invisible but interactive
+  tileLayer.style.opacity = '0';
+  tileLayer.style.pointerEvents = 'auto';
 
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {

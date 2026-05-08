@@ -1,67 +1,59 @@
 /**
- * MapRenderer.js — Canvas-based pseudo-isometric map renderer for Spaced
- * =========================================================================
- * Draws the map onto a <canvas> element using procedural placeholder art.
- * All gameplay logic (grid coords, collision, clicks, entities) is unchanged.
- * A transparent HTML overlay sits on top for all click/hover interactions.
- *
- * Visual approach:
- *   - Each tile is drawn as a top-down square with depth illusions
- *   - Walls get a top face (lit) + front face (shadowed) for height
- *   - Floors get texture, edge shading, and decal/FX overlays
- *   - Props are drawn as small geometric silhouettes
- *   - All assets are procedural — swap drawXxx() functions for sprite draws later
- *
- * Coordinate system: unchanged. x,y = grid tile coords. Canvas px = x*T, y*T.
+ * MapRenderer.js — High-atmosphere canvas renderer for Spaced
+ * ============================================================
+ * Target aesthetic: dark atmospheric sci-fi station interior.
+ * Walls read as tall 3D blocks. Floors have strong texture contrast.
+ * Lighting pools create zone identity. Props fill space.
  */
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
-const WALL_HEIGHT  = 18;   // pixels of wall "height" above tile top
-const WALL_DEPTH   = 6;    // right-side wall depth
-const LIGHT_DIR    = { x: -0.4, y: -0.8 };  // top-left light source
+const T_BASE    = 56;   // base tile size (overridden by config)
+const WALL_H    = 26;   // wall top-face height in px
+const WALL_D    = 8;    // wall right-depth in px
+const SHADOW_D  = 16;   // floor shadow cast by wall above
 
-// Port Sable palette
-const PAL = {
-  // Floors
-  floorMetal:    ['#1a2535', '#1e2c3f', '#162030'],
-  floorGrate:    ['#111820', '#141e28', '#0e1520'],
-  floorConcrete: ['#1c2230', '#1a2030', '#161c28'],
-  floorStained:  ['#16181e', '#1a1c22', '#121416'],
-  floorCivic:    ['#1a2048', '#1e2550', '#161c3a'],
-  floorVoid:     ['#050810', '#060a14', '#040608'],
+// ─── PALETTE ──────────────────────────────────────────────────────────────────
 
-  // Walls
-  wallHull:      { top: '#2a3f58', face: '#142030', right: '#0a1520', accent: '#3a5570' },
-  wallCorrugated:{ top: '#253545', face: '#101e2c', right: '#080f18', accent: '#304555' },
-  wallPipes:     { top: '#1a2d3f', face: '#0c1c2c', right: '#060e18', accent: '#2a4060' },
-  wallRock:      { top: '#2a2018', face: '#181208', right: '#0c0a04', accent: '#3a3020' },
-  wallCivic:     { top: '#1e2c60', face: '#0e1840', right: '#081028', accent: '#2e4080' },
+const C = {
+  // Floor bases
+  fMetal:    '#18232f',
+  fGrate:    '#0e1620',
+  fConcrete: '#161d28',
+  fStained:  '#111318',
+  fCivic:    '#151d3a',
+  fVoid:     '#040608',
+  fAsh:      '#1a1510',
+  fSand:     '#1e1a0e',
+  fToxic:    '#0a1812',
 
-  // Neon accent colors by zone
-  neonPink:   '#ff2d78',
-  neonCyan:   '#00e5ff',
-  neonGold:   '#ffd600',
-  neonGreen:  '#00ff88',
-  neonPurple: '#b400ff',
-  neonOrange: '#ff6a00',
+  // Wall bases
+  wTop:      '#2c4060',  // lit top face
+  wFace:     '#0e1824',  // front face
+  wDepth:    '#060e16',  // right depth
+  wAccent:   '#3a5580',  // top edge highlight
 
-  // Fogged
-  fog: '#0a0e14',
-  fogEdge: '#0c1018',
+  // Neon palette
+  pink:   '#ff2070',
+  cyan:   '#00d4ff',
+  gold:   '#ffcc00',
+  green:  '#00ff88',
+  purple: '#c040ff',
+  orange: '#ff6a00',
+  red:    '#ff2020',
 
-  // Grid edge
-  gridLine: 'rgba(255,255,255,0.028)',
+  // Fog
+  fog:    '#080c10',
 };
 
-// Zone → accent color mapping
-const ZONE_COLOR = {
-  restricted_impound: PAL.neonOrange,
-  restricted_civic:   PAL.neonCyan,
-  hostile_reaver:     PAL.neonPink,
-  transition_ab:      PAL.neonGold,
-  transition_bc:      PAL.neonGold,
-  transition_ac:      PAL.neonGold,
+// Zone → neon color
+const ZONE_NEON = {
+  restricted_impound: C.orange,
+  restricted_civic:   C.cyan,
+  hostile_reaver:     C.red,
+  transition_ab:      C.gold,
+  transition_bc:      C.gold,
+  transition_ac:      C.gold,
 };
 
 // ─── MODULE STATE ─────────────────────────────────────────────────────────────
@@ -69,985 +61,33 @@ const ZONE_COLOR = {
 let _canvas  = null;
 let _ctx     = null;
 let _animId  = null;
-let _fxTime  = 0;   // incremented each frame for animations
+let _t       = 0;     // time counter for animations
+let _getState = null;
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ─── PUBLIC API ───────────────────────────────────────────────────────────────
 
 export function initMapRenderer(tileLayerEl) {
-  // Replace tileLayer div with a canvas
   if (_canvas) { _canvas.remove(); cancelAnimationFrame(_animId); }
-
   _canvas = document.createElement('canvas');
   _canvas.id = 'mapCanvas';
-  _canvas.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;';
+  _canvas.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;';
   tileLayerEl.parentElement.insertBefore(_canvas, tileLayerEl);
-
-  // Hide the old tileLayer div — keep it for click hit-testing
   tileLayerEl.style.opacity = '0';
-  tileLayerEl.style.pointerEvents = 'auto'; // still handles clicks
-
-  _ctx = _canvas.getContext('2d');
-  return _canvas;
+  tileLayerEl.style.pointerEvents = 'auto';
+  _ctx = _canvas.getContext('2d', { alpha: false });
 }
 
-// ─── MAIN RENDER ENTRY POINT ──────────────────────────────────────────────────
-
-export function renderMapCanvas(map, state, data, api) {
-  if (!_canvas || !_ctx) return;
-  const T = data.config.map.tileSize;
-  const W = map.width  * T;
-  const H = map.height * T + WALL_HEIGHT; // extra height for wall tops
-
-  _canvas.width  = W;
-  _canvas.height = H;
-
-  _ctx.clearRect(0, 0, W, H);
-
-  // Draw in painter's order: back rows first
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
-      const t = map.tiles[y]?.[x];
-      if (!t) continue;
-      const revealed = api.isTileRevealed(x, y);
-      drawTile(_ctx, t, x, y, T, revealed, map, state, data);
-    }
-  }
-}
-
-// ─── DRAW A SINGLE TILE ───────────────────────────────────────────────────────
-
-function drawTile(ctx, t, x, y, T, revealed, map, state, data) {
-  const px = x * T;
-  const py = y * T;
-  const v  = t.visual || {};
-
-  if (!revealed) {
-    drawFogTile(ctx, px, py, T);
-    return;
-  }
-
-  if (t.type === 'wall') {
-    drawWallTile(ctx, t, px, py, T, v, map, x, y);
-  } else {
-    drawFloorTile(ctx, t, px, py, T, v, map, x, y, state, data);
-  }
-}
-
-// ─── FOG TILE ─────────────────────────────────────────────────────────────────
-
-function drawFogTile(ctx, px, py, T) {
-  ctx.fillStyle = PAL.fog;
-  ctx.fillRect(px, py, T, T);
-  // Subtle vignette at edges
-  const g = ctx.createLinearGradient(px, py, px+T, py+T);
-  g.addColorStop(0, 'rgba(20,30,50,0.15)');
-  g.addColorStop(1, 'rgba(0,0,0,0.3)');
-  ctx.fillStyle = g;
-  ctx.fillRect(px, py, T, T);
-}
-
-// ─── WALL TILE ────────────────────────────────────────────────────────────────
-
-function drawWallTile(ctx, t, px, py, T, v, map, gx, gy) {
-  const pal  = getWallPalette(v.wall);
-  const zone = t.zone || '';
-
-  // ── Front face (the main block face) ──────────────────────────────────────
-  const faceGrad = ctx.createLinearGradient(px, py, px, py + T);
-  faceGrad.addColorStop(0, pal.face);
-  faceGrad.addColorStop(1, darken(pal.face, 0.6));
-  ctx.fillStyle = faceGrad;
-  ctx.fillRect(px, py, T, T);
-
-  // ── Wall texture based on type ─────────────────────────────────────────────
-  const wallType = v.wall || 'hull_plate';
-  drawWallTexture(ctx, wallType, px, py, T, pal);
-
-  // ── Top face (lit surface — gives height illusion) ─────────────────────────
-  ctx.fillStyle = pal.top;
-  ctx.fillRect(px, py, T, WALL_HEIGHT);
-
-  // Top face highlight gradient
-  const topGrad = ctx.createLinearGradient(px, py, px + T, py + WALL_HEIGHT);
-  topGrad.addColorStop(0, 'rgba(255,255,255,0.12)');
-  topGrad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
-  topGrad.addColorStop(1, 'rgba(0,0,0,0.1)');
-  ctx.fillStyle = topGrad;
-  ctx.fillRect(px, py, T, WALL_HEIGHT);
-
-  // Top face accent line
-  ctx.fillStyle = pal.accent;
-  ctx.fillRect(px, py, T, 1);
-  ctx.fillRect(px, py, 1, WALL_HEIGHT);
-
-  // ── Right depth edge ───────────────────────────────────────────────────────
-  ctx.fillStyle = pal.right;
-  ctx.fillRect(px + T - WALL_DEPTH, py, WALL_DEPTH, T);
-  const rightGrad = ctx.createLinearGradient(px + T - WALL_DEPTH, py, px + T, py);
-  rightGrad.addColorStop(0, 'rgba(0,0,0,0)');
-  rightGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
-  ctx.fillStyle = rightGrad;
-  ctx.fillRect(px + T - WALL_DEPTH, py, WALL_DEPTH, T);
-
-  // ── Zone accent glow on wall top ───────────────────────────────────────────
-  const zoneColor = ZONE_COLOR[zone];
-  if (zoneColor) {
-    ctx.fillStyle = hexAlpha(zoneColor, 0.18);
-    ctx.fillRect(px, py, T, WALL_HEIGHT);
-  }
-
-  // ── Cast shadow downward (onto the floor below if not also a wall) ─────────
-  const tileBelow = map.tiles[gy + 1]?.[gx];
-  if (tileBelow && tileBelow.type !== 'wall') {
-    const shadowGrad = ctx.createLinearGradient(px, py + T, px, py + T + 12);
-    shadowGrad.addColorStop(0, 'rgba(0,0,0,0.45)');
-    shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = shadowGrad;
-    ctx.fillRect(px, py + T, T, 12);
-  }
-
-  // ── Grid line ─────────────────────────────────────────────────────────────
-  ctx.strokeStyle = PAL.gridLine;
-  ctx.lineWidth = 0.5;
-  ctx.strokeRect(px + 0.5, py + 0.5, T - 1, T - 1);
-}
-
-function drawWallTexture(ctx, wallType, px, py, T, pal) {
-  ctx.save();
-  ctx.globalAlpha = 0.35;
-
-  if (wallType === 'corrugated') {
-    // Vertical corrugation lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
-    for (let i = 4; i < T; i += 8) {
-      ctx.beginPath(); ctx.moveTo(px + i, py + WALL_HEIGHT); ctx.lineTo(px + i, py + T);
-      ctx.stroke();
-    }
-    // Darker valleys
-    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-    for (let i = 8; i < T; i += 8) {
-      ctx.beginPath(); ctx.moveTo(px + i, py + WALL_HEIGHT); ctx.lineTo(px + i, py + T);
-      ctx.stroke();
-    }
-
-  } else if (wallType === 'pipe_bundle') {
-    // Draw 2-3 horizontal pipes
-    ctx.globalAlpha = 0.5;
-    const pipes = [py + T * 0.3, py + T * 0.6];
-    pipes.forEach(pipeY => {
-      const pg = ctx.createLinearGradient(px, pipeY - 4, px, pipeY + 4);
-      pg.addColorStop(0, 'rgba(80,120,160,0.6)');
-      pg.addColorStop(0.4, 'rgba(140,180,220,0.4)');
-      pg.addColorStop(1, 'rgba(20,50,80,0.5)');
-      ctx.fillStyle = pg;
-      ctx.beginPath();
-      ctx.roundRect(px + 4, pipeY - 4, T - 8, 8, 3);
-      ctx.fill();
-      // Pipe highlight
-      ctx.fillStyle = 'rgba(200,230,255,0.15)';
-      ctx.fillRect(px + 4, pipeY - 3, T - 8, 2);
-    });
-
-  } else if (wallType === 'rock') {
-    // Irregular rock facets
-    ctx.globalAlpha = 0.4;
-    ctx.fillStyle = 'rgba(80,60,20,0.3)';
-    ctx.fillRect(px + 4, py + WALL_HEIGHT + 4, T * 0.4, T * 0.3);
-    ctx.fillStyle = 'rgba(40,30,10,0.3)';
-    ctx.fillRect(px + T * 0.45, py + WALL_HEIGHT + 8, T * 0.35, T * 0.4);
-    // Crack lines
-    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-    ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.moveTo(px + T * 0.3, py + WALL_HEIGHT);
-    ctx.lineTo(px + T * 0.45, py + T * 0.5);
-    ctx.lineTo(px + T * 0.6, py + T);
-    ctx.stroke();
-
-  } else if (wallType === 'civic_block') {
-    // Horizontal mortar lines
-    ctx.strokeStyle = 'rgba(60,80,140,0.2)';
-    ctx.lineWidth = 1;
-    for (let i = py + WALL_HEIGHT + 10; i < py + T; i += 10) {
-      ctx.beginPath(); ctx.moveTo(px, i); ctx.lineTo(px + T, i); ctx.stroke();
-    }
-    // Civic authority stripe
-    ctx.fillStyle = 'rgba(60,80,180,0.12)';
-    ctx.fillRect(px, py + T - 6, T, 4);
-
-  } else {
-    // hull_plate default — subtle panel lines
-    ctx.strokeStyle = 'rgba(100,150,200,0.07)';
-    ctx.lineWidth = 0.8;
-    // Horizontal panel seam
-    const seamY = py + WALL_HEIGHT + Math.floor((T - WALL_HEIGHT) / 2);
-    ctx.beginPath(); ctx.moveTo(px, seamY); ctx.lineTo(px + T, seamY); ctx.stroke();
-    // Bolt dots
-    ctx.fillStyle = 'rgba(80,120,160,0.2)';
-    [[px+4,py+WALL_HEIGHT+4],[px+T-6,py+WALL_HEIGHT+4],[px+4,py+T-6],[px+T-6,py+T-6]].forEach(([bx,by]) => {
-      ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI*2); ctx.fill();
-    });
-  }
-  ctx.restore();
-}
-
-// ─── FLOOR TILE ───────────────────────────────────────────────────────────────
-
-function drawFloorTile(ctx, t, px, py, T, v, map, gx, gy, state, data) {
-  const zone  = t.zone || '';
-  const floor = v.floor || (t.type === 'metal' ? 'metal_plate' : t.type === 'floor' ? 'concrete' : t.type);
-
-  // ── Base floor color ───────────────────────────────────────────────────────
-  drawFloorBase(ctx, floor, px, py, T);
-
-  // ── Receive shadow from wall above ─────────────────────────────────────────
-  const tileAbove = map.tiles[gy - 1]?.[gx];
-  if (tileAbove?.type === 'wall') {
-    const shadowGrad = ctx.createLinearGradient(px, py, px, py + 14);
-    shadowGrad.addColorStop(0, 'rgba(0,0,0,0.5)');
-    shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = shadowGrad;
-    ctx.fillRect(px, py, T, 14);
-  }
-  // Shadow from wall to the left
-  const tileLeft = map.tiles[gy]?.[gx - 1];
-  if (tileLeft?.type === 'wall') {
-    const lsGrad = ctx.createLinearGradient(px, py, px + 10, py);
-    lsGrad.addColorStop(0, 'rgba(0,0,0,0.35)');
-    lsGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = lsGrad;
-    ctx.fillRect(px, py, 10, T);
-  }
-
-  // ── Zone color overlay ─────────────────────────────────────────────────────
-  const zoneColor = ZONE_COLOR[zone];
-  if (zoneColor) {
-    ctx.fillStyle = hexAlpha(zoneColor, 0.06);
-    ctx.fillRect(px, py, T, T);
-    // Zone edge highlight on north wall face
-    if (tileAbove?.zone !== zone) {
-      ctx.fillStyle = hexAlpha(zoneColor, 0.25);
-      ctx.fillRect(px, py, T, 2);
-    }
-  }
-
-  // ── Decal ──────────────────────────────────────────────────────────────────
-  if (v.decal) drawDecal(ctx, v.decal, px, py, T, zone);
-
-  // ── Prop ───────────────────────────────────────────────────────────────────
-  if (v.prop && !t.gameTable && !t.jukebox) drawProp(ctx, v.prop, px, py, T);
-
-  // ── FX ─────────────────────────────────────────────────────────────────────
-  if (v.fx) drawFX(ctx, v.fx, px, py, T, _fxTime);
-
-  // ── Special tile markers ───────────────────────────────────────────────────
-  if (t.gameTable)   drawGameTableMarker(ctx, px, py, T, t.gameTable, data);
-  if (t.jukebox)     drawJukeboxMarker(ctx, px, py, T, t.jukebox, data);
-  if (t.transition)  drawTransitionMarker(ctx, px, py, T, t.transition);
-  else if (t.loot)   drawLootMarker(ctx, px, py, T, t);
-  else if (t.interact) drawInteractMarker(ctx, px, py, T, t);
-
-  // ── Cover indicator ────────────────────────────────────────────────────────
-  if (t.cover) {
-    ctx.strokeStyle = 'rgba(80,120,180,0.3)';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(px + 3, py + 3, T - 6, T - 6);
-  }
-
-  // ── Grid line ─────────────────────────────────────────────────────────────
-  ctx.strokeStyle = PAL.gridLine;
-  ctx.lineWidth   = 0.5;
-  ctx.strokeRect(px + 0.5, py + 0.5, T - 1, T - 1);
-}
-
-// ─── FLOOR BASE TEXTURES ──────────────────────────────────────────────────────
-
-function drawFloorBase(ctx, floor, px, py, T) {
-  switch (floor) {
-
-    case 'metal_plate': {
-      // Steel plate with rivet grid
-      const g = ctx.createLinearGradient(px, py, px + T, py + T);
-      g.addColorStop(0, '#1e2c3e'); g.addColorStop(1, '#141e2c');
-      ctx.fillStyle = g; ctx.fillRect(px, py, T, T);
-      // Panel seams
-      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1;
-      const seamX = px + Math.round(T / 2);
-      const seamY = py + Math.round(T / 2);
-      ctx.beginPath(); ctx.moveTo(seamX, py); ctx.lineTo(seamX, py + T); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(px, seamY); ctx.lineTo(px + T, seamY); ctx.stroke();
-      // Rivets at corners
-      ctx.fillStyle = 'rgba(80,110,150,0.5)';
-      [[px+3,py+3],[px+T-4,py+3],[px+3,py+T-4],[px+T-4,py+T-4]].forEach(([rx,ry]) => {
-        ctx.beginPath(); ctx.arc(rx, ry, 1.8, 0, Math.PI*2); ctx.fill();
-      });
-      // Subtle highlight top-left
-      const hl = ctx.createLinearGradient(px, py, px + T * 0.6, py + T * 0.6);
-      hl.addColorStop(0, 'rgba(255,255,255,0.04)');
-      hl.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = hl; ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'metal_grate': {
-      ctx.fillStyle = '#0e1520'; ctx.fillRect(px, py, T, T);
-      // Grate crosshatch
-      ctx.strokeStyle = 'rgba(40,60,90,0.7)'; ctx.lineWidth = 1;
-      for (let i = 0; i <= T; i += 7) {
-        ctx.beginPath(); ctx.moveTo(px + i, py); ctx.lineTo(px + i, py + T); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(px, py + i); ctx.lineTo(px + T, py + i); ctx.stroke();
-      }
-      // Glow from below (through grate)
-      const gg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*0.5);
-      gg.addColorStop(0, 'rgba(0,100,200,0.12)');
-      gg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = gg; ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'concrete': {
-      const g = ctx.createLinearGradient(px, py, px + T, py + T);
-      g.addColorStop(0, '#1c2230'); g.addColorStop(1, '#141a24');
-      ctx.fillStyle = g; ctx.fillRect(px, py, T, T);
-      // Crack pattern
-      ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.7;
-      ctx.beginPath();
-      ctx.moveTo(px + T*0.3, py + T*0.2);
-      ctx.lineTo(px + T*0.5, py + T*0.55);
-      ctx.lineTo(px + T*0.7, py + T*0.7);
-      ctx.stroke();
-      // Subtle noise patches
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
-      ctx.fillRect(px + 8, py + 12, 14, 10);
-      ctx.fillStyle = 'rgba(255,255,255,0.02)';
-      ctx.fillRect(px + 28, py + 6, 10, 16);
-      break;
-    }
-
-    case 'stained': {
-      ctx.fillStyle = '#14161c'; ctx.fillRect(px, py, T, T);
-      // Oil stains
-      const s1 = ctx.createRadialGradient(px+T*0.35, py+T*0.4, 0, px+T*0.35, py+T*0.4, T*0.3);
-      s1.addColorStop(0, 'rgba(40,20,5,0.4)'); s1.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = s1; ctx.fillRect(px, py, T, T);
-      const s2 = ctx.createRadialGradient(px+T*0.7, py+T*0.25, 0, px+T*0.7, py+T*0.25, T*0.2);
-      s2.addColorStop(0, 'rgba(0,15,30,0.35)'); s2.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = s2; ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'civic_tile': {
-      const g = ctx.createLinearGradient(px, py, px + T, py + T);
-      g.addColorStop(0, '#1a2248'); g.addColorStop(1, '#121838');
-      ctx.fillStyle = g; ctx.fillRect(px, py, T, T);
-      // Clean tile grid
-      ctx.strokeStyle = 'rgba(60,80,160,0.25)'; ctx.lineWidth = 0.8;
-      const half = T / 2;
-      ctx.strokeRect(px + 3, py + 3, half - 4, half - 4);
-      ctx.strokeRect(px + half + 1, py + 3, half - 4, half - 4);
-      ctx.strokeRect(px + 3, py + half + 1, half - 4, half - 4);
-      ctx.strokeRect(px + half + 1, py + half + 1, half - 4, half - 4);
-      // Civic sheen
-      const hl = ctx.createLinearGradient(px, py, px + T * 0.5, py + T * 0.3);
-      hl.addColorStop(0, 'rgba(100,140,255,0.06)');
-      hl.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = hl; ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'void': default: {
-      ctx.fillStyle = '#050810'; ctx.fillRect(px, py, T, T);
-      const vg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*0.7);
-      vg.addColorStop(0, 'rgba(20,30,80,0.15)');
-      vg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = vg; ctx.fillRect(px, py, T, T);
-      break;
-    }
-  }
-}
-
-// ─── PROPS ────────────────────────────────────────────────────────────────────
-
-function drawProp(ctx, prop, px, py, T) {
-  ctx.save();
-  const cx = px + T / 2, cy = py + T / 2;
-
-  switch(prop) {
-    case 'barrel': {
-      // Industrial drum — cylindrical silhouette
-      const bx = px + T * 0.62, by = py + T * 0.55, bw = T * 0.22, bh = T * 0.28;
-      ctx.fillStyle = '#3a4a5a';
-      ctx.fillRect(bx, by - bh/2, bw, bh);
-      // Barrel highlight
-      const bg = ctx.createLinearGradient(bx, by, bx + bw, by);
-      bg.addColorStop(0, 'rgba(100,140,180,0.4)');
-      bg.addColorStop(0.4, 'rgba(200,230,255,0.15)');
-      bg.addColorStop(1, 'rgba(0,0,0,0.3)');
-      ctx.fillStyle = bg; ctx.fillRect(bx, by - bh/2, bw, bh);
-      // Bands
-      ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(bx, by - bh/6); ctx.lineTo(bx+bw, by - bh/6); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bx, by + bh/6); ctx.lineTo(bx+bw, by + bh/6); ctx.stroke();
-      // Top cap shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.fillRect(bx, by - bh/2, bw, 3);
-      break;
-    }
-
-    case 'crate': {
-      const crx = px + T*0.1, cry = py + T*0.15, crw = T*0.5, crh = T*0.45;
-      // Crate body
-      const cg = ctx.createLinearGradient(crx, cry, crx+crw, cry+crh);
-      cg.addColorStop(0, '#5a4a2a'); cg.addColorStop(1, '#3a2e18');
-      ctx.fillStyle = cg; ctx.fillRect(crx, cry, crw, crh);
-      // Wood planks
-      ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 1;
-      ctx.strokeRect(crx, cry, crw, crh);
-      ctx.beginPath(); ctx.moveTo(crx + crw/3, cry); ctx.lineTo(crx + crw/3, cry + crh); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(crx + crw*2/3, cry); ctx.lineTo(crx + crw*2/3, cry + crh); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(crx, cry + crh/2); ctx.lineTo(crx + crw, cry + crh/2); ctx.stroke();
-      // Top highlight
-      ctx.fillStyle = 'rgba(255,220,120,0.08)';
-      ctx.fillRect(crx, cry, crw, crh * 0.3);
-      // Cast shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
-      ctx.fillRect(crx + crw, cry + 4, 5, crh - 4);
-      ctx.fillRect(crx + 4, cry + crh, crw - 4, 4);
-      break;
-    }
-
-    case 'terminal': {
-      const tx = px + T*0.2, ty = py + T*0.1, tw = T*0.6, th = T*0.5;
-      // Terminal body
-      ctx.fillStyle = '#0a1520'; ctx.fillRect(tx, ty, tw, th);
-      ctx.strokeStyle = '#1a3050'; ctx.lineWidth = 1; ctx.strokeRect(tx, ty, tw, th);
-      // Screen glow
-      const scr = ctx.createRadialGradient(tx+tw/2, ty+th/2, 0, tx+tw/2, ty+th/2, tw/2);
-      scr.addColorStop(0, 'rgba(0,200,255,0.3)');
-      scr.addColorStop(0.6, 'rgba(0,100,200,0.15)');
-      scr.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = scr; ctx.fillRect(tx+2, ty+2, tw-4, th-4);
-      // Screen scanlines
-      ctx.strokeStyle = 'rgba(0,200,255,0.08)'; ctx.lineWidth = 0.8;
-      for (let i = ty + 4; i < ty + th - 4; i += 3) {
-        ctx.beginPath(); ctx.moveTo(tx+2, i); ctx.lineTo(tx+tw-2, i); ctx.stroke();
-      }
-      // Cursor blink via phase of fxTime
-      if (Math.sin(_fxTime * 3) > 0) {
-        ctx.fillStyle = 'rgba(0,255,200,0.7)';
-        ctx.fillRect(tx + tw * 0.3, ty + th * 0.55, 6, 3);
-      }
-      // Base
-      ctx.fillStyle = '#0c1828'; ctx.fillRect(tx + tw*0.3, ty + th, tw*0.4, 4);
-      break;
-    }
-
-    case 'cable_bundle': {
-      // Cables running along wall edge
-      ctx.strokeStyle = '#1a2a3a'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(px+2, py+T*0.3); ctx.lineTo(px+2, py+T*0.9); ctx.stroke();
-      ctx.strokeStyle = '#0f2030'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(px+5, py+T*0.2); ctx.lineTo(px+5, py+T); ctx.stroke();
-      ctx.strokeStyle = '#152535'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(px+8, py+T*0.4); ctx.lineTo(px+8, py+T*0.85); ctx.stroke();
-      // Zip tie
-      ctx.strokeStyle = 'rgba(200,220,255,0.3)'; ctx.lineWidth = 1.5;
-      ctx.strokeRect(px+1, py + T*0.55, 9, 4);
-      break;
-    }
-
-    case 'sign_neon': {
-      // Neon sign on wall — glowing text box
-      const sx = px + T*0.05, sy = py + T*0.1, sw = T*0.9, sh = T*0.35;
-      ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(sx, sy, sw, sh);
-      // Neon glow
-      const neonAlpha = 0.7 + 0.3 * Math.sin(_fxTime * 2);
-      ctx.fillStyle = hexAlpha(PAL.neonPink, neonAlpha * 0.15);
-      ctx.fillRect(sx, sy, sw, sh);
-      ctx.strokeStyle = hexAlpha(PAL.neonPink, neonAlpha);
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(sx + 1, sy + 1, sw - 2, sh - 2);
-      // Sign glow halo
-      ctx.shadowColor = PAL.neonPink;
-      ctx.shadowBlur = 8 * neonAlpha;
-      ctx.strokeRect(sx + 1, sy + 1, sw - 2, sh - 2);
-      ctx.shadowBlur = 0;
-      // BAR text approximation (3 rectangles)
-      ctx.fillStyle = hexAlpha(PAL.neonPink, neonAlpha * 0.8);
-      const lx = sx + sw*0.15, ly = sy + sh*0.25, lh = sh*0.5;
-      // B
-      ctx.fillRect(lx,      ly, 4, lh);
-      ctx.fillRect(lx,      ly, 8, 2);
-      ctx.fillRect(lx,      ly + lh/2 - 1, 8, 2);
-      ctx.fillRect(lx,      ly + lh - 2, 8, 2);
-      // A
-      ctx.fillRect(lx+12,   ly, 3, lh);
-      ctx.fillRect(lx+19,   ly, 3, lh);
-      ctx.fillRect(lx+12,   ly, 10, 2);
-      ctx.fillRect(lx+12,   ly + lh/2-1, 10, 2);
-      // R
-      ctx.fillRect(lx+26,   ly, 3, lh);
-      ctx.fillRect(lx+26,   ly, 9, 2);
-      ctx.fillRect(lx+26,   ly + lh/2-1, 9, 2);
-      ctx.fillRect(lx+33,   ly, 3, lh*0.5);
-      ctx.fillRect(lx+30,   ly + lh*0.5, 6, lh*0.5);
-      break;
-    }
-
-    case 'debris': {
-      ctx.fillStyle = 'rgba(60,70,80,0.6)';
-      // Scattered small pieces
-      [[px+T*0.2, py+T*0.6, 6, 3],[px+T*0.5, py+T*0.45, 4, 4],[px+T*0.7, py+T*0.7, 5, 2]].forEach(([rx,ry,rw,rh]) => {
-        ctx.fillRect(rx, ry, rw, rh);
-      });
-      ctx.fillStyle = 'rgba(80,90,100,0.4)';
-      ctx.beginPath(); ctx.arc(px+T*0.35, py+T*0.55, 2, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(px+T*0.65, py+T*0.6, 1.5, 0, Math.PI*2); ctx.fill();
-      break;
-    }
-
-    case 'chem_tank': {
-      const ctx2 = ctx;
-      const tx = px + T*0.55, ty = py + T*0.1, tw2 = T*0.32, th2 = T*0.7;
-      const tg = ctx2.createLinearGradient(tx, ty, tx+tw2, ty);
-      tg.addColorStop(0, '#1a3a20'); tg.addColorStop(0.4, '#2a5a30'); tg.addColorStop(1, '#0e2016');
-      ctx2.fillStyle = tg; ctx2.fillRect(tx, ty, tw2, th2);
-      // Tank ribs
-      ctx2.strokeStyle = 'rgba(0,0,0,0.4)'; ctx2.lineWidth = 1;
-      for (let i = 0.2; i < 0.9; i += 0.2) {
-        ctx2.beginPath(); ctx2.moveTo(tx, ty + th2*i); ctx2.lineTo(tx+tw2, ty + th2*i); ctx2.stroke();
-      }
-      // Hazard label
-      ctx2.fillStyle = 'rgba(200,200,0,0.2)';
-      ctx2.fillRect(tx + 2, ty + th2*0.35, tw2-4, th2*0.25);
-      // Top cap
-      ctx2.fillStyle = '#0e1e14';
-      ctx2.fillRect(tx - 2, ty, tw2 + 4, 5);
-      break;
-    }
-  }
-  ctx.restore();
-}
-
-// ─── FX LAYER ─────────────────────────────────────────────────────────────────
-
-function drawFX(ctx, fx, px, py, T, t) {
-  ctx.save();
-  switch(fx) {
-
-    case 'steam_vent': {
-      const phase = t * 0.8;
-      const puffs = 3;
-      for (let i = 0; i < puffs; i++) {
-        const offset = ((phase + i / puffs) % 1);
-        const puffY  = py + T - offset * T * 1.2;
-        const alpha  = offset < 0.3 ? offset / 0.3 : 1 - (offset - 0.3) / 0.7;
-        const radius = 3 + offset * 10;
-        const sg = ctx.createRadialGradient(px + T/2, puffY, 0, px + T/2, puffY, radius);
-        sg.addColorStop(0, `rgba(200,220,255,${alpha * 0.35})`);
-        sg.addColorStop(1, 'rgba(200,220,255,0)');
-        ctx.fillStyle = sg;
-        ctx.beginPath(); ctx.arc(px + T/2, puffY, radius, 0, Math.PI*2); ctx.fill();
-      }
-      // Vent grate at bottom
-      ctx.fillStyle = 'rgba(40,50,70,0.6)';
-      ctx.fillRect(px + T*0.3, py + T*0.8, T*0.4, 4);
-      ctx.strokeStyle = 'rgba(80,100,130,0.4)'; ctx.lineWidth = 0.8;
-      for (let i = 0; i < 4; i++) {
-        const vx = px + T*0.32 + i * (T*0.38/3);
-        ctx.beginPath(); ctx.moveTo(vx, py+T*0.8); ctx.lineTo(vx, py+T*0.8+4); ctx.stroke();
-      }
-      break;
-    }
-
-    case 'neon_glow': {
-      const pulse = 0.7 + 0.3 * Math.sin(t * 1.5);
-      const ng = ctx.createRadialGradient(px + T/2, py + T/2, 0, px + T/2, py + T/2, T * 0.6);
-      ng.addColorStop(0, `rgba(255,30,120,${0.12 * pulse})`);
-      ng.addColorStop(1, 'rgba(255,30,120,0)');
-      ctx.fillStyle = ng;
-      ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'flicker': {
-      // Overhead light cone that flickers
-      const on = Math.sin(t * 8) > -0.85 && Math.sin(t * 15) > -0.7;
-      if (on) {
-        const fl = ctx.createRadialGradient(px + T/2, py, 0, px + T/2, py + T*0.7, T*0.6);
-        fl.addColorStop(0, 'rgba(220,210,150,0.18)');
-        fl.addColorStop(1, 'rgba(220,210,150,0)');
-        ctx.fillStyle = fl; ctx.fillRect(px, py, T, T);
-        // Light fixture dot
-        ctx.fillStyle = on ? 'rgba(255,240,180,0.7)' : 'rgba(80,80,60,0.3)';
-        ctx.beginPath(); ctx.arc(px + T/2, py + 3, 2.5, 0, Math.PI*2); ctx.fill();
-      }
-      break;
-    }
-
-    case 'red_light': {
-      const rpulse = 0.5 + 0.5 * Math.abs(Math.sin(t * 1.2));
-      const rl = ctx.createRadialGradient(px + T*0.8, py + T*0.15, 0, px + T*0.8, py + T*0.15, T*0.5);
-      rl.addColorStop(0, `rgba(255,20,20,${0.25 * rpulse})`);
-      rl.addColorStop(1, 'rgba(255,20,20,0)');
-      ctx.fillStyle = rl; ctx.fillRect(px, py, T, T);
-      // Warning light fixture
-      ctx.fillStyle = `rgba(255,20,20,${0.8 * rpulse})`;
-      ctx.beginPath(); ctx.arc(px + T*0.8, py + T*0.15, 3, 0, Math.PI*2); ctx.fill();
-      ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 6 * rpulse;
-      ctx.fill(); ctx.shadowBlur = 0;
-      break;
-    }
-
-    case 'sparks': {
-      if (Math.sin(t * 7) > 0.92) {
-        const sparkCount = 4;
-        for (let i = 0; i < sparkCount; i++) {
-          const ang = (i / sparkCount) * Math.PI * 2 + t * 10;
-          const dist = 4 + Math.random() * 8;
-          const sx = px + T * 0.3 + Math.cos(ang) * dist;
-          const sy = py + T * 0.5 + Math.sin(ang) * dist;
-          ctx.fillStyle = `rgba(255,${180 + Math.floor(Math.random()*60)},30,0.9)`;
-          ctx.fillRect(sx, sy, 2, 2);
-        }
-        ctx.fillStyle = 'rgba(255,220,80,0.6)';
-        ctx.beginPath(); ctx.arc(px + T*0.3, py + T*0.5, 3, 0, Math.PI*2); ctx.fill();
-      }
-      break;
-    }
-
-    case 'haze': {
-      const alpha = 0.08 + 0.04 * Math.sin(t * 0.5);
-      ctx.fillStyle = `rgba(60,60,80,${alpha})`;
-      ctx.fillRect(px, py, T, T);
-      break;
-    }
-
-    case 'drip': {
-      const dPhase = (t * 0.4) % 1;
-      const dAlpha = dPhase < 0.2 ? dPhase / 0.2 : dPhase > 0.8 ? 1 - (dPhase - 0.8) / 0.2 : 1;
-      const dY = py + dPhase * T;
-      ctx.fillStyle = `rgba(100,140,200,${dAlpha * 0.6})`;
-      ctx.beginPath(); ctx.arc(px + T * 0.4, dY, 1.5, 0, Math.PI*2); ctx.fill();
-      // Drip streak
-      ctx.strokeStyle = `rgba(100,140,200,${dAlpha * 0.3})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(px + T*0.4, py); ctx.lineTo(px + T*0.4, dY); ctx.stroke();
-      break;
-    }
-  }
-  ctx.restore();
-}
-
-// ─── DECALS ───────────────────────────────────────────────────────────────────
-
-function drawDecal(ctx, decal, px, py, T, zone) {
-  ctx.save(); ctx.globalAlpha = 0.6;
-  switch(decal) {
-    case 'worn_number':
-      ctx.fillStyle = 'rgba(100,120,160,0.3)';
-      ctx.font = `bold ${T*0.22}px monospace`;
-      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
-      ctx.fillText('B4', px + 3, py + T - 3);
-      break;
-    case 'civic_stripe':
-      ctx.fillStyle = 'rgba(255,200,0,0.25)';
-      ctx.fillRect(px, py + T - 4, T, 4);
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
-      ctx.fillRect(px, py + T - 6, T, 2);
-      break;
-    case 'blood_stain':
-      ctx.fillStyle = 'rgba(120,15,15,0.45)';
-      ctx.beginPath(); ctx.ellipse(px + T*0.3, py + T*0.6, T*0.2, T*0.12, 0.3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(px + T*0.55, py + T*0.5, T*0.08, T*0.06, -0.5, 0, Math.PI*2); ctx.fill();
-      break;
-    case 'graffiti':
-      ctx.fillStyle = 'rgba(180,40,180,0.3)';
-      ctx.font = `bold ${T*0.25}px monospace`;
-      ctx.textAlign = 'right'; ctx.textBaseline = 'top';
-      ctx.fillText('◈◈', px + T - 3, py + 3);
-      break;
-    case 'hazard_strip':
-      for (let i = 0; i < T; i += 8) {
-        ctx.fillStyle = i % 16 < 8 ? 'rgba(255,200,0,0.3)' : 'rgba(0,0,0,0.2)';
-        ctx.fillRect(px + i, py + T - 5, 8, 5);
-      }
-      break;
-    case 'boot_prints':
-      ctx.fillStyle = 'rgba(30,35,45,0.5)';
-      ctx.beginPath(); ctx.ellipse(px+T*0.35, py+T*0.4, 4, 6, 0.3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(px+T*0.55, py+T*0.65, 4, 6, 0.5, 0, Math.PI*2); ctx.fill();
-      break;
-  }
-  ctx.restore();
-}
-
-// ─── SPECIAL TILE MARKERS ─────────────────────────────────────────────────────
-
-function drawGameTableMarker(ctx, px, py, T, tableId, data) {
-  const table = (data.tables||[]).find(t => t.id === tableId);
-  const type  = table?.type || 'card';
-  const color = type === 'slot' ? PAL.neonGold : type === 'other' ? PAL.neonGreen : PAL.neonCyan;
-
-  // Glow floor
-  const gg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*0.5);
-  gg.addColorStop(0, hexAlpha(color, 0.15)); gg.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = gg; ctx.fillRect(px, py, T, T);
-
-  // Icon
-  ctx.save();
-  ctx.font = `${T * 0.38}px monospace`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = color; ctx.shadowBlur = 8;
-  ctx.fillStyle = color;
-  ctx.fillText(type === 'slot' ? '🎰' : type === 'other' ? '◈' : '◈', px + T/2, py + T/2);
-  ctx.shadowBlur = 0; ctx.restore();
-}
-
-function drawJukeboxMarker(ctx, px, py, T, jukeboxId, data) {
-  const color = PAL.neonPink;
-  const pulse = 0.8 + 0.2 * Math.sin(_fxTime * 2);
-
-  const gg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*0.5);
-  gg.addColorStop(0, hexAlpha(color, 0.18 * pulse)); gg.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = gg; ctx.fillRect(px, py, T, T);
-
-  ctx.save();
-  ctx.font = `${T * 0.4}px monospace`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = color; ctx.shadowBlur = 10 * pulse;
-  ctx.fillStyle = color;
-  ctx.fillText('♪', px + T/2, py + T/2);
-  ctx.shadowBlur = 0; ctx.restore();
-}
-
-function drawTransitionMarker(ctx, px, py, T, transition) {
-  const color = PAL.neonGold;
-  // Arrow chevron drawn on floor
-  ctx.save();
-  ctx.strokeStyle = hexAlpha(color, 0.7);
-  ctx.fillStyle   = hexAlpha(color, 0.12);
-  ctx.lineWidth   = 1.5;
-  ctx.fillRect(px + 4, py + 4, T - 8, T - 8);
-  ctx.strokeRect(px + 4, py + 4, T - 8, T - 8);
-  // Arrow pointing right
-  ctx.beginPath();
-  ctx.moveTo(px + T*0.35, py + T*0.35);
-  ctx.lineTo(px + T*0.65, py + T/2);
-  ctx.lineTo(px + T*0.35, py + T*0.65);
-  ctx.strokeStyle = hexAlpha(color, 0.9);
-  ctx.lineWidth = 2; ctx.stroke();
-  ctx.restore();
-}
-
-function drawLootMarker(ctx, px, py, T, t) {
-  const color = '#c8a040';
-  ctx.save();
-  ctx.font = `${T * 0.35}px monospace`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = color; ctx.shadowBlur = 5;
-  ctx.fillStyle = color;
-  const txt = t.containerName?.toLowerCase().includes('locker') ? '▪' : '▩';
-  ctx.fillText(txt, px + T/2, py + T/2);
-  ctx.shadowBlur = 0; ctx.restore();
-}
-
-function drawInteractMarker(ctx, px, py, T, t) {
-  const txt = t.interactText?.toLowerCase();
-  const color = txt?.includes('terminal') || txt?.includes('console') ? PAL.neonCyan
-              : txt?.includes('door') || txt?.includes('hatch') ? PAL.neonGold
-              : '#8888aa';
-  ctx.save();
-  ctx.font = `${T * 0.3}px monospace`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = color; ctx.shadowBlur = 4;
-  ctx.fillStyle = color;
-  ctx.fillText('⬡', px + T/2, py + T/2);
-  ctx.shadowBlur = 0; ctx.restore();
-}
-
-// ─── ENTITY / ACTOR DRAWING ───────────────────────────────────────────────────
-
-/**
- * Draw all actors onto the canvas AFTER the tile pass.
- * Called separately so entities are always on top of tiles.
- */
-export function renderEntitiesCanvas(map, state, data, api, T) {
-  if (!_ctx) return;
-  const actorsHere = state.roster.filter(a => a.mapId === state.mapId && !a.dead);
-
-  actorsHere.forEach(actor => {
-    const revealed = api.isTileRevealed(actor.x, actor.y);
-    if (!revealed && !state.party.includes(actor.id)) return;
-    drawActor(_ctx, actor, state, T);
-  });
-}
-
-function drawActor(ctx, actor, state, T) {
-  const px = actor.x * T + 2;
-  const py = actor.y * T + 2;
-  const w  = T - 4;
-  const h  = T - 4;
-  const cx = px + w / 2;
-  const cy = py + h / 2;
-
-  const isSelected  = state.selectedActorId === actor.id;
-  const isCurrent   = state.combat.active && state.combat.turnOrder[state.combat.currentTurnIndex] === actor.id;
-  const isAI        = state.combat.aiActingId === actor.id;
-  const isStealthed = actor.statuses.includes('stealthed');
-  const hpPct       = Math.max(0, actor.hp / actor.hpMax);
-
-  ctx.save();
-  if (isStealthed) ctx.globalAlpha = 0.4;
-  if (actor.downed) { ctx.globalAlpha = 0.45; ctx.filter = 'grayscale(0.8)'; }
-
-  // Role colors
-  const colors = {
-    player:  { body: '#1e3a6e', rim: '#4a90e2', glow: '#6fb3ff' },
-    ally:    { body: '#1a3d25', rim: '#3ab060', glow: '#7ed9a0' },
-    enemy:   { body: '#4a1010', rim: '#cc3030', glow: '#ff6464' },
-    neutral: { body: '#3d3010', rim: '#b08020', glow: '#ccaa55' },
-  };
-  const col = colors[actor.role] || colors.neutral;
-
-  // ── Ground shadow ──────────────────────────────────────────────────────────
-  const shadowG = ctx.createRadialGradient(cx, py + h - 2, 0, cx, py + h - 2, w * 0.55);
-  shadowG.addColorStop(0, 'rgba(0,0,0,0.5)');
-  shadowG.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = shadowG;
-  ctx.beginPath(); ctx.ellipse(cx, py + h - 1, w * 0.45, 5, 0, 0, Math.PI*2); ctx.fill();
-
-  // ── Selection ring ─────────────────────────────────────────────────────────
-  if (isSelected) {
-    const selPulse = 0.7 + 0.3 * Math.sin(_fxTime * 3);
-    ctx.strokeStyle = hexAlpha(col.glow, selPulse);
-    ctx.lineWidth = 2;
-    ctx.shadowColor = col.glow; ctx.shadowBlur = 10 * selPulse;
-    ctx.strokeRect(px - 2, py - 2, w + 4, h + 4);
-    ctx.shadowBlur = 0;
-  }
-
-  // ── AI acting bounce offset ────────────────────────────────────────────────
-  let drawOffY = 0;
-  if (isAI) drawOffY = -Math.abs(Math.sin(_fxTime * 6)) * 4;
-
-  // ── Body silhouette ────────────────────────────────────────────────────────
-  const bodyH  = h * 0.65;
-  const bodyW  = w * 0.55;
-  const bodyX  = cx - bodyW / 2;
-  const bodyY  = py + h * 0.28 + drawOffY;
-  const headR  = w * 0.18;
-  const headCX = cx;
-  const headCY = py + h * 0.22 + drawOffY;
-
-  // Body gradient
-  const bg = ctx.createLinearGradient(bodyX, bodyY, bodyX + bodyW, bodyY + bodyH);
-  bg.addColorStop(0, lighten(col.body, 0.4));
-  bg.addColorStop(0.3, col.body);
-  bg.addColorStop(1, darken(col.body, 0.5));
-  ctx.fillStyle = bg;
-
-  // Draw body shape based on class
-  drawActorBody(ctx, actor.classId, bodyX, bodyY, bodyW, bodyH, headCX, headCY, headR, col, bg);
-
-  // ── Current turn pulse ring ────────────────────────────────────────────────
-  if (isCurrent && !isAI) {
-    const tp = 0.6 + 0.4 * Math.abs(Math.sin(_fxTime * 2));
-    ctx.strokeStyle = hexAlpha(col.glow, tp);
-    ctx.lineWidth   = 1.5;
-    ctx.shadowColor = col.glow; ctx.shadowBlur = 8;
-    ctx.beginPath(); ctx.arc(cx, py + h * 0.5 + drawOffY, w * 0.48, 0, Math.PI*2); ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  // ── AI warning glow ────────────────────────────────────────────────────────
-  if (isAI) {
-    ctx.strokeStyle = hexAlpha(PAL.neonGold, 0.85);
-    ctx.lineWidth = 2;
-    ctx.shadowColor = PAL.neonGold; ctx.shadowBlur = 12;
-    ctx.strokeRect(px - 2, py - 2 + drawOffY, w + 4, h + 4);
-    ctx.shadowBlur = 0;
-  }
-
-  // ── HP bar ─────────────────────────────────────────────────────────────────
-  const barY  = py + h - 5;
-  const barW  = w;
-  const barH2 = 3;
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.fillRect(px, barY, barW, barH2);
-  const hpColor = hpPct > 0.6 ? '#4aff9a' : hpPct > 0.3 ? '#ffcc5a' : '#ff4444';
-  ctx.fillStyle = hpColor;
-  ctx.fillRect(px, barY, barW * hpPct, barH2);
-
-  ctx.restore();
-}
-
-function drawActorBody(ctx, classId, bodyX, bodyY, bodyW, bodyH, headCX, headCY, headR, col, bodyGrad) {
-  // Head
-  ctx.fillStyle = lighten(col.body, 0.5);
-  ctx.beginPath(); ctx.arc(headCX, headCY, headR, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle = col.rim; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(headCX, headCY, headR, 0, Math.PI*2); ctx.stroke();
-  // Head highlight
-  ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.beginPath(); ctx.arc(headCX - headR*0.25, headCY - headR*0.25, headR*0.45, 0, Math.PI*2); ctx.fill();
-
-  // Body
-  ctx.fillStyle = bodyGrad;
-  ctx.fillRect(bodyX, bodyY, bodyW, bodyH);
-  ctx.strokeStyle = col.rim; ctx.lineWidth = 1;
-  ctx.strokeRect(bodyX, bodyY, bodyW, bodyH);
-  // Body highlight
-  ctx.fillStyle = 'rgba(255,255,255,0.07)';
-  ctx.fillRect(bodyX, bodyY, bodyW * 0.4, bodyH);
-
-  // Class-specific detail
-  switch(classId) {
-    case 'marshal':
-      // Gun arm
-      ctx.strokeStyle = col.rim; ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(bodyX + bodyW, bodyY + bodyH * 0.2);
-      ctx.lineTo(bodyX + bodyW + 8, bodyY + bodyH * 0.15);
-      ctx.stroke();
-      break;
-    case 'voidseer':
-      // Glow aura
-      ctx.strokeStyle = hexAlpha('#c97aff', 0.4);
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([2, 2]);
-      ctx.beginPath(); ctx.arc(headCX, headCY, headR + 4, 0, Math.PI*2); ctx.stroke();
-      ctx.setLineDash([]);
-      break;
-    case 'raider':
-      // Shoulder spike
-      ctx.fillStyle = col.rim;
-      ctx.fillRect(bodyX - 4, bodyY, 4, 8);
-      ctx.fillRect(bodyX + bodyW, bodyY, 4, 8);
-      break;
-    case 'salvager':
-      // Tool on back
-      ctx.strokeStyle = '#607080'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(bodyX + bodyW * 0.8, bodyY - 4);
-      ctx.lineTo(bodyX + bodyW * 0.8, bodyY + bodyH * 0.4);
-      ctx.stroke();
-      break;
-  }
-}
-
-// ─── ANIMATION LOOP ───────────────────────────────────────────────────────────
-
-export function startMapRenderLoop(getState) {
+export function startMapRenderLoop(getStateFn) {
+  _getState = getStateFn;
   cancelAnimationFrame(_animId);
   function loop() {
-    _fxTime += 0.016;
-    const { map, state, data, api } = getState();
-    if (map && state && data && api) {
-      renderMapCanvas(map, state, data, api);
-      renderEntitiesCanvas(map, state, data, api, data.config.map.tileSize);
-    }
+    _t += 0.018;
+    try {
+      const { map, state, data, api } = _getState();
+      if (map && state && data && api) {
+        _drawFrame(map, state, data, api);
+      }
+    } catch(e) {}
     _animId = requestAnimationFrame(loop);
   }
   _animId = requestAnimationFrame(loop);
@@ -1058,41 +98,1063 @@ export function stopMapRenderLoop() {
   _animId = null;
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+export function renderMapCanvas(map, state, data, api) {
+  if (!_canvas || !_ctx) return;
+  _drawFrame(map, state, data, api);
+}
 
-function getWallPalette(wallType) {
-  switch(wallType) {
-    case 'corrugated':  return PAL.wallCorrugated;
-    case 'pipe_bundle': return PAL.wallPipes;
-    case 'rock':        return PAL.wallRock;
-    case 'civic_block': return PAL.wallCivic;
-    default:            return PAL.wallHull;
+export function renderEntitiesCanvas() {} // no-op — entities drawn in loop
+
+// ─── MAIN FRAME ───────────────────────────────────────────────────────────────
+
+function _drawFrame(map, state, data, api) {
+  const T  = data?.config?.map?.tileSize || T_BASE;
+  const W  = map.width  * T;
+  const H  = map.height * T;
+
+  if (_canvas.width !== W || _canvas.height !== H) {
+    _canvas.width  = W;
+    _canvas.height = H;
+  }
+
+  const ctx = _ctx;
+  ctx.fillStyle = C.fog;
+  ctx.fillRect(0, 0, W, H);
+
+  // Pass 1 — floors (back to front)
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const t = map.tiles[y]?.[x];
+      if (!t || t.type === 'wall') continue;
+      const revealed = api.isTileRevealed(x, y);
+      if (revealed) _drawFloor(ctx, t, x, y, T, map);
+      else _drawFog(ctx, x, y, T);
+    }
+  }
+
+  // Pass 2 — walls on top (so they overlap floors)
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const t = map.tiles[y]?.[x];
+      if (!t || t.type !== 'wall') continue;
+      const revealed = api.isTileRevealed(x, y);
+      if (revealed) _drawWall(ctx, t, x, y, T, map);
+      else _drawFog(ctx, x, y, T);
+    }
+  }
+
+  // Pass 3 — overlays: FX, markers, props
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const t = map.tiles[y]?.[x];
+      if (!t || t.type === 'wall') continue;
+      if (!api.isTileRevealed(x, y)) continue;
+      _drawOverlays(ctx, t, x, y, T, map, data);
+    }
+  }
+
+  // Pass 4 — actors
+  const actors = state.roster.filter(a => a.mapId === state.mapId && !a.dead);
+  // Sort by Y so lower actors draw on top
+  actors.sort((a,b) => a.y - b.y);
+  for (const actor of actors) {
+    const revealed = api.isTileRevealed(actor.x, actor.y);
+    if (!revealed && !state.party.includes(actor.id)) continue;
+    _drawActor(ctx, actor, state, T);
   }
 }
 
-function hexAlpha(hex, alpha) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${alpha})`;
+// ─── FOG ──────────────────────────────────────────────────────────────────────
+
+function _drawFog(ctx, gx, gy, T) {
+  const px = gx * T, py = gy * T;
+  ctx.fillStyle = '#06090e';
+  ctx.fillRect(px, py, T, T);
 }
 
-function darken(hex, amount) {
-  let r = parseInt(hex.slice(1,3),16);
-  let g = parseInt(hex.slice(3,5),16);
-  let b = parseInt(hex.slice(5,7),16);
-  r = Math.max(0, Math.floor(r * (1 - amount)));
-  g = Math.max(0, Math.floor(g * (1 - amount)));
-  b = Math.max(0, Math.floor(b * (1 - amount)));
-  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+// ─── FLOOR ────────────────────────────────────────────────────────────────────
+
+function _drawFloor(ctx, t, gx, gy, T, map) {
+  const px   = gx * T, py = gy * T;
+  const v    = t.visual || {};
+  const fl   = v.floor || _inferFloor(t);
+  const zone = t.zone || '';
+
+  // Base texture
+  _floorTexture(ctx, fl, px, py, T);
+
+  // Receive wall shadow from above
+  const above = map.tiles[gy-1]?.[gx];
+  if (above?.type === 'wall') {
+    const sg = ctx.createLinearGradient(px, py, px, py + SHADOW_D);
+    sg.addColorStop(0, 'rgba(0,0,0,0.75)');
+    sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(px, py, T, SHADOW_D);
+  }
+  // Shadow from wall to the left
+  const left = map.tiles[gy]?.[gx-1];
+  if (left?.type === 'wall') {
+    const sg = ctx.createLinearGradient(px, py, px + SHADOW_D * 0.7, py);
+    sg.addColorStop(0, 'rgba(0,0,0,0.55)');
+    sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(px, py, SHADOW_D * 0.7, T);
+  }
+
+  // Zone neon floor tint
+  const zc = ZONE_NEON[zone];
+  if (zc) {
+    ctx.fillStyle = _rgba(zc, 0.07);
+    ctx.fillRect(px, py, T, T);
+    // Edge strip on north boundary
+    const aboveZone = map.tiles[gy-1]?.[gx]?.zone;
+    if (aboveZone !== zone) {
+      ctx.fillStyle = _rgba(zc, 0.35);
+      ctx.fillRect(px, py, T, 2);
+    }
+  }
+
+  // Decal
+  if (v.decal) _drawDecal(ctx, v.decal, px, py, T);
+
+  // Grid lines (subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  ctx.strokeRect(px + 0.5, py + 0.5, T - 1, T - 1);
 }
 
-function lighten(hex, amount) {
-  let r = parseInt(hex.slice(1,3),16);
-  let g = parseInt(hex.slice(3,5),16);
-  let b = parseInt(hex.slice(5,7),16);
-  r = Math.min(255, Math.floor(r + (255 - r) * amount));
-  g = Math.min(255, Math.floor(g + (255 - g) * amount));
-  b = Math.min(255, Math.floor(b + (255 - b) * amount));
-  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+function _inferFloor(t) {
+  if (t.type === 'metal') return 'metal_plate';
+  if (t.type === 'floor') return 'concrete';
+  if (t.type === 'dirt')  return 'concrete';
+  if (t.type === 'sand')  return 'metal_plate';
+  if (t.type === 'toxic') return 'void';
+  return 'metal_plate';
+}
+
+function _floorTexture(ctx, floor, px, py, T) {
+  switch(floor) {
+
+    case 'metal_plate': {
+      // Base gradient — slightly lighter toward top-left (light source)
+      const g = ctx.createLinearGradient(px, py, px + T, py + T);
+      g.addColorStop(0, '#1e2c3e');
+      g.addColorStop(0.5, '#18222e');
+      g.addColorStop(1, '#111820');
+      ctx.fillStyle = g;
+      ctx.fillRect(px, py, T, T);
+
+      // Plate seam lines — divides tile into 4 panels
+      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+      ctx.lineWidth = 1.5;
+      const mx = px + T * 0.5, my = py + T * 0.5;
+      ctx.beginPath(); ctx.moveTo(mx, py); ctx.lineTo(mx, py+T); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px, my); ctx.lineTo(px+T, my); ctx.stroke();
+
+      // Seam highlight (light edge of seam)
+      ctx.strokeStyle = 'rgba(80,120,180,0.12)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(mx+1, py); ctx.lineTo(mx+1, py+T); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px, my+1); ctx.lineTo(px+T, my+1); ctx.stroke();
+
+      // Rivet bolts at corners and center seam intersections
+      ctx.fillStyle = 'rgba(60,90,130,0.6)';
+      const rivets = [[px+3,py+3],[px+T-4,py+3],[px+3,py+T-4],[px+T-4,py+T-4],[mx-1,my-1]];
+      for (const [rx,ry] of rivets) {
+        ctx.beginPath(); ctx.arc(rx, ry, 2, 0, Math.PI*2); ctx.fill();
+        // Rivet highlight
+        ctx.fillStyle = 'rgba(140,180,240,0.25)';
+        ctx.beginPath(); ctx.arc(rx-0.5, ry-0.5, 1, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'rgba(60,90,130,0.6)';
+      }
+
+      // Overall top-left light sheen
+      const sheen = ctx.createLinearGradient(px, py, px+T*0.7, py+T*0.7);
+      sheen.addColorStop(0, 'rgba(255,255,255,0.035)');
+      sheen.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = sheen;
+      ctx.fillRect(px, py, T, T);
+      break;
+    }
+
+    case 'metal_grate': {
+      ctx.fillStyle = '#0a1018';
+      ctx.fillRect(px, py, T, T);
+
+      // Thick grid bars
+      ctx.strokeStyle = 'rgba(30,50,80,0.9)';
+      ctx.lineWidth = 2;
+      const step = 8;
+      for (let i = 0; i <= T; i += step) {
+        ctx.beginPath(); ctx.moveTo(px+i, py); ctx.lineTo(px+i, py+T); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px, py+i); ctx.lineTo(px+T, py+i); ctx.stroke();
+      }
+      // Thinner inner highlight
+      ctx.strokeStyle = 'rgba(60,90,140,0.3)';
+      ctx.lineWidth = 0.8;
+      for (let i = step/2; i < T; i += step) {
+        ctx.beginPath(); ctx.moveTo(px+i, py); ctx.lineTo(px+i, py+T); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px, py+i); ctx.lineTo(px+T, py+i); ctx.stroke();
+      }
+      // Glow from below (machinery beneath)
+      const gg = ctx.createRadialGradient(px+T/2, py+T, 0, px+T/2, py+T/2, T*0.6);
+      gg.addColorStop(0, 'rgba(0,80,180,0.18)');
+      gg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gg; ctx.fillRect(px, py, T, T);
+      break;
+    }
+
+    case 'concrete': {
+      const g = ctx.createLinearGradient(px, py, px+T, py+T);
+      g.addColorStop(0, '#1a2030');
+      g.addColorStop(1, '#12181e');
+      ctx.fillStyle = g;
+      ctx.fillRect(px, py, T, T);
+
+      // Cracked texture overlay
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 0.8;
+      // Main crack
+      ctx.beginPath();
+      ctx.moveTo(px + T*0.25, py + T*0.1);
+      ctx.lineTo(px + T*0.4,  py + T*0.5);
+      ctx.lineTo(px + T*0.65, py + T*0.75);
+      ctx.stroke();
+      // Secondary crack
+      ctx.beginPath();
+      ctx.moveTo(px + T*0.6, py + T*0.15);
+      ctx.lineTo(px + T*0.55, py + T*0.45);
+      ctx.stroke();
+      // Spalling patches
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.fillRect(px+5, py+8, 12, 8);
+      ctx.fillRect(px+T-14, py+T-12, 10, 8);
+      ctx.fillStyle = 'rgba(255,255,255,0.015)';
+      ctx.fillRect(px+T*0.3, py+T*0.3, 16, 10);
+      break;
+    }
+
+    case 'stained': {
+      ctx.fillStyle = '#0e1016';
+      ctx.fillRect(px, py, T, T);
+
+      // Multi-layer oil/grime stains
+      const stains = [
+        [px+T*0.3, py+T*0.4, T*0.35, T*0.22, 'rgba(50,25,5,0.5)'],
+        [px+T*0.6, py+T*0.2, T*0.22, T*0.18, 'rgba(0,20,40,0.45)'],
+        [px+T*0.15,py+T*0.65,T*0.28, T*0.2,  'rgba(30,10,5,0.4)'],
+      ];
+      for (const [sx,sy,sw,sh,col] of stains) {
+        const sg = ctx.createRadialGradient(sx,sy,0,sx,sy,Math.max(sw,sh));
+        sg.addColorStop(0, col); sg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle = sg; ctx.fillRect(px, py, T, T);
+      }
+      // Scuff marks
+      ctx.strokeStyle = 'rgba(40,40,50,0.4)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(px+T*0.2,py+T*0.3); ctx.lineTo(px+T*0.45,py+T*0.35); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px+T*0.55,py+T*0.6); ctx.lineTo(px+T*0.8,py+T*0.7); ctx.stroke();
+      break;
+    }
+
+    case 'civic_tile': {
+      const g = ctx.createLinearGradient(px, py, px+T, py+T);
+      g.addColorStop(0, '#182050');
+      g.addColorStop(1, '#10163a');
+      ctx.fillStyle = g;
+      ctx.fillRect(px, py, T, T);
+
+      // 2x2 tile sub-grid
+      const hs = T / 2;
+      ctx.strokeStyle = 'rgba(50,80,180,0.35)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px+2, py+2, hs-3, hs-3);
+      ctx.strokeRect(px+hs+1, py+2, hs-3, hs-3);
+      ctx.strokeRect(px+2, py+hs+1, hs-3, hs-3);
+      ctx.strokeRect(px+hs+1, py+hs+1, hs-3, hs-3);
+
+      // Tile face reflections (polished look)
+      ctx.fillStyle = 'rgba(80,120,255,0.05)';
+      ctx.fillRect(px+2, py+2, hs-3, hs-3);
+      ctx.fillRect(px+hs+1, py+hs+1, hs-3, hs-3);
+      ctx.fillStyle = 'rgba(255,255,255,0.025)';
+      ctx.fillRect(px+hs+1, py+2, hs-3, hs-3);
+      ctx.fillRect(px+2, py+hs+1, hs-3, hs-3);
+
+      // Authority sheen
+      const sheen = ctx.createLinearGradient(px, py, px+T*0.5, py+T*0.3);
+      sheen.addColorStop(0, 'rgba(100,140,255,0.06)');
+      sheen.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = sheen; ctx.fillRect(px,py,T,T);
+      break;
+    }
+
+    case 'void': default: {
+      ctx.fillStyle = '#040608';
+      ctx.fillRect(px, py, T, T);
+      const vg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*0.7);
+      vg.addColorStop(0, 'rgba(10,20,60,0.2)');
+      vg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = vg; ctx.fillRect(px, py, T, T);
+      break;
+    }
+  }
+}
+
+// ─── WALL ─────────────────────────────────────────────────────────────────────
+
+function _drawWall(ctx, t, gx, gy, T, map) {
+  const px   = gx * T, py = gy * T;
+  const v    = t.visual || {};
+  const wt   = v.wall || 'hull_plate';
+  const zone = t.zone || '';
+
+  const isOuterEdge = (gx === 0 || gx === map.width-1 || gy === 0 || gy === map.height-1);
+  const cols = _wallColors(wt, isOuterEdge);
+
+  // ── Front face — fills the tile square ────────────────────────────────────
+  const fg = ctx.createLinearGradient(px, py, px, py+T);
+  fg.addColorStop(0, cols.face1);
+  fg.addColorStop(0.6, cols.face2);
+  fg.addColorStop(1, cols.face3);
+  ctx.fillStyle = fg;
+  ctx.fillRect(px, py, T, T);
+
+  // Wall texture
+  _wallTexture(ctx, wt, px, py, T);
+
+  // ── TOP FACE — drawn ABOVE the tile square, gives height illusion ──────────
+  const topPy = py - WALL_H;
+  const tg = ctx.createLinearGradient(px, topPy, px+T, topPy+WALL_H);
+  tg.addColorStop(0, cols.top1);
+  tg.addColorStop(1, cols.top2);
+  ctx.fillStyle = tg;
+  ctx.fillRect(px, topPy, T, WALL_H);
+
+  // Top face — beveled edges
+  ctx.fillStyle = cols.accent;
+  ctx.fillRect(px, topPy, T, 1.5);     // top edge bright line
+  ctx.fillRect(px, topPy, 1.5, WALL_H);// left edge bright line
+
+  // Top face inner shadow (depth)
+  const tis = ctx.createLinearGradient(px, topPy, px, topPy+WALL_H);
+  tis.addColorStop(0, 'rgba(255,255,255,0.06)');
+  tis.addColorStop(1, 'rgba(0,0,0,0.3)');
+  ctx.fillStyle = tis;
+  ctx.fillRect(px, topPy, T, WALL_H);
+
+  // Top face texture marks
+  _wallTopTexture(ctx, wt, px, topPy, T, WALL_H);
+
+  // ── RIGHT DEPTH FACE ────────────────────────────────────────────────────────
+  const dg = ctx.createLinearGradient(px+T-WALL_D, py, px+T, py);
+  dg.addColorStop(0, 'rgba(0,0,0,0)');
+  dg.addColorStop(1, cols.depth);
+  ctx.fillStyle = dg;
+  ctx.fillRect(px+T-WALL_D, py-WALL_H, WALL_D, T+WALL_H);
+
+  // ── BOTTOM EDGE shadow ──────────────────────────────────────────────────────
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(px, py+T-2, T, 2);
+
+  // ── Zone neon accent on top face ────────────────────────────────────────────
+  const zc = ZONE_NEON[zone];
+  if (zc) {
+    ctx.fillStyle = _rgba(zc, 0.22);
+    ctx.fillRect(px, topPy, T, WALL_H);
+    ctx.fillStyle = _rgba(zc, 0.6);
+    ctx.fillRect(px, topPy, T, 1);
+  }
+
+  // ── Cast shadow downward onto floor below ──────────────────────────────────
+  const below = map.tiles[gy+1]?.[gx];
+  if (below && below.type !== 'wall') {
+    const sg = ctx.createLinearGradient(px, py+T, px, py+T+SHADOW_D);
+    sg.addColorStop(0, 'rgba(0,0,0,0.6)');
+    sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(px, py+T, T, SHADOW_D);
+  }
+}
+
+function _wallColors(wt, isOuter) {
+  switch(wt) {
+    case 'corrugated':   return { face1:'#0e1c2c', face2:'#091420', face3:'#060e18', top1:'#253545', top2:'#182535', accent:'#3a5060', depth:'#04080c' };
+    case 'pipe_bundle':  return { face1:'#0a1828', face2:'#071220', face3:'#050e18', top1:'#1e3050', top2:'#142240', accent:'#304880', depth:'#030810' };
+    case 'rock':         return { face1:'#16120a', face2:'#0e0c06', face3:'#080604', top1:'#2a2216', top2:'#1c1810', accent:'#3a3020', depth:'#040302' };
+    case 'civic_block':  return { face1:'#0e1840', face2:'#091030', face3:'#060c20', top1:'#1e2c60', top2:'#141e50', accent:'#304080', depth:'#040810' };
+    default: // hull_plate
+      return isOuter
+        ? { face1:'#101e2e', face2:'#0a1420', face3:'#060c14', top1:'#283c54', top2:'#1a2c40', accent:'#3a5060', depth:'#03080e' }
+        : { face1:'#0e1c2c', face2:'#091420', face3:'#060c18', top1:'#243850', top2:'#18283e', accent:'#344e68', depth:'#040810' };
+  }
+}
+
+function _wallTexture(ctx, wt, px, py, T) {
+  ctx.save();
+  if (wt === 'corrugated') {
+    ctx.strokeStyle = 'rgba(255,255,255,0.055)'; ctx.lineWidth = 1;
+    for (let i = 6; i < T; i += 10) {
+      ctx.beginPath(); ctx.moveTo(px+i, py); ctx.lineTo(px+i, py+T); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+    for (let i = 11; i < T; i += 10) {
+      ctx.beginPath(); ctx.moveTo(px+i, py); ctx.lineTo(px+i, py+T); ctx.stroke();
+    }
+  } else if (wt === 'pipe_bundle') {
+    // Two horizontal pipes across the wall face
+    for (const fy of [py + T*0.28, py + T*0.65]) {
+      const pg = ctx.createLinearGradient(px, fy-5, px, fy+5);
+      pg.addColorStop(0, 'rgba(30,60,100,0.7)');
+      pg.addColorStop(0.35, 'rgba(80,130,200,0.45)');
+      pg.addColorStop(0.6, 'rgba(20,50,90,0.5)');
+      pg.addColorStop(1, 'rgba(5,15,30,0.6)');
+      ctx.fillStyle = pg;
+      ctx.beginPath(); ctx.roundRect(px+3, fy-5, T-6, 10, 4); ctx.fill();
+      ctx.fillStyle = 'rgba(160,210,255,0.12)';
+      ctx.fillRect(px+4, fy-4, T-8, 2);
+    }
+  } else if (wt === 'rock') {
+    // Irregular facet patches
+    ctx.fillStyle = 'rgba(80,60,20,0.2)';
+    ctx.fillRect(px+4, py+8, T*0.38, T*0.32);
+    ctx.fillStyle = 'rgba(30,20,5,0.25)';
+    ctx.fillRect(px+T*0.42, py+T*0.2, T*0.4, T*0.45);
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(px+T*0.28, py); ctx.lineTo(px+T*0.42, py+T*0.55); ctx.lineTo(px+T*0.62, py+T); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px+T*0.65, py+T*0.1); ctx.lineTo(px+T*0.55, py+T*0.6); ctx.stroke();
+  } else if (wt === 'civic_block') {
+    ctx.strokeStyle = 'rgba(60,80,160,0.18)'; ctx.lineWidth = 1;
+    for (let i = py+12; i < py+T; i += 12) {
+      ctx.beginPath(); ctx.moveTo(px, i); ctx.lineTo(px+T, i); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(40,60,180,0.08)';
+    ctx.fillRect(px, py+T-8, T, 6);
+  } else {
+    // hull_plate — bolt pattern + panel seam
+    ctx.strokeStyle = 'rgba(80,120,180,0.06)'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(px, py + T*0.5); ctx.lineTo(px+T, py + T*0.5); ctx.stroke();
+    ctx.fillStyle = 'rgba(80,120,160,0.2)';
+    for (const [bx,by] of [[px+4,py+5],[px+T-6,py+5],[px+4,py+T-7],[px+T-6,py+T-7]]) {
+      ctx.beginPath(); ctx.arc(bx, by, 2, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function _wallTopTexture(ctx, wt, px, py, T, H) {
+  ctx.save(); ctx.globalAlpha = 0.45;
+  if (wt === 'corrugated') {
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.7;
+    for (let i = 8; i < T; i += 10) {
+      ctx.beginPath(); ctx.moveTo(px+i, py); ctx.lineTo(px+i, py+H); ctx.stroke();
+    }
+  } else if (wt === 'pipe_bundle') {
+    // Pipe cross-sections on top
+    for (const fx of [px+T*0.2, px+T*0.55, px+T*0.8]) {
+      const pg2 = ctx.createRadialGradient(fx, py+H/2, 0, fx, py+H/2, H*0.5);
+      pg2.addColorStop(0, 'rgba(80,140,220,0.6)');
+      pg2.addColorStop(1, 'rgba(20,60,120,0.3)');
+      ctx.fillStyle = pg2;
+      ctx.beginPath(); ctx.arc(fx, py+H/2, H*0.38, 0, Math.PI*2); ctx.fill();
+    }
+  } else if (wt === 'hull_plate') {
+    ctx.strokeStyle = 'rgba(120,160,200,0.12)'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(px+T/2, py); ctx.lineTo(px+T/2, py+H); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ─── OVERLAYS: PROPS / FX / MARKERS ──────────────────────────────────────────
+
+function _drawOverlays(ctx, t, gx, gy, T, map, data) {
+  const px = gx * T, py = gy * T;
+  const v  = t.visual || {};
+
+  // Atmospheric lighting pools per zone
+  _drawZoneLighting(ctx, t, gx, gy, T, map);
+
+  if (v.prop)  _drawProp(ctx, v.prop, px, py, T);
+  if (v.fx)    _drawFX(ctx, v.fx, px, py, T, _t);
+  if (v.decal) _drawDecal(ctx, v.decal, px, py, T);
+
+  if (t.gameTable)  _drawTableMarker(ctx, px, py, T, t.gameTable, data);
+  if (t.jukebox)    _drawJukeboxMarker(ctx, px, py, T);
+  if (t.transition) _drawDoorMarker(ctx, px, py, T);
+  else if (t.loot)   _drawLootMarker(ctx, px, py, T, t);
+  else if (t.interact) _drawInteractMarker(ctx, px, py, T, t);
+
+  if (t.cover) {
+    ctx.strokeStyle = 'rgba(80,120,200,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(px+3, py+3, T-6, T-6);
+  }
+}
+
+function _drawZoneLighting(ctx, t, gx, gy, T, map) {
+  const zone = t.zone || '';
+  const px = gx * T, py = gy * T;
+
+  // Bar/sump area — warm amber light pools
+  if (!zone && (gy >= 19 && gy <= 28) && (gx >= 1 && gx <= 13)) {
+    if ((gx + gy * 2) % 9 === 0) {
+      const lg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*1.5);
+      lg.addColorStop(0, 'rgba(200,120,20,0.09)');
+      lg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = lg; ctx.fillRect(px-T, py-T, T*3, T*3);
+    }
+  }
+  // Berth area — cool blue-white lights
+  if (!zone && gy <= 9) {
+    if ((gx * 3 + gy) % 11 === 0) {
+      const lg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*1.8);
+      lg.addColorStop(0, 'rgba(80,140,220,0.07)');
+      lg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = lg; ctx.fillRect(px-T, py-T, T*3, T*3);
+    }
+  }
+  // Civic zone — white/blue authority lighting
+  if (zone === 'restricted_civic') {
+    const lg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T);
+    lg.addColorStop(0, 'rgba(140,160,255,0.06)');
+    lg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = lg; ctx.fillRect(px-T/2, py-T/2, T*2, T*2);
+  }
+  // Hostile zone — red ambient threat
+  if (zone === 'hostile_reaver') {
+    const lg = ctx.createRadialGradient(px+T/2, py+T/2, 0, px+T/2, py+T/2, T*1.2);
+    lg.addColorStop(0, 'rgba(180,20,20,0.08)');
+    lg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = lg; ctx.fillRect(px-T/2, py-T/2, T*2, T*2);
+  }
+}
+
+// ─── PROPS ────────────────────────────────────────────────────────────────────
+
+function _drawProp(ctx, prop, px, py, T) {
+  ctx.save();
+  switch(prop) {
+
+    case 'crate': {
+      const cx = px + T*0.12, cy = py + T*0.18, cw = T*0.52, ch = T*0.48;
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillRect(cx+4, cy+ch, cw-4, 5);
+      ctx.fillRect(cx+cw, cy+5, 6, ch-4);
+      // Body
+      const bg = ctx.createLinearGradient(cx, cy, cx+cw, cy+ch);
+      bg.addColorStop(0, '#5c4c28'); bg.addColorStop(0.5,'#48381c'); bg.addColorStop(1,'#30240e');
+      ctx.fillStyle = bg; ctx.fillRect(cx, cy, cw, ch);
+      // Top face
+      const tg = ctx.createLinearGradient(cx, cy-8, cx+cw, cy);
+      tg.addColorStop(0,'#7a6030'); tg.addColorStop(1,'#5c4824');
+      ctx.fillStyle = tg; ctx.fillRect(cx, cy-7, cw, 7);
+      // Plank lines
+      ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=1.2;
+      ctx.strokeRect(cx,cy,cw,ch);
+      for (const fx of [cx+cw*0.33, cx+cw*0.66]) {
+        ctx.beginPath(); ctx.moveTo(fx,cy); ctx.lineTo(fx,cy+ch); ctx.stroke();
+      }
+      ctx.beginPath(); ctx.moveTo(cx,cy+ch*0.5); ctx.lineTo(cx+cw,cy+ch*0.5); ctx.stroke();
+      // Metal banding
+      ctx.strokeStyle='rgba(100,80,30,0.5)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(cx,cy+ch*0.22); ctx.lineTo(cx+cw,cy+ch*0.22); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx,cy+ch*0.78); ctx.lineTo(cx+cw,cy+ch*0.78); ctx.stroke();
+      // Highlight
+      ctx.fillStyle='rgba(255,220,120,0.06)';
+      ctx.fillRect(cx,cy-7,cw,ch*0.25+7);
+      break;
+    }
+
+    case 'barrel': {
+      const bx = px+T*0.55, by = py+T*0.15, bw = T*0.3, bh = T*0.6;
+      // Shadow
+      ctx.fillStyle='rgba(0,0,0,0.35)';
+      ctx.beginPath(); ctx.ellipse(bx+bw/2+3, by+bh+2, bw*0.5, 4, 0, 0, Math.PI*2); ctx.fill();
+      // Body gradient (cylindrical)
+      const bg = ctx.createLinearGradient(bx, by, bx+bw, by);
+      bg.addColorStop(0,'#2a3840'); bg.addColorStop(0.2,'#3c5060'); bg.addColorStop(0.5,'#4a6070');
+      bg.addColorStop(0.75,'#2a3840'); bg.addColorStop(1,'#151e24');
+      ctx.fillStyle=bg; ctx.fillRect(bx,by,bw,bh);
+      // Bands
+      ctx.strokeStyle='rgba(0,0,0,0.6)'; ctx.lineWidth=1.5;
+      for (const fy of [by+bh*0.2, by+bh*0.5, by+bh*0.78]) {
+        ctx.beginPath(); ctx.moveTo(bx,fy); ctx.lineTo(bx+bw,fy); ctx.stroke();
+        ctx.strokeStyle='rgba(100,140,180,0.2)'; ctx.lineWidth=0.7;
+        ctx.beginPath(); ctx.moveTo(bx,fy+1.5); ctx.lineTo(bx+bw,fy+1.5); ctx.stroke();
+        ctx.strokeStyle='rgba(0,0,0,0.6)'; ctx.lineWidth=1.5;
+      }
+      // Top
+      const tg = ctx.createLinearGradient(bx, by-6, bx+bw, by);
+      tg.addColorStop(0,'#3a5060'); tg.addColorStop(1,'#1e2e38');
+      ctx.fillStyle=tg; ctx.fillRect(bx, by-5, bw, 5);
+      ctx.strokeStyle='rgba(80,120,160,0.4)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(bx,by-5); ctx.lineTo(bx+bw,by-5); ctx.stroke();
+      break;
+    }
+
+    case 'terminal': {
+      const tx=px+T*0.08, ty=py+T*0.06, tw=T*0.7, th=T*0.55;
+      // Body
+      ctx.fillStyle='#0a1520'; ctx.fillRect(tx,ty,tw,th);
+      ctx.strokeStyle='#1a3050'; ctx.lineWidth=1.5; ctx.strokeRect(tx,ty,tw,th);
+      // Screen
+      const scx=tx+4, scy=ty+4, scw=tw-8, sch=th-14;
+      ctx.fillStyle='#040c18'; ctx.fillRect(scx,scy,scw,sch);
+      // Screen glow
+      const sg = ctx.createRadialGradient(scx+scw/2,scy+sch/2,0,scx+scw/2,scy+sch/2,scw/2);
+      sg.addColorStop(0,'rgba(0,180,255,0.25)'); sg.addColorStop(0.6,'rgba(0,80,200,0.1)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sg; ctx.fillRect(scx,scy,scw,sch);
+      // Scanlines
+      ctx.strokeStyle='rgba(0,180,255,0.06)'; ctx.lineWidth=0.8;
+      for (let i=scy+2; i<scy+sch-2; i+=3) { ctx.beginPath(); ctx.moveTo(scx+1,i); ctx.lineTo(scx+scw-1,i); ctx.stroke(); }
+      // Text lines
+      ctx.fillStyle='rgba(0,220,255,0.5)';
+      ctx.fillRect(scx+3, scy+4, scw*0.7, 2);
+      ctx.fillRect(scx+3, scy+9, scw*0.5, 2);
+      ctx.fillRect(scx+3, scy+14, scw*0.6, 2);
+      // Cursor blink
+      if (Math.sin(_t*4) > 0) { ctx.fillStyle='rgba(0,255,200,0.8)'; ctx.fillRect(scx+3,scy+20,6,3); }
+      // Base
+      ctx.fillStyle='#0c1828'; ctx.fillRect(tx+tw*0.25,ty+th,tw*0.5,5);
+      // Status lights
+      for (const [lx,lc] of [[tx+3,'#00ff88'],[tx+9,'#ffcc00'],[tx+15,'rgba(255,80,80,0.3)']]) {
+        ctx.fillStyle=lc; ctx.beginPath(); ctx.arc(lx,ty+th-5,2,0,Math.PI*2); ctx.fill();
+      }
+      break;
+    }
+
+    case 'cable_bundle': {
+      const cables = [
+        {x:px+3, c:'#1a2a3a', w:3},
+        {x:px+7, c:'#0f2030', w:2},
+        {x:px+11,c:'#152535', w:2.5},
+        {x:px+15,c:'#101820', w:2},
+      ];
+      for (const cab of cables) {
+        ctx.strokeStyle=cab.c; ctx.lineWidth=cab.w;
+        ctx.beginPath();
+        ctx.moveTo(cab.x, py);
+        ctx.bezierCurveTo(cab.x+2, py+T*0.3, cab.x-2, py+T*0.6, cab.x, py+T);
+        ctx.stroke();
+      }
+      // Zip tie
+      ctx.fillStyle='rgba(180,200,220,0.3)'; ctx.lineWidth=1.5;
+      ctx.fillRect(px+1,py+T*0.45,17,5);
+      ctx.strokeStyle='rgba(200,220,240,0.2)'; ctx.lineWidth=1;
+      ctx.strokeRect(px+1,py+T*0.45,17,5);
+      break;
+    }
+
+    case 'sign_neon': {
+      const sx=px+T*0.04, sy=py+T*0.06, sw=T*0.92, sh=T*0.38;
+      ctx.fillStyle='rgba(0,0,0,0.8)'; ctx.fillRect(sx,sy,sw,sh);
+      const pulse = 0.75 + 0.25*Math.sin(_t*1.8);
+      // Glow
+      ctx.shadowColor=C.pink; ctx.shadowBlur=12*pulse;
+      ctx.strokeStyle=_rgba(C.pink,pulse); ctx.lineWidth=1.5;
+      ctx.strokeRect(sx+1,sy+1,sw-2,sh-2);
+      ctx.shadowBlur=0;
+      // Bar text (pixel style)
+      ctx.fillStyle=_rgba(C.pink,pulse*0.85);
+      const lx=sx+sw*0.12, ly=sy+sh*0.2, lh=sh*0.6;
+      // B — two rectangles
+      ctx.fillRect(lx,ly,3,lh); ctx.fillRect(lx,ly,8,2); ctx.fillRect(lx,ly+lh/2-1,8,2); ctx.fillRect(lx,ly+lh-2,8,2);
+      ctx.fillRect(lx+3,ly,5,lh/2-1); ctx.fillRect(lx+3,ly+lh/2+1,5,lh/2-2);
+      // A
+      ctx.fillRect(lx+12,ly,3,lh); ctx.fillRect(lx+19,ly,3,lh);
+      ctx.fillRect(lx+12,ly,10,2); ctx.fillRect(lx+12,ly+lh*0.45,10,2);
+      // R
+      ctx.fillRect(lx+26,ly,3,lh); ctx.fillRect(lx+26,ly,10,2); ctx.fillRect(lx+26,ly+lh*0.45,10,2);
+      ctx.fillRect(lx+33,ly,3,lh*0.45+2); ctx.fillRect(lx+30,ly+lh*0.45,5,lh*0.55);
+      break;
+    }
+
+    case 'debris': {
+      ctx.fillStyle='rgba(50,60,70,0.65)';
+      const pieces=[[px+T*0.15,py+T*0.55,8,3,0.2],[px+T*0.4,py+T*0.45,5,5,0.5],[px+T*0.65,py+T*0.65,7,2,0.1],[px+T*0.55,py+T*0.35,3,6,-0.3]];
+      for (const [dx,dy,dw,dh,dr] of pieces) {
+        ctx.save(); ctx.translate(dx+dw/2,dy+dh/2); ctx.rotate(dr);
+        ctx.fillRect(-dw/2,-dh/2,dw,dh); ctx.restore();
+      }
+      ctx.fillStyle='rgba(80,90,100,0.4)';
+      for (const [dx,dy,dr] of [[px+T*0.3,py+T*0.6,2],[px+T*0.7,py+T*0.4,1.5],[px+T*0.2,py+T*0.75,1.8]]) {
+        ctx.beginPath(); ctx.arc(dx,dy,dr,0,Math.PI*2); ctx.fill();
+      }
+      break;
+    }
+
+    case 'chem_tank': {
+      const tx2=px+T*0.52, ty2=py+T*0.08, tw2=T*0.34, th2=T*0.75;
+      ctx.fillStyle='rgba(0,0,0,0.35)';
+      ctx.fillRect(tx2+3,ty2+th2,tw2-3,5);
+      const tg2=ctx.createLinearGradient(tx2,ty2,tx2+tw2,ty2);
+      tg2.addColorStop(0,'#152a18'); tg2.addColorStop(0.3,'#1e3c20'); tg2.addColorStop(0.7,'#122418'); tg2.addColorStop(1,'#0a1810');
+      ctx.fillStyle=tg2; ctx.fillRect(tx2,ty2,tw2,th2);
+      ctx.strokeStyle='rgba(0,0,0,0.4)'; ctx.lineWidth=1;
+      for (let i=0.2; i<0.9; i+=0.18) { ctx.beginPath(); ctx.moveTo(tx2,ty2+th2*i); ctx.lineTo(tx2+tw2,ty2+th2*i); ctx.stroke(); }
+      ctx.fillStyle='rgba(180,200,30,0.22)'; ctx.fillRect(tx2+2,ty2+th2*0.32,tw2-4,th2*0.22);
+      ctx.strokeStyle='rgba(180,200,30,0.5)'; ctx.lineWidth=0.8; ctx.strokeRect(tx2+2,ty2+th2*0.32,tw2-4,th2*0.22);
+      ctx.fillStyle='#0e1e12'; ctx.fillRect(tx2-2,ty2,tw2+4,6);
+      ctx.fillStyle='#0e2012'; ctx.fillRect(tx2-2,ty2+th2,tw2+4,4);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+// ─── FX ───────────────────────────────────────────────────────────────────────
+
+function _drawFX(ctx, fx, px, py, T, t) {
+  ctx.save();
+  switch(fx) {
+
+    case 'steam_vent': {
+      const puffs=4;
+      for (let i=0; i<puffs; i++) {
+        const phase=((t*0.7 + i/puffs) % 1);
+        const pY=py+T - phase*T*1.1;
+        const alpha=phase<0.3 ? phase/0.3*0.4 : (1-phase)*0.4;
+        const r=4+phase*14;
+        const sg=ctx.createRadialGradient(px+T/2,pY,0,px+T/2,pY,r);
+        sg.addColorStop(0,`rgba(200,220,255,${alpha})`); sg.addColorStop(1,'rgba(200,220,255,0)');
+        ctx.fillStyle=sg; ctx.beginPath(); ctx.arc(px+T/2,pY,r,0,Math.PI*2); ctx.fill();
+      }
+      // Vent grate
+      ctx.fillStyle='rgba(30,45,65,0.8)';
+      ctx.fillRect(px+T*0.28,py+T*0.82,T*0.44,5);
+      ctx.strokeStyle='rgba(60,90,130,0.5)'; ctx.lineWidth=0.8;
+      for (let i=0;i<5;i++) { const vx=px+T*0.3+i*(T*0.4/4); ctx.beginPath(); ctx.moveTo(vx,py+T*0.82); ctx.lineTo(vx,py+T*0.82+5); ctx.stroke(); }
+      break;
+    }
+
+    case 'neon_glow': {
+      const p=0.65+0.35*Math.sin(t*1.4);
+      const ng=ctx.createRadialGradient(px+T/2,py+T/2,0,px+T/2,py+T/2,T*0.65);
+      ng.addColorStop(0,`rgba(255,20,100,${0.18*p})`); ng.addColorStop(0.5,`rgba(200,10,80,${0.08*p})`); ng.addColorStop(1,'rgba(255,20,100,0)');
+      ctx.fillStyle=ng; ctx.fillRect(px,py,T,T);
+      break;
+    }
+
+    case 'flicker': {
+      const flicker=Math.sin(t*9)>-0.8 && Math.sin(t*16)>-0.6;
+      if (flicker) {
+        const fl=ctx.createRadialGradient(px+T/2,py+4,0,px+T/2,py+T*0.6,T*0.55);
+        fl.addColorStop(0,'rgba(230,220,160,0.2)'); fl.addColorStop(1,'rgba(230,220,160,0)');
+        ctx.fillStyle=fl; ctx.fillRect(px,py,T,T);
+        ctx.fillStyle='rgba(255,240,180,0.7)';
+        ctx.beginPath(); ctx.arc(px+T/2,py+4,2.5,0,Math.PI*2); ctx.fill();
+      } else {
+        ctx.fillStyle='rgba(80,80,60,0.3)';
+        ctx.beginPath(); ctx.arc(px+T/2,py+4,2.5,0,Math.PI*2); ctx.fill();
+      }
+      break;
+    }
+
+    case 'red_light': {
+      const p=0.4+0.6*Math.abs(Math.sin(t*1.1));
+      const rl=ctx.createRadialGradient(px+T*0.82,py+T*0.12,0,px+T*0.82,py+T*0.12,T*0.6);
+      rl.addColorStop(0,`rgba(255,20,20,${0.3*p})`); rl.addColorStop(1,'rgba(255,20,20,0)');
+      ctx.fillStyle=rl; ctx.fillRect(px,py,T,T);
+      ctx.fillStyle=`rgba(255,20,20,${0.85*p})`;
+      ctx.shadowColor='#ff0000'; ctx.shadowBlur=8*p;
+      ctx.beginPath(); ctx.arc(px+T*0.82,py+T*0.12,3,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+      break;
+    }
+
+    case 'sparks': {
+      if (Math.sin(t*8)>0.9) {
+        ctx.shadowColor='#ffaa20'; ctx.shadowBlur=6;
+        ctx.fillStyle='rgba(255,180,40,0.9)';
+        ctx.beginPath(); ctx.arc(px+T*0.28,py+T*0.5,3,0,Math.PI*2); ctx.fill();
+        ctx.shadowBlur=0;
+        for (let i=0;i<5;i++) {
+          const ang=i/5*Math.PI*2+t*8;
+          const d=5+Math.random()*10;
+          ctx.fillStyle=`rgba(255,${160+Math.random()*80|0},20,0.8)`;
+          ctx.fillRect(px+T*0.28+Math.cos(ang)*d,py+T*0.5+Math.sin(ang)*d,2,2);
+        }
+      }
+      break;
+    }
+
+    case 'drip': {
+      const ph=(t*0.35)%1;
+      const dY=py+ph*T;
+      const alpha=ph<0.15?ph/0.15:ph>0.85?(1-ph)/0.15:1;
+      ctx.fillStyle=`rgba(80,120,200,${alpha*0.7})`;
+      ctx.beginPath(); ctx.arc(px+T*0.38,dY,2,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=`rgba(80,120,200,${alpha*0.25})`; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(px+T*0.38,py); ctx.lineTo(px+T*0.38,dY); ctx.stroke();
+      break;
+    }
+
+    case 'haze': {
+      ctx.fillStyle=`rgba(50,55,70,${0.1+0.04*Math.sin(t*0.4)})`;
+      ctx.fillRect(px,py,T,T);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+// ─── DECALS ───────────────────────────────────────────────────────────────────
+
+function _drawDecal(ctx, decal, px, py, T) {
+  ctx.save(); ctx.globalAlpha=0.7;
+  switch(decal) {
+    case 'hazard_strip':
+      for (let i=0;i<T;i+=10) {
+        ctx.fillStyle=i%20<10?'rgba(255,200,0,0.35)':'rgba(0,0,0,0.2)';
+        ctx.fillRect(px+i,py+T-6,10,6);
+      }
+      break;
+    case 'civic_stripe':
+      ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(px,py+T-5,T,2);
+      ctx.fillStyle='rgba(255,210,0,0.3)'; ctx.fillRect(px,py+T-7,T,3);
+      break;
+    case 'blood_stain':
+      const bs=ctx.createRadialGradient(px+T*0.3,py+T*0.6,0,px+T*0.3,py+T*0.6,T*0.22);
+      bs.addColorStop(0,'rgba(130,15,15,0.55)'); bs.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=bs; ctx.fillRect(px,py,T,T);
+      ctx.fillStyle='rgba(100,10,10,0.4)';
+      ctx.beginPath(); ctx.ellipse(px+T*0.55,py+T*0.5,T*0.06,T*0.04,-0.4,0,Math.PI*2); ctx.fill();
+      break;
+    case 'graffiti':
+      ctx.fillStyle='rgba(180,40,180,0.35)';
+      ctx.font=`bold ${T*0.22}px monospace`; ctx.textAlign='right'; ctx.textBaseline='top';
+      ctx.fillText('VR', px+T-3, py+3);
+      break;
+    case 'worn_number':
+      ctx.fillStyle='rgba(90,110,150,0.35)';
+      ctx.font=`bold ${T*0.2}px monospace`; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText('B'+(px%10+1|0), px+3, py+T-2);
+      break;
+    case 'boot_prints':
+      ctx.fillStyle='rgba(25,30,40,0.55)';
+      ctx.beginPath(); ctx.ellipse(px+T*0.35,py+T*0.4,4,7,0.3,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(px+T*0.55,py+T*0.65,4,7,0.5,0,Math.PI*2); ctx.fill();
+      break;
+  }
+  ctx.restore();
+}
+
+// ─── SPECIAL MARKERS ─────────────────────────────────────────────────────────
+
+function _drawTableMarker(ctx, px, py, T, tableId, data) {
+  const table=(data?.tables||[]).find(t=>t.id===tableId);
+  const type=table?.type||'card';
+  const color=type==='slot'?C.gold:type==='other'?C.green:C.cyan;
+  const pulse=0.75+0.25*Math.sin(_t*1.5);
+  ctx.save();
+  const gg=ctx.createRadialGradient(px+T/2,py+T/2,0,px+T/2,py+T/2,T*0.6);
+  gg.addColorStop(0,_rgba(color,0.2*pulse)); gg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gg; ctx.fillRect(px,py,T,T);
+  ctx.shadowColor=color; ctx.shadowBlur=6*pulse;
+  ctx.font=`${T*0.4}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle=_rgba(color,0.9);
+  ctx.fillText(type==='slot'?'⬡':type==='other'?'◈':'◈', px+T/2, py+T/2);
+  ctx.shadowBlur=0; ctx.restore();
+}
+
+function _drawJukeboxMarker(ctx, px, py, T) {
+  const p=0.7+0.3*Math.sin(_t*2);
+  ctx.save();
+  const gg=ctx.createRadialGradient(px+T/2,py+T/2,0,px+T/2,py+T/2,T*0.6);
+  gg.addColorStop(0,_rgba(C.pink,0.22*p)); gg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gg; ctx.fillRect(px,py,T,T);
+  ctx.shadowColor=C.pink; ctx.shadowBlur=10*p;
+  ctx.font=`${T*0.45}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle=_rgba(C.pink,0.95);
+  ctx.fillText('♪', px+T/2, py+T/2);
+  ctx.shadowBlur=0; ctx.restore();
+}
+
+function _drawDoorMarker(ctx, px, py, T) {
+  ctx.save();
+  ctx.fillStyle=_rgba(C.gold,0.1);
+  ctx.fillRect(px+3,py+3,T-6,T-6);
+  ctx.strokeStyle=_rgba(C.gold,0.6); ctx.lineWidth=1.5;
+  ctx.strokeRect(px+3,py+3,T-6,T-6);
+  ctx.shadowColor=C.gold; ctx.shadowBlur=4;
+  ctx.font=`${T*0.38}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle=_rgba(C.gold,0.85); ctx.fillText('▶', px+T/2, py+T/2);
+  ctx.shadowBlur=0; ctx.restore();
+}
+
+function _drawLootMarker(ctx, px, py, T, t) {
+  ctx.save();
+  ctx.shadowColor='#c8a040'; ctx.shadowBlur=4;
+  ctx.font=`${T*0.35}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#c8a040';
+  ctx.fillText('▩', px+T/2, py+T/2);
+  ctx.shadowBlur=0; ctx.restore();
+}
+
+function _drawInteractMarker(ctx, px, py, T, tile) {
+  const txt=(tile.interactText||'').toLowerCase();
+  const color=txt.includes('terminal')||txt.includes('console')?C.cyan:txt.includes('door')||txt.includes('hatch')?C.gold:'#6688aa';
+  ctx.save();
+  ctx.shadowColor=color; ctx.shadowBlur=3;
+  ctx.font=`${T*0.3}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle=color; ctx.fillText('⬡', px+T/2, py+T/2);
+  ctx.shadowBlur=0; ctx.restore();
+}
+
+// ─── ACTORS ───────────────────────────────────────────────────────────────────
+
+function _drawActor(ctx, actor, state, T) {
+  const px=actor.x*T, py=actor.y*T;
+  const cx=px+T/2, cy=py+T/2;
+  const isSelected=state.selectedActorId===actor.id;
+  const isCurrent=state.combat.active&&state.combat.turnOrder[state.combat.currentTurnIndex]===actor.id;
+  const isAI=state.combat.aiActingId===actor.id;
+  const isStealthed=actor.statuses.includes('stealthed');
+  const hpPct=Math.max(0,actor.hp/actor.hpMax);
+
+  const COLORS={
+    player: {body:'#1a3562',rim:'#4a88d8',glow:'#6fb3ff',name:'player'},
+    ally:   {body:'#183620',rim:'#38a858',glow:'#7ed9a0',name:'ally'},
+    enemy:  {body:'#420e0e',rim:'#c03030',glow:'#ff6060',name:'enemy'},
+    neutral:{body:'#342e10',rim:'#a07820',glow:'#ccaa55',name:'neutral'},
+  };
+  const col=COLORS[actor.role]||COLORS.neutral;
+
+  ctx.save();
+  if (isStealthed) ctx.globalAlpha=0.38;
+  if (actor.downed) { ctx.globalAlpha=0.4; ctx.filter='grayscale(1)'; }
+
+  // AI bounce
+  let offY=0;
+  if (isAI) offY=-Math.abs(Math.sin(_t*5))*5;
+
+  // Ground shadow ellipse
+  const sg=ctx.createRadialGradient(cx,py+T-5,0,cx,py+T-5,T*0.42);
+  sg.addColorStop(0,'rgba(0,0,0,0.55)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=sg;
+  ctx.beginPath(); ctx.ellipse(cx,py+T-5,T*0.38,5,0,0,Math.PI*2); ctx.fill();
+
+  // Selection ring
+  if (isSelected) {
+    const sp=0.6+0.4*Math.abs(Math.sin(_t*2.5));
+    ctx.strokeStyle=_rgba(col.glow,sp); ctx.lineWidth=2;
+    ctx.shadowColor=col.glow; ctx.shadowBlur=10*sp;
+    ctx.strokeRect(px-1,py-1+offY,T+2,T+2);
+    ctx.shadowBlur=0;
+  }
+
+  // Body dimensions
+  const bodyW=T*0.52, bodyH=T*0.55;
+  const bodyX=cx-bodyW/2, bodyY=py+T*0.38+offY;
+  const headR=T*0.175, headY=py+T*0.26+offY;
+
+  // Body shadow (left side dark)
+  const bg=ctx.createLinearGradient(bodyX,bodyY,bodyX+bodyW,bodyY+bodyH);
+  bg.addColorStop(0,_lighten(col.body,0.35));
+  bg.addColorStop(0.3,col.body);
+  bg.addColorStop(1,_darken(col.body,0.5));
+  ctx.fillStyle=bg; ctx.fillRect(bodyX,bodyY,bodyW,bodyH);
+  ctx.strokeStyle=col.rim; ctx.lineWidth=1.2;
+  ctx.strokeRect(bodyX,bodyY,bodyW,bodyH);
+  // Body highlight
+  ctx.fillStyle='rgba(255,255,255,0.08)';
+  ctx.fillRect(bodyX,bodyY,bodyW*0.38,bodyH);
+
+  // Class detail on body
+  _actorClassDetail(ctx, actor.classId, bodyX, bodyY, bodyW, bodyH, cx, col, offY);
+
+  // Head
+  const hg=ctx.createRadialGradient(cx-headR*0.2,headY-headR*0.2,0,cx,headY,headR);
+  hg.addColorStop(0,_lighten(col.body,0.55)); hg.addColorStop(1,col.body);
+  ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(cx,headY,headR,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle=col.rim; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.arc(cx,headY,headR,0,Math.PI*2); ctx.stroke();
+  // Head highlight
+  ctx.fillStyle='rgba(255,255,255,0.14)';
+  ctx.beginPath(); ctx.arc(cx-headR*0.28,headY-headR*0.28,headR*0.42,0,Math.PI*2); ctx.fill();
+
+  // Current turn glow
+  if (isCurrent&&!isAI) {
+    const tp=0.5+0.5*Math.abs(Math.sin(_t*2));
+    ctx.strokeStyle=_rgba(col.glow,tp); ctx.lineWidth=1.5;
+    ctx.shadowColor=col.glow; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(cx,py+T*0.5+offY,T*0.46,0,Math.PI*2); ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+
+  // AI glow
+  if (isAI) {
+    ctx.strokeStyle=_rgba(C.gold,0.9); ctx.lineWidth=2;
+    ctx.shadowColor=C.gold; ctx.shadowBlur=14;
+    ctx.strokeRect(px-2,py-2+offY,T+4,T+4);
+    ctx.shadowBlur=0;
+  }
+
+  // HP bar
+  const bY=py+T-6, bW=T-4;
+  ctx.fillStyle='rgba(0,0,0,0.75)'; ctx.fillRect(px+2,bY,bW,4);
+  const hpC=hpPct>0.6?'#4aff9a':hpPct>0.3?'#ffcc5a':'#ff4444';
+  ctx.fillStyle=hpC;
+  ctx.shadowColor=hpC; ctx.shadowBlur=4;
+  ctx.fillRect(px+2,bY,bW*hpPct,4);
+  ctx.shadowBlur=0;
+
+  // Name label above head (small, dim)
+  ctx.fillStyle='rgba(200,220,255,0.65)';
+  ctx.font=`${T*0.15}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText(actor.name.split(' ')[0], cx, py+headY-headR-2+offY);
+
+  ctx.restore();
+}
+
+function _actorClassDetail(ctx, classId, bx, by, bw, bh, cx, col, offY) {
+  ctx.save();
+  switch(classId) {
+    case 'marshal':
+      // Gun held forward
+      ctx.fillStyle=_rgba(col.rim,0.8); ctx.lineWidth=2; ctx.strokeStyle=col.rim;
+      ctx.fillRect(bx+bw-1,by+bh*0.15,10,5);
+      ctx.fillRect(bx+bw+9,by+bh*0.12,3,3);
+      break;
+    case 'voidseer':
+      // Aura ring
+      ctx.strokeStyle=_rgba('#c040ff',0.45); ctx.lineWidth=1.5;
+      ctx.setLineDash([2,3]);
+      ctx.beginPath(); ctx.arc(cx,by+bh*0.35+offY,bw*0.72,0,Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      // Eye glow
+      ctx.fillStyle='rgba(180,60,255,0.7)';
+      ctx.beginPath(); ctx.arc(cx,by+offY-6,2,0,Math.PI*2); ctx.fill();
+      break;
+    case 'raider':
+      // Shoulder spikes
+      ctx.fillStyle=_rgba(col.rim,0.7);
+      ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx-6,by-8); ctx.lineTo(bx+6,by); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx+bw,by); ctx.lineTo(bx+bw+6,by-8); ctx.lineTo(bx+bw-6,by); ctx.fill();
+      break;
+    case 'salvager':
+      // Tool/wrench on back
+      ctx.strokeStyle='rgba(80,100,120,0.6)'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(bx+bw*0.78,by-5); ctx.lineTo(bx+bw*0.78,by+bh*0.5); ctx.stroke();
+      ctx.fillStyle='rgba(80,100,120,0.5)';
+      ctx.fillRect(bx+bw*0.72,by-5,12,5);
+      break;
+  }
+  ctx.restore();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+function _rgba(hex, a) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function _darken(hex, f) {
+  let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `#${Math.max(0,r*(1-f)|0).toString(16).padStart(2,'0')}${Math.max(0,g*(1-f)|0).toString(16).padStart(2,'0')}${Math.max(0,b*(1-f)|0).toString(16).padStart(2,'0')}`;
+}
+function _lighten(hex, f) {
+  let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `#${Math.min(255,r+(255-r)*f|0).toString(16).padStart(2,'0')}${Math.min(255,g+(255-g)*f|0).toString(16).padStart(2,'0')}${Math.min(255,b+(255-b)*f|0).toString(16).padStart(2,'0')}`;
 }
