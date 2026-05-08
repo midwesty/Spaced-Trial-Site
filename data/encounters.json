@@ -1,0 +1,267 @@
+[
+ {
+  "id": "dock_ambush",
+  "name": "Dock Ambush",
+  "scope": "map",
+  "text": "Port Sable scavenger-killers push in from the berth catwalk.",
+  "spawn": [
+   {
+    "id": "ambush_1",
+    "name": "Scavenger Killer",
+    "speciesId": "human",
+    "classId": "raider",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 13,
+    "y": 4,
+    "hpMax": 14,
+    "armor": 11,
+    "movement": 6,
+    "abilities": [
+     "jet_lunge"
+    ],
+    "inventory": [
+     {
+      "itemId": "stunstick",
+      "qty": 1
+     }
+    ],
+    "equipped": {
+     "mainhand": "stunstick",
+     "armor": "patch_armor"
+    }
+   },
+   {
+    "id": "ambush_2",
+    "name": "Scavenger Killer",
+    "speciesId": "vaylen",
+    "classId": "marshal",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 14,
+    "y": 4,
+    "hpMax": 12,
+    "armor": 11,
+    "movement": 7,
+    "abilities": [
+     "precision_shot"
+    ],
+    "inventory": [
+     {
+      "itemId": "scrap_pistol",
+      "qty": 1
+     }
+    ],
+    "equipped": {
+     "mainhand": "scrap_pistol",
+     "armor": "field_coat"
+    }
+   }
+  ]
+ },
+ {
+  "id": "ash_raiders",
+  "name": "Ash Raider Pack",
+  "scope": "map",
+  "text": "Sand-caked raiders rise out of the ridge haze.",
+  "spawn": [
+   {
+    "id": "ash_1",
+    "name": "Ash Raider",
+    "speciesId": "human",
+    "classId": "raider",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 8,
+    "y": 3,
+    "hpMax": 14,
+    "armor": 12,
+    "movement": 6,
+    "abilities": [
+     "jet_lunge"
+    ],
+    "inventory": [
+     {
+      "itemId": "stunstick",
+      "qty": 1
+     }
+    ],
+    "equipped": {
+     "mainhand": "stunstick",
+     "armor": "patch_armor"
+    }
+   },
+   {
+    "id": "ash_2",
+    "name": "Ash Raider Gunner",
+    "speciesId": "synthel",
+    "classId": "marshal",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 9,
+    "y": 3,
+    "hpMax": 12,
+    "armor": 11,
+    "movement": 6,
+    "abilities": [
+     "burst_fire"
+    ],
+    "inventory": [
+     {
+      "itemId": "scrap_pistol",
+      "qty": 1
+     }
+    ],
+    "equipped": {
+     "mainhand": "scrap_pistol",
+     "armor": "field_coat"
+    }
+   }
+  ]
+ },
+ {
+  "id": "reef_ghouls",
+  "name": "Reef Ghouls",
+  "scope": "map",
+  "text": "Drowned scav-suits twitch back to life under the basin lights.",
+  "spawn": [
+   {
+    "id": "reef_1",
+    "name": "Reef Ghoul",
+    "speciesId": "human",
+    "classId": "raider",
+    "role": "enemy",
+    "factionId": "reef_ghouls",
+    "x": 6,
+    "y": 7,
+    "hpMax": 13,
+    "armor": 10,
+    "movement": 5,
+    "abilities": [
+     "jet_lunge"
+    ],
+    "inventory": [],
+    "equipped": {
+     "mainhand": "stunstick",
+     "armor": "patch_armor"
+    }
+   },
+   {
+    "id": "reef_2",
+    "name": "Reef Ghoul",
+    "speciesId": "human",
+    "classId": "raider",
+    "role": "enemy",
+    "factionId": "reef_ghouls",
+    "x": 7,
+    "y": 7,
+    "hpMax": 13,
+    "armor": 10,
+    "movement": 5,
+    "abilities": [
+     "jet_lunge"
+    ],
+    "inventory": [],
+    "equipped": {
+     "mainhand": "stunstick",
+     "armor": "patch_armor"
+    }
+   }
+  ]
+ },
+ {
+  "id": "travel_pirates",
+  "name": "Skiff Intercept",
+  "scope": "travel",
+  "text": "A pirate skiff shadows the Wake and peppers the hull before peeling off.",
+  "resourceLoss": {
+   "shipSupplies": 1,
+   "scrap": 2
+  },
+  "damageParty": 1,
+  "spawn": [
+   {
+    "id": "enemy_0555",
+    "name": "Big Jerk",
+    "speciesId": "human",
+    "classId": "salvager",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 5,
+    "y": 5,
+    "hpMax": 20,
+    "armor": 12,
+    "movement": 5,
+    "abilities": [],
+    "inventory": [],
+    "equipped": {
+     "mainhand": null,
+     "armor": null
+    }
+   }
+  ]
+ },
+ {
+  "id": "travel_storm",
+  "name": "Ion Squall",
+  "scope": "travel",
+  "text": "An ion storm rattles the drive coils, burns off fuel, and leaves everyone's nerves fried.",
+  "resourceLoss": {
+   "fuel": 1
+  },
+  "damageParty": 0,
+  "spawn": [
+   {
+    "id": "enemy_7888",
+    "name": "Little Jerk",
+    "speciesId": "human",
+    "classId": "salvager",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 5,
+    "y": 5,
+    "hpMax": 10,
+    "armor": 12,
+    "movement": 6,
+    "abilities": [],
+    "inventory": [],
+    "equipped": {
+     "mainhand": null,
+     "armor": null
+    }
+   }
+  ]
+ },
+ {
+  "id": "travel_stowaway",
+  "name": "Stowaway in the Ducts",
+  "scope": "travel",
+  "text": "Someone half-starved and armed is living in your crawlspace. The confrontation costs supplies, but maybe buys a future ally.",
+  "resourceLoss": {
+   "rations": 1,
+   "water": 1
+  },
+  "damageParty": 0,
+  "spawn": [
+   {
+    "id": "enemy_3698",
+    "name": "Stowaway",
+    "speciesId": "mutoid",
+    "classId": "salvager",
+    "role": "enemy",
+    "factionId": "void_reavers",
+    "x": 5,
+    "y": 5,
+    "hpMax": 15,
+    "armor": 11,
+    "movement": 6,
+    "abilities": [],
+    "inventory": [],
+    "equipped": {
+     "mainhand": null,
+     "armor": null
+    }
+   }
+  ]
+ }
+]

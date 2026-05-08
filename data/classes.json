@@ -1,0 +1,171 @@
+[
+  {
+    "id": "marshal",
+    "name": "Frontier Marshal",
+    "summary": "Gunfighter, negotiator, and dirt-law icon. Good at steady damage, crowd pressure, and social checks.",
+    "hpBonus": 3,
+    "initiativeBonus": 1,
+    "saveBonuses": [
+      "grit",
+      "presence"
+    ],
+    "statMods": {
+      "agility": 1,
+      "presence": 1
+    },
+    "baseShield": 2,
+    "abilities": [
+      "precision_shot",
+      "command_bark"
+    ],
+    "startingItems": [
+      {
+        "itemId": "scrap_pistol",
+        "qty": 1
+      },
+      {
+        "itemId": "ration_pack",
+        "qty": 2
+      },
+      {
+        "itemId": "canteen",
+        "qty": 1
+      }
+    ],
+    "startingEquip": {
+      "mainhand": "scrap_pistol",
+      "armor": "field_coat",
+      "utility": "medgel_spray"
+    }
+  },
+  {
+    "id": "voidseer",
+    "name": "Voidseer",
+    "summary": "A perception-bending adept whose 'powers' are quantum cognition, relic implants, and dangerous intuition.",
+    "hpBonus": 1,
+    "initiativeBonus": 0,
+    "saveBonuses": [
+      "wit",
+      "presence"
+    ],
+    "statMods": {
+      "wit": 2,
+      "presence": 1
+    },
+    "baseShield": 1,
+    "abilities": [
+      "rift_lance",
+      "phase_veil"
+    ],
+    "startingItems": [
+      {
+        "itemId": "focus_shard",
+        "qty": 1
+      },
+      {
+        "itemId": "ration_pack",
+        "qty": 1
+      },
+      {
+        "itemId": "water_cell",
+        "qty": 2
+      }
+    ],
+    "startingEquip": {
+      "mainhand": "focus_shard",
+      "armor": "weave_wrap",
+      "implant": "psi_mesh"
+    },
+    "powerPools": {
+      "flux": {
+        "label": "Flux Cells",
+        "max": 2,
+        "recharge": "longRest"
+      }
+    }
+  },
+  {
+    "id": "raider",
+    "name": "Shock Raider",
+    "summary": "Fast assault specialist built for flanks, gap-closing, vicious melee, and surviving bad odds.",
+    "hpBonus": 4,
+    "initiativeBonus": 1,
+    "saveBonuses": [
+      "grit",
+      "agility"
+    ],
+    "statMods": {
+      "might": 2,
+      "agility": 1
+    },
+    "baseShield": 0,
+    "abilities": [
+      "jet_lunge",
+      "adrenal_surge"
+    ],
+    "startingItems": [
+      {
+        "itemId": "stunstick",
+        "qty": 1
+      },
+      {
+        "itemId": "ration_pack",
+        "qty": 1
+      },
+      {
+        "itemId": "canteen",
+        "qty": 1
+      }
+    ],
+    "startingEquip": {
+      "mainhand": "stunstick",
+      "armor": "patch_armor"
+    }
+  },
+  {
+    "id": "salvager",
+    "name": "Salvager Tech",
+    "summary": "Drone-minded scrapper, field medic, engineer, lockbreaker, and all-purpose disaster wrangler.",
+    "hpBonus": 2,
+    "initiativeBonus": 0,
+    "saveBonuses": [
+      "tech",
+      "wit"
+    ],
+    "statMods": {
+      "tech": 2,
+      "wit": 1
+    },
+    "baseShield": 3,
+    "abilities": [
+      "repair_burst",
+      "shock_dart"
+    ],
+    "startingItems": [
+      {
+        "itemId": "repair_kit",
+        "qty": 1
+      },
+      {
+        "itemId": "ration_pack",
+        "qty": 1
+      },
+      {
+        "itemId": "water_cell",
+        "qty": 1
+      }
+    ],
+    "startingEquip": {
+      "mainhand": "arc_tool",
+      "armor": "salvage_rig",
+      "utility": "repair_kit"
+    },
+    "powerPools": {
+      "gadget": {
+        "label": "Gadget Charges",
+        "max": 2,
+        "recharge": "longRest"
+      }
+    }
+  }
+]

@@ -1,0 +1,394 @@
+[
+ {
+  "id": "voss_shark",
+  "name": "Voss",
+  "archetype": "shark",
+  "speciesId": "vaylen",
+  "bio": "Quiet. Watchful. Has been at this table longer than the bar has been open.",
+  "bluffFrequency": 0.12,
+  "foldThreshold": 0.28,
+  "aggressionBias": 0.15,
+  "creditReset": 400,
+  "tells": [
+   "Voss's eyes flick to the door for a fraction of a second.",
+   "Voss straightens almost imperceptibly.",
+   "Not a tell. Voss gives nothing."
+  ],
+  "winDialogue": [
+   "\"Expected,\" Voss says, pulling in chips."
+  ],
+  "loseDialogue": [
+   "Voss says nothing. That's almost worse."
+  ],
+  "bustDialogue": [
+   "A single exhale through the nose. That's all you get."
+  ],
+  "gossipDialogue": {
+   "dock_gossip_1": "\"Ship's been in impound since the Civic purge. Six years. Nobody touches it.\" Voss returns to their cards.",
+   "wake_hint_1": "\"Whoever owned that ship in berth nine \u2014 they either ran or they're in the civic body disposal queue.\" Voss deals without looking up."
+  }
+ },
+ {
+  "id": "mira_nervous",
+  "name": "Mira Que",
+  "archetype": "nervous",
+  "speciesId": "human",
+  "bio": "Dockworker, second shift. Gambling to forget the debt. Mostly succeeding at the forgetting part.",
+  "bluffFrequency": 0.05,
+  "foldThreshold": 0.55,
+  "aggressionBias": 0.05,
+  "creditReset": 180,
+  "tells": [
+   "Mira Que taps the table twice with one finger.",
+   "Mira Que glances at her credits.",
+   "Mira Que exhales slowly."
+  ],
+  "winDialogue": [
+   "\"Oh! Oh, okay!\" Mira seems surprised every time."
+  ],
+  "loseDialogue": [
+   "\"Yeah. Yeah, that tracks.\" She pushes her chips over."
+  ],
+  "bustDialogue": [
+   "\"Of course,\" she mutters, \"of course.\""
+  ],
+  "gossipDialogue": {}
+ },
+ {
+  "id": "drek_reckless",
+  "name": "Drek",
+  "archetype": "reckless",
+  "speciesId": "karrox",
+  "bio": "He bets big. He loses big. He laughs either way. The table is more fun when Drek shows up.",
+  "bluffFrequency": 0.42,
+  "foldThreshold": 0.12,
+  "aggressionBias": 0.72,
+  "creditReset": 220,
+  "tells": [
+   "Drek grins. He always grins. It means nothing.",
+   "Drek cracks his knuckles.",
+   "\"Let's make it interesting,\" Drek says to no one."
+  ],
+  "winDialogue": [
+   "\"HA!\" Drek slams the table with one fist. The drinks jump."
+  ],
+  "loseDialogue": [
+   "\"Worth it,\" Drek declares, pushing chips with both hands."
+  ],
+  "bustDialogue": [
+   "\"BEAUTIFUL,\" Drek announces. Nobody else agrees."
+  ],
+  "gossipDialogue": {}
+ },
+ {
+  "id": "kael_drin_gambler",
+  "name": "Kael Drin",
+  "archetype": "shark",
+  "speciesId": "synthel",
+  "bio": "Licensed pilot. Unlicensed hustler. Claims he only plays to pass time between runs.",
+  "bluffFrequency": 0.22,
+  "foldThreshold": 0.33,
+  "aggressionBias": 0.28,
+  "creditReset": 600,
+  "tells": [
+   "Kael Drin checks his cards twice. Just twice.",
+   "Something flickers in Kael's expression \u2014 gone before you can name it.",
+   "Kael tilts his head a few degrees to the left."
+  ],
+  "winDialogue": [
+   "\"Good run,\" Kael says, like it was never in doubt."
+  ],
+  "loseDialogue": [
+   "\"You're better than you look.\" It sounds like a compliment."
+  ],
+  "bustDialogue": [
+   "\"Hm.\" A single syllable. Then he resets."
+  ],
+  "gossipDialogue": {
+   "wake_hint_1": "\"Wake's been impounded since before I got my license,\" Kael says idly. \"Whoever owned it either ran or got buried.\""
+  }
+ },
+ {
+  "id": "commander_vask_off",
+  "name": "Commander Vask (Off Duty)",
+  "archetype": "shark",
+  "speciesId": "human",
+  "bio": "Out of uniform. Uncomfortably good at cards. Knows more than she says, which is already a lot.",
+  "bluffFrequency": 0.18,
+  "foldThreshold": 0.25,
+  "aggressionBias": 0.35,
+  "creditReset": 800,
+  "tells": [
+   "Vask sets her cards face-down with absolute precision.",
+   "A pause \u2014 half a second \u2014 before she bets.",
+   "Vask doesn't look at her cards again. She already knows them."
+  ],
+  "winDialogue": [
+   "\"Discipline,\" Vask says quietly. \"At the table and off it.\""
+  ],
+  "loseDialogue": [
+   "\"Acceptable,\" she says, which means it isn't."
+  ],
+  "bustDialogue": [
+   "Vask says nothing. She marks something mentally and moves on."
+  ],
+  "gossipDialogue": {
+   "impound_hint_1": "\"The ship in berth nine is technically still registered to a living owner,\" Vask says, watching your face. \"Technically.\"",
+   "vask_secret_1": "After the hand, Vask leans forward slightly. \"If someone wanted to make a legitimate claim on that vessel \u2014 quietly \u2014 I might be persuaded to expedite the process.\""
+  }
+ },
+ {
+  "id": "ash_boss_rel",
+  "name": "Rel",
+  "archetype": "reckless",
+  "speciesId": "karrox",
+  "bio": "Runs a crew in Ember Hollow. Respects two things: a good bet and someone who doesn't flinch.",
+  "bluffFrequency": 0.38,
+  "foldThreshold": 0.15,
+  "aggressionBias": 0.65,
+  "creditReset": 500,
+  "tells": [
+   "Rel leans back in his chair.",
+   "Rel drums his fingers \u2014 three taps, then stops.",
+   "\"You sure about that?\" Rel asks, eyes on your bet."
+  ],
+  "winDialogue": [
+   "\"Good game,\" Rel says, and means it."
+  ],
+  "loseDialogue": [
+   "\"Huh.\" A pause. \"Buy the next round and we're square.\""
+  ],
+  "bustDialogue": [
+   "\"AGAIN,\" Rel announces to the ceiling."
+  ],
+  "gossipDialogue": {
+   "ember_convoy_hint": "\"There's a salvage cache two ridges east,\" Rel says between hands. \"Convoy didn't make it through the storm season. Nobody's claimed it official.\""
+  }
+ },
+ {
+  "id": "frontier_del",
+  "name": "Del",
+  "archetype": "nervous",
+  "speciesId": "human",
+  "bio": "Mining surveyor. Lost two fingers to a plasma drill and most of his savings to cards. Still here.",
+  "bluffFrequency": 0.07,
+  "foldThreshold": 0.5,
+  "aggressionBias": 0.08,
+  "creditReset": 200,
+  "tells": [
+   "Del rubs his remaining fingers together.",
+   "Del glances at the pot, then away.",
+   "Del's jaw tightens briefly."
+  ],
+  "winDialogue": [
+   "\"Oh thank the void,\" Del breathes."
+  ],
+  "loseDialogue": [
+   "\"Right. Sure. Fine.\""
+  ],
+  "bustDialogue": [
+   "Del puts his face in his hands for exactly three seconds."
+  ],
+  "gossipDialogue": {}
+ },
+ {
+  "id": "frontier_yara",
+  "name": "Yara",
+  "archetype": "drunk",
+  "speciesId": "morrowkin",
+  "bio": "Came in for one drink. That was last cycle. The cards just kept being interesting.",
+  "bluffFrequency": 0.55,
+  "foldThreshold": 0.22,
+  "aggressionBias": 0.48,
+  "creditReset": 190,
+  "tells": [
+   "Yara laughs at something nobody said.",
+   "Yara's cards drift slightly sideways in her grip.",
+   "\"Wait,\" Yara says, \"whose turn is it?\""
+  ],
+  "winDialogue": [
+   "\"I KNEW it,\" Yara says triumphantly, \"I KNEW it the whole time.\""
+  ],
+  "loseDialogue": [
+   "\"That's \u2014 okay, wait, let me think about this.\""
+  ],
+  "bustDialogue": [
+   "\"That was a strategic bust,\" Yara announces. \"Very strategic.\""
+  ],
+  "gossipDialogue": {}
+ },
+ {
+  "id": "pastor_jim",
+  "name": "Pastor Jim",
+  "archetype": "drunk",
+  "speciesId": "mutoid",
+  "bio": "It's not a sin to drink, is it? Oh wait... is it?! Well, at least it's on a Sunday... is it!?",
+  "bluffFrequency": 0.15,
+  "foldThreshold": 0.35,
+  "aggressionBias": 0.2,
+  "creditReset": 1000,
+  "winDialogue": [
+   "Praise me! I mean, praise the Lord."
+  ],
+  "loseDialogue": [
+   "It's not a sin to drink, is it? Oh wait... is it?!"
+  ],
+  "bustDialogue": [
+   "Goddamn it!"
+  ],
+  "tells": [
+   "I am truly blessed."
+  ]
+ },
+ {
+  "id": "vexa",
+  "name": "Vexa Sorn",
+  "archetype": "shark",
+  "speciesId": "synthel",
+  "bio": "What happens at the table stays at the table.",
+  "bluffFrequency": 0.11,
+  "foldThreshold": 0.3,
+  "aggressionBias": 0.17,
+  "creditReset": 200,
+  "winDialogue": [
+   "Finally!"
+  ],
+  "loseDialogue": [
+   "Who cheated?"
+  ],
+  "bustDialogue": [
+   "It's not my fault! There was a... a breeze."
+  ],
+  "tells": [
+   "Mmmm. These cards rock!"
+  ]
+ },
+ {
+  "id": "boobo",
+  "name": "Boobo",
+  "archetype": "reckless",
+  "speciesId": "mutoid",
+  "bio": "Wait. Boobo has money? And pockets?",
+  "bluffFrequency": 0.19,
+  "foldThreshold": 0.19,
+  "aggressionBias": 0.36,
+  "creditReset": 200,
+  "winDialogue": [
+   "Gooey victory is mine!"
+  ],
+  "loseDialogue": [
+   "Is it over?"
+  ],
+  "bustDialogue": [
+   "I didn't bust! I just had too may."
+  ],
+  "tells": [
+   "Huh?"
+  ]
+ },
+ {
+  "id": "cargo_drone",
+  "name": "Cargo Drone L3M",
+  "archetype": "nervous",
+  "speciesId": "synthel",
+  "bio": "Do we pay the Cargo Drone...?",
+  "bluffFrequency": 0.11,
+  "foldThreshold": 0.29,
+  "aggressionBias": 0.2,
+  "creditReset": 650,
+  "winDialogue": [
+   "Calculated!"
+  ],
+  "loseDialogue": [
+   "But the odds..."
+  ],
+  "bustDialogue": [
+   "Inconceivable!"
+  ],
+  "tells": [
+   "100101001"
+  ]
+ },
+ {
+  "id": "chalk_drifter",
+  "name": "Chalk",
+  "archetype": "nervous",
+  "speciesId": "vaylen",
+  "bio": "Drifted in on a salvage rig three weeks ago. Has not left the billiards corner. Some say she sleeps under the table.",
+  "bluffFrequency": 0.08,
+  "foldThreshold": 0.5,
+  "aggressionBias": 0.1,
+  "creditReset": 350,
+  "tells": [
+   "Chalk rolls the cue between her palms before every shot.",
+   "She blinks exactly twice before a difficult cut.",
+   "Chalk pauses too long on easy shots."
+  ],
+  "winDialogue": [
+   "\"I didn't expect that to work,\" Chalk admits."
+  ],
+  "loseDialogue": [
+   "\"Yeah.\" A pause. \"Yeah, that tracks.\""
+  ],
+  "bustDialogue": [
+   "Chalk stares at the table for a long moment, then sits back down anyway."
+  ],
+  "gossipDialogue": {
+   "pool_dock_rumor": "\"Heard the Wake's been in impound since before the last station audit. Nobody claims it, but somebody keeps paying the storage fee.\" Chalk doesn't look up from chalking her cue."
+  }
+ },
+ {
+  "id": "one_eye_lev",
+  "name": "One-Eye Lev",
+  "archetype": "shark",
+  "speciesId": "karrox",
+  "bio": "Lost the eye in a bar fight over a missed call shot. Claims the depth perception loss improved his game. He might not be wrong.",
+  "bluffFrequency": 0.15,
+  "foldThreshold": 0.25,
+  "aggressionBias": 0.4,
+  "creditReset": 600,
+  "tells": [
+   "Lev tilts his head slightly to use his good eye on a long shot.",
+   "His jaw tightens when he has a clear run.",
+   "Lev never says \"nice shot.\" If he does, check your pockets."
+  ],
+  "winDialogue": [
+   "\"Called it,\" Lev says. He did not, in fact, call it."
+  ],
+  "loseDialogue": [
+   "\"You got lucky on the geometry.\" He means it as a compliment."
+  ],
+  "bustDialogue": [
+   "\"Depth,\" Lev says, pointing at his empty socket. \"Every damn time.\""
+  ],
+  "gossipDialogue": {
+   "pool_wake_tip": "\"If you're looking to move something quiet-like,\" Lev says between shots, \"the ship in berth nine used to run the Glassreef route. Unofficial. Fast. Whoever owns it knew the reef passages.\"\n"
+  }
+ },
+ {
+  "id": "juno_breaks",
+  "name": "Juno",
+  "archetype": "reckless",
+  "speciesId": "human",
+  "bio": "She plays every shot like it's the break. Loves Blitzards with a disturbing enthusiasm. The bottle shatters are her favorite part.",
+  "bluffFrequency": 0.45,
+  "foldThreshold": 0.1,
+  "aggressionBias": 0.8,
+  "creditReset": 220,
+  "tells": [
+   "Juno grins when she's about to do something inadvisable.",
+   "\"Oh THAT's interesting\" means she's about to scratch.",
+   "She leans back before every break like she's about to launch herself."
+  ],
+  "winDialogue": [
+   "\"YES!\" Juno pumps her fist hard enough to nearly knock a drink over."
+  ],
+  "loseDialogue": [
+   "\"Worth it,\" Juno says immediately. \"That ricochet was BEAUTIFUL.\""
+  ],
+  "bustDialogue": [
+   "\"SPECTACULAR,\" Juno announces. She lost. She does not seem to understand this."
+  ],
+  "gossipDialogue": {}
+ }
+]

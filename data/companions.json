@@ -1,0 +1,373 @@
+[
+ {
+  "id": "comp_vesk",
+  "name": "Vexa Sorn",
+  "speciesId": "synthel",
+  "classId": "salvager",
+  "role": "ally",
+  "factionId": "free",
+  "level": 1,
+  "x": 4,
+  "y": 8,
+  "hpMax": 13,
+  "armor": 12,
+  "movement": 6,
+  "abilities": [
+   "repair_burst",
+   "shock_dart"
+  ],
+  "inventory": [
+   {
+    "itemId": "repair_kit",
+    "qty": 1
+   },
+   {
+    "itemId": "ration_pack",
+    "qty": 1
+   }
+  ],
+  "equipped": {
+   "mainhand": "arc_tool",
+   "armor": "salvage_rig",
+   "utility": "repair_kit",
+   "offhand": null,
+   "implant": null,
+   "pack": null
+  },
+  "bio": "Dry-witted salvage prodigy who can repair a reactor, crack a lock, or insult a warlord with equal confidence.",
+  "dialogueId": "vexa_intro",
+  "affinity": 8,
+  "voice": "assets/audio/voice/vexa_intro_001.ogg",
+  "portrait": "assets/images/portraits/vexa.png",
+  "startMapId": "port_sable",
+  "appearance": {
+   "skin": "#8a9bb1",
+   "hair": "#f5f5f5",
+   "accent": "#79d4ff"
+  },
+  "repeatDialogueId": "vexa_ship",
+  "conversationTag": "comp_vesk",
+  "ambientDialogue": [
+   "Vexa is elbow-deep in a panel and talks without looking up.",
+   "\"If it sparks, do not touch it. If it hums, maybe touch it carefully,\" Vexa mutters."
+  ],
+  "stats": {
+   "might": 10,
+   "agility": 10,
+   "grit": 10,
+   "wit": 10,
+   "presence": 10
+  }
+ },
+ {
+  "id": "comp_talon",
+  "name": "Talon Rhyse",
+  "speciesId": "karrox",
+  "classId": "raider",
+  "role": "ally",
+  "factionId": "free",
+  "level": 1,
+  "x": 12,
+  "y": 4,
+  "hpMax": 18,
+  "armor": 13,
+  "movement": 5,
+  "abilities": [
+   "jet_lunge",
+   "adrenal_surge"
+  ],
+  "inventory": [
+   {
+    "itemId": "stunstick",
+    "qty": 1
+   },
+   {
+    "itemId": "ration_pack",
+    "qty": 1
+   }
+  ],
+  "equipped": {
+   "mainhand": "stunstick",
+   "armor": "patch_armor",
+   "utility": null,
+   "offhand": null,
+   "implant": null,
+   "pack": null
+  },
+  "bio": "Former convoy bruiser with a heroic streak he denies whenever possible.",
+  "dialogueId": "talon_intro",
+  "affinity": 4,
+  "voice": "assets/audio/voice/talon_intro_001.ogg",
+  "portrait": "assets/images/portraits/talon.png",
+  "startMapId": "ember_hollow",
+  "appearance": {
+   "skin": "#946a55",
+   "hair": "#311811",
+   "accent": "#ff8e62"
+  },
+  "repeatDialogueId": "talon_test",
+  "conversationTag": "comp_talon",
+  "ambientDialogue": [
+   "Talon checks the perimeter with the expression of a man who expects betrayal on schedule."
+  ]
+ },
+ {
+  "id": "boobo",
+  "name": "Boobo",
+  "speciesId": "mutoid",
+  "classId": "voidseer",
+  "role": "ally",
+  "factionId": "free",
+  "level": 1,
+  "x": 2,
+  "y": 2,
+  "hpMax": 12,
+  "armor": 11,
+  "movement": 6,
+  "abilities": [
+   "drain_essence"
+  ],
+  "inventory": [],
+  "equipped": {
+   "mainhand": null,
+   "offhand": null,
+   "armor": null,
+   "utility": null,
+   "implant": null,
+   "pack": null
+  },
+  "bio": "A mutant who's people fell victim to radioactive fallout somewhere in the verse. Loyal, but skiddish.",
+  "dialogueId": "node_1777145691576",
+  "appearance": {
+   "skin": "#b88e74",
+   "hair": "#2f3d5a",
+   "eyes": "#93d7ff",
+   "accent": "#d2a84b"
+  },
+  "startMapId": "wake_hold",
+  "affinity": 2,
+  "stats": {
+   "might": 12,
+   "agility": 8,
+   "grit": 11,
+   "wit": 8,
+   "presence": 11
+  },
+  "ambientDialogue": [
+   "Boobo may could be daydreaming or having a stroke. It's hard to tell with Boobo. Also, things stick to him, which has it's benefits."
+  ],
+  "visionRange": 5,
+  "facing": {
+   "dx": 0,
+   "dy": -1
+  },
+  "isVendor": true,
+  "vendorInventory": [
+   {
+    "itemId": "boobo_dart",
+    "qty": 10
+   },
+   {
+    "itemId": "credits_chit",
+    "qty": 50
+   }
+  ],
+  "vendorMarkdown": 0.5,
+  "vendorMarkup": 0.5,
+  "vendorGold": 1500
+ },
+ {
+  "id": "torsh_vendor",
+  "name": "Torsh",
+  "speciesId": "karrox",
+  "classId": "raider",
+  "role": "neutral",
+  "factionId": "free",
+  "level": 2,
+  "x": 8,
+  "y": 30,
+  "hpMax": 22,
+  "armor": 12,
+  "movement": 4,
+  "abilities": [],
+  "inventory": [],
+  "equipped": {
+   "mainhand": "stunstick",
+   "offhand": null,
+   "armor": "patch_armor",
+   "utility": null,
+   "implant": null,
+   "pack": null
+  },
+  "bio": "Runs the Sump Bar and a modest trade operation on the side. Does not discuss where the goods come from.",
+  "dialogueId": null,
+  "affinity": 0,
+  "startMapId": "port_sable",
+  "appearance": {
+   "skin": "#7a5a48",
+   "hair": "#1a0e0a",
+   "accent": "#c07a3a"
+  },
+  "ambientDialogue": [
+   "\"What'll it be?\" Torsh doesn't look up from wiping the counter.",
+   "\"Buy something or move along. Space is valuable in here.\"",
+   "Torsh eyes you with the mild suspicion of someone who has seen everything and is impressed by none of it."
+  ],
+  "isVendor": true,
+  "vendorMarkup": 1.35,
+  "vendorMarkdown": 0.4,
+  "vendorGold": 600,
+  "visionRange": 4,
+  "visionAngle": 90,
+  "facing": {
+   "dx": 0,
+   "dy": -1
+  },
+  "vendorInventory": [
+   {
+    "itemId": "lockpick",
+    "qty": 5
+   },
+   {
+    "itemId": "medkit",
+    "qty": 3
+   },
+   {
+    "itemId": "medgel_spray",
+    "qty": 6
+   },
+   {
+    "itemId": "ration_pack",
+    "qty": 8
+   },
+   {
+    "itemId": "canteen",
+    "qty": 4
+   },
+   {
+    "itemId": "water_cell",
+    "qty": 4
+   },
+   {
+    "itemId": "frag_canister",
+    "qty": 3
+   },
+   {
+    "itemId": "smoke_canister",
+    "qty": 3
+   },
+   {
+    "itemId": "scrap_grenade",
+    "qty": 4
+   },
+   {
+    "itemId": "void_cell",
+    "qty": 2
+   },
+   {
+    "itemId": "stasis_pod",
+    "qty": 1
+   },
+   {
+    "itemId": "scrap_pistol",
+    "qty": 2
+   },
+   {
+    "itemId": "stunstick",
+    "qty": 2
+   },
+   {
+    "itemId": "field_coat",
+    "qty": 2
+   },
+   {
+    "itemId": "patch_armor",
+    "qty": 1
+   },
+   {
+    "itemId": "repair_kit",
+    "qty": 3
+   },
+   {
+    "itemId": "credits_chit",
+    "qty": 10
+   },
+   {
+    "itemId": "spice_brick",
+    "qty": 5
+   }
+  ],
+  "stats": {
+   "might": 14,
+   "agility": 8,
+   "grit": 12,
+   "wit": 10,
+   "presence": 11,
+   "tech": 8
+  }
+ },
+ {
+  "id": "shady_sam",
+  "name": "Shady Sam",
+  "speciesId": "human",
+  "classId": "raider",
+  "role": "neutral",
+  "factionId": "void_reavers",
+  "level": 1,
+  "x": 16,
+  "y": 29,
+  "hpMax": 12,
+  "armor": 11,
+  "movement": 6,
+  "abilities": [
+   "shove"
+  ],
+  "inventory": [],
+  "equipped": {
+   "mainhand": null,
+   "offhand": null,
+   "armor": null,
+   "utility": null,
+   "implant": null,
+   "pack": null
+  },
+  "bio": "This guy is shady, but has good luck finding things that \"fell off a truck\".",
+  "dialogueId": "node_1777663705389",
+  "appearance": {
+   "skin": "#b88e74",
+   "hair": "#2f3d5a",
+   "eyes": "#93d7ff",
+   "accent": "#d2a84b"
+  },
+  "startMapId": "port_sable",
+  "affinity": 0,
+  "isVendor": true,
+  "facing": {
+   "dx": -1,
+   "dy": 0
+  },
+  "repeatDialogueId": "node_1777663705389",
+  "ambientDialogue": [
+   "My wife is gonna be pissed!"
+  ],
+  "vendorGold": 500,
+  "vendorInventory": [
+   {
+    "itemId": "psi_mesh",
+    "qty": 5
+   },
+   {
+    "itemId": "ration_pack",
+    "qty": 5
+   },
+   {
+    "itemId": "impound_key",
+    "qty": 1
+   },
+   {
+    "itemId": "salvage_rig",
+    "qty": 2
+   }
+  ]
+ }
+]

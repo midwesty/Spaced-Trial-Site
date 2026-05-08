@@ -1,0 +1,96 @@
+[
+ {
+  "id": "stealthed",
+  "name": "Stealthed",
+  "category": "combat",
+  "description": "Harder to notice. Breaks on aggressive action."
+ },
+ {
+  "id": "bleeding",
+  "name": "Bleeding",
+  "category": "combat",
+  "description": "Loses health each combat round until treated."
+ },
+ {
+  "id": "irradiated",
+  "name": "Irradiated",
+  "category": "hazard",
+  "description": "Toxic energy exposure raises long-term damage risk."
+ },
+ {
+  "id": "staggered",
+  "name": "Staggered",
+  "category": "combat",
+  "description": "Disoriented and easier to pressure."
+ },
+ {
+  "id": "inspired",
+  "name": "Inspired",
+  "category": "combat",
+  "description": "Bonus morale and confidence."
+ },
+ {
+  "id": "fortified",
+  "name": "Fortified",
+  "category": "combat",
+  "description": "Reduced panic, braced posture."
+ },
+ {
+  "id": "steadfast",
+  "name": "Steadfast",
+  "category": "combat",
+  "description": "Harder to down through pain or fear."
+ },
+ {
+  "id": "hasted",
+  "name": "Hasted",
+  "category": "combat",
+  "description": "Temporarily accelerated reactions."
+ },
+ {
+  "id": "shaken",
+  "name": "Shaken",
+  "category": "combat",
+  "description": "Confidence rattled by fear or psychic pressure."
+ },
+ {
+  "id": "scarred-survivor",
+  "name": "Scarred Survivor",
+  "category": "origin",
+  "description": "You are harder to break after near-death experiences."
+ },
+ {
+  "id": "clean-killer",
+  "name": "Clean Killer",
+  "category": "origin",
+  "description": "Violence comes easy, and your face barely changes when it happens."
+ },
+ {
+  "id": "saint-of-nowhere",
+  "name": "Saint of Nowhere",
+  "category": "origin",
+  "description": "People trust you more than they should."
+ },
+ {
+  "id": "void-touched",
+  "name": "Void-Touched",
+  "category": "origin",
+  "description": "Anomalies recognize something in you, and that is not comforting."
+ },
+ {
+  "id": "blinded",
+  "name": "Blinded",
+  "category": "debuff",
+  "description": "Character can't see and has disadvantage.",
+  "duration": 3,
+  "stackable": false
+ },
+ {
+  "id": "bloated",
+  "name": "Bloated",
+  "category": "debuff",
+  "description": "Bloated to the point of discomfort leading to encumberment and disadvantage on save throws. ",
+  "duration": 3,
+  "stackable": true
+ }
+]

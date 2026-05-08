@@ -1,0 +1,174 @@
+[
+ {
+  "id": "main_awake",
+  "name": "The Wake Claim",
+  "category": "Main",
+  "description": "Survive the station slaughter, secure the hidden smuggler ship, gather a crew, and get out before Port Sable decides you belong in a body chute.",
+  "stages": [
+   {
+    "text": "Escape the drydock gunfight and reach the hidden berth.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "acquiredWake"
+     }
+    ],
+    "onAdvanceLog": "The berth seals groan open around the hidden ship."
+   },
+   {
+    "text": "Claim the Scavenger's Wake and get it spaceworthy.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "tutorialComplete"
+     }
+    ],
+    "onAdvanceLog": "The Wake is yours. Now you need somewhere worth running to."
+   },
+   {
+    "text": "Choose your first jump: Ember Hollow or Glassreef.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "takeOff"
+     }
+    ],
+    "onAdvanceLog": "You leave Port Sable behind and commit to a trail."
+   },
+   {
+    "text": "Learn why someone on Port Sable wanted the ship buried."
+   }
+  ],
+  "completeIf": [
+   {
+    "type": "flag",
+    "key": "learnedShipSecret"
+   }
+  ]
+ },
+ {
+  "id": "side_debt",
+  "name": "Ashes of a Bad Loan",
+  "category": "Side",
+  "description": "A local fixer wants a ledger recovered before station enforcers burn it.",
+  "stages": [
+   {
+    "text": "Find the debtor locker in Port Sable's lower vents.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "has_debt_ledger"
+     }
+    ],
+    "onAdvanceLog": "You've found the ledger. Now you have to decide what to do with it."
+   },
+   {
+    "text": "Choose who gets the ledger.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "debt_ledger_turned_in"
+     }
+    ],
+    "onAdvanceLog": "You did what you had to do to get the Wake flying again. You handed over the ledger."
+   }
+  ],
+  "completeIf": [
+   {
+    "type": "flag",
+    "key": "debt_ledger_turned_in"
+   }
+  ]
+ },
+ {
+  "id": "comp_vexa",
+  "name": "Patchwork Loyalties",
+  "category": "Companion",
+  "description": "Vexa's old salvage crew sold her out for civic immunity.",
+  "stages": [
+   {
+    "text": "Hear Vexa out once the ship is yours.",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "talked_comp_vesk"
+     }
+    ]
+   },
+   {
+    "text": "Track the crew's fence through Ember Hollow."
+   }
+  ],
+  "completeIf": [
+   {
+    "type": "flag",
+    "key": "vexa_fence_found"
+   }
+  ]
+ },
+ {
+  "id": "comp_talon",
+  "name": "Convoy of One",
+  "category": "Companion",
+  "description": "Talon has unfinished business with the raider crews haunting Ember Hollow.",
+  "stages": [
+   {
+    "text": "Recruit Talon and learn what happened to his convoy.",
+    "onAdvanceLog": "Decide how to help Talon with his Boss Krail problem."
+   },
+   {
+    "text": "Put down Boss Krail and decide who gets the salvage."
+   }
+  ],
+  "completeIf": [
+   {
+    "type": "flag",
+    "key": "talon_convoy_settled"
+   }
+  ]
+ },
+ {
+  "id": "bad_breath",
+  "name": "Bad Breath",
+  "category": "Side",
+  "description": "You are now self-conscious about your possible halitosis. You've heard montroot is a good home-remedy...",
+  "stages": [
+   {
+    "text": "Sally told you where montroot grows natrually.",
+    "onAdvanceLog": "Look out for montroot!",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "found_montroot"
+     }
+    ]
+   },
+   {
+    "text": "Found Montroot!",
+    "onAdvanceLog": "You found montroot to threat your halitosis",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "found_montroot"
+     }
+    ]
+   },
+   {
+    "text": "Eat the montroot",
+    "onAdvanceLog": "Eat the montroot",
+    "autoAdvanceIf": [
+     {
+      "type": "flag",
+      "key": "used_montroot"
+     }
+    ]
+   }
+  ],
+  "completeIf": [
+   {
+    "type": "flag",
+    "key": "used_montroot"
+   }
+  ]
+ }
+]

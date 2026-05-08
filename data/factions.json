@@ -1,0 +1,22 @@
+[
+  {
+    "id": "free",
+    "name": "The Unbound",
+    "description": "Smugglers, drifters, dock-hands, runners, and anyone else too useful or too annoying to control."
+  },
+  {
+    "id": "station_civic",
+    "name": "Port Sable Civic Authority",
+    "description": "Underfunded station governance with a badge on one hand and a bribe list in the other."
+  },
+  {
+    "id": "void_reavers",
+    "name": "Void Reavers",
+    "description": "Scavenger-pirates who mistake cruelty for charisma."
+  },
+  {
+    "id": "reef_conclave",
+    "name": "Reef Conclave",
+    "description": "An inward-looking Glassreef order preserving old transit relics and stranger secrets."
+  }
+]

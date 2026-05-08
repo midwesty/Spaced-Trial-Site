@@ -1,0 +1,91 @@
+[
+ {
+  "id": "sump_jukebox",
+  "name": "The Void Box",
+  "location": "Port Sable · Sump Bar, near the back",
+  "mapId": "port_sable",
+  "tileX": 10,
+  "tileY": 20,
+  "atmosphere": "dim",
+  "costPerSong": 1,
+  "songSlots": 10,
+  "requiredFlag": null,
+  "gossip": [
+   "Someone keeps queuing that same track. Nobody's complaining though.",
+   "The bartender says this thing hasn't broken in eleven years. The bartender is a liar.",
+   "Last week someone played seven songs in a row. Bought every round too."
+  ],
+  "songs": [
+   {
+    "title": "Hard Up and Stoned (in space)",
+    "artist": "M. Clay Space",
+    "genre": "Star Strum",
+    "duration": "1:05",
+    "file": "spaced/assets/audio/jukebox/Hard Up and Stoned (in space).wav"
+   },
+   {
+    "title": "The Fuckin' Slug ",
+    "artist": "The Slugs",
+    "genre": "Braincore",
+    "duration": "2:23",
+    "file": "spaced/assets/audio/jukebox/The Fuckin' Slug.mp3"
+   },
+   {
+    "title": "Shower Song",
+    "artist": "M. Clay Space (feat. Lil Uranus)",
+    "genre": "Asteroid Folk",
+    "duration": "0:53",
+    "file": "spaced/assets/audio/jukebox/Shower Song.mp3"
+   },
+   {
+    "title": "Fuel & Static",
+    "artist": "DJ Kael",
+    "genre": "Electronic",
+    "duration": "3:12",
+    "file": "spaced/assets/audio/jukebox/fuel_and_static.mp3"
+   },
+   {
+    "title": "Into the Dark Sector",
+    "artist": "Phantom Drive",
+    "genre": "Dark Ambient",
+    "duration": "6:18",
+    "file": "assets/audio/jukebox/dark_sector.mp3"
+   },
+   {
+    "title": "Scavenger's Waltz",
+    "artist": "The Wake Band",
+    "genre": "Space Folk",
+    "duration": "3:55",
+    "file": "assets/audio/jukebox/scavengers_waltz.mp3"
+   },
+   {
+    "title": "Pulse Grid",
+    "artist": "RVKT",
+    "genre": "Industrial",
+    "duration": "4:08",
+    "file": "assets/audio/jukebox/pulse_grid.mp3"
+   },
+   {
+    "title": "Last Known Position",
+    "artist": "Voss & The Nomads",
+    "genre": "Outlaw Country",
+    "duration": "4:44",
+    "file": "assets/audio/jukebox/last_known_position.mp3"
+   },
+   {
+    "title": "Chromatic Rust",
+    "artist": "Static Choir",
+    "genre": "Post-Rock",
+    "duration": "5:30",
+    "file": "assets/audio/jukebox/chromatic_rust.mp3"
+   },
+   {
+    "title": "Void Hymn No. 3",
+    "artist": "Unknown",
+    "genre": "Ceremonial",
+    "duration": "7:01",
+    "file": "assets/audio/jukebox/void_hymn_3.mp3"
+   }
+  ]
+ }
+]

@@ -1,0 +1,3868 @@
+{
+ "nodes": {
+  "intro_station_master": {
+   "speaker": "Unknown Voice",
+   "text": "You found the wrong berth on the worst possible day. Good news: the ship still flies. Bad news: half the station wants you dead, and the other half wants the bounty.",
+   "choices": [
+    {
+     "label": "Who are you?",
+     "target": "intro_station_master_who"
+    },
+    {
+     "label": "Then we take the ship and leave.",
+     "check": {
+      "stat": "presence",
+      "dc": 11
+     },
+     "target": "intro_station_master_take",
+     "failTarget": "intro_station_master_fail"
+    },
+    {
+     "label": "I want details before I trust a whisper in the dark.",
+     "check": {
+      "stat": "wit",
+      "dc": 12
+     },
+     "target": "intro_station_master_detail",
+     "failTarget": "intro_station_master_fail"
+    }
+   ]
+  },
+  "intro_station_master_who": {
+   "speaker": "Unknown Voice",
+   "text": "Call me the berth ghost. I kept this crate hidden until someone meaner than me started looking for it. That happened ten minutes ago.",
+   "choices": [
+    {
+     "label": "Fine. We move now.",
+     "target": "intro_station_master_take",
+     "effects": {
+      "shipOwned": true,
+      "setFlag": "acquiredWake",
+      "questAdvance": {
+       "id": "main_awake",
+       "stage": 1
+      },
+      "log": "The hidden berth unlocks with a shriek of old seals."
+     }
+    },
+    {
+     "label": "This feels like a trap.",
+     "target": "intro_station_master_fail"
+    }
+   ]
+  },
+  "intro_station_master_take": {
+   "speaker": "Unknown Voice",
+   "text": "Finally. Grab the salvage tech by the coolant stack if you want the engines lit before security drills through the hull. And if she mouths off, that means she likes you.",
+   "choices": [
+    {
+     "label": "Understood. Move.",
+     "target": null,
+     "effects": {
+      "shipOwned": true,
+      "joinParty": false
+     }
+    },
+    {
+     "label": "You had me at 'engines lit.'",
+     "target": null,
+     "effects": {
+      "shipOwned": true
+     }
+    }
+   ]
+  },
+  "intro_station_master_detail": {
+   "speaker": "Unknown Voice",
+   "text": "The ship was used to smuggle pre-collapse relics, living cargo, and one thing nobody names out loud. Whoever controlled it disappeared. Whoever finds it next gets hunted.",
+   "choices": [
+    {
+     "label": "Then let's earn the hunt.",
+     "target": "intro_station_master_take",
+     "effects": {
+      "affinity": 2
+     }
+    },
+    {
+     "label": "I hate this already.",
+     "target": "intro_station_master_take"
+    }
+   ]
+  },
+  "intro_station_master_fail": {
+   "speaker": "Unknown Voice",
+   "text": "You can doubt me on your own time. Right now, boots are coming down the catwalk and those people do not negotiate.",
+   "choices": [
+    {
+     "label": "Move.",
+     "target": "intro_station_master_take"
+    }
+   ]
+  },
+  "vexa_intro": {
+   "speaker": "Vexa Sorn",
+   "text": "Let me guess. You touched the cursed ship, made eye contact with death, and now you're hoping I'm the kind of idiot who can fix both. Annoying for you: I actually can.",
+   "choices": [
+    {
+     "label": "Join me and keep us alive.",
+     "check": {
+      "stat": "presence",
+      "dc": 10
+     },
+     "target": "vexa_join",
+     "failTarget": "vexa_notyet"
+    },
+    {
+     "label": "What broke on the ship?",
+     "target": "vexa_ship"
+    },
+    {
+     "label": "You always this charming?",
+     "target": "vexa_flirt",
+     "effects": {
+      "affinity": 2,
+      "romance": 1
+     }
+    }
+   ]
+  },
+  "vexa_join": {
+   "speaker": "Vexa Sorn",
+   "text": "Fine. I get a bunk, first pick of interesting scrap, and veto power if you try to fly this coffin without enough coolant again.",
+   "choices": [
+    {
+     "label": "Deal.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "questAdvance": {
+       "id": "comp_vexa",
+       "stage": 0
+      },
+      "affinity": 4
+     }
+    },
+    {
+     "label": "You drive a hard bargain.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 3
+     }
+    }
+   ]
+  },
+  "vexa_notyet": {
+   "speaker": "Vexa Sorn",
+   "text": "Cute speech. Try again after you survive one firefight and stop smelling like coolant panic.",
+   "choices": [
+    {
+     "label": "Fair enough.",
+     "target": null
+    }
+   ]
+  },
+  "vexa_ship": {
+   "speaker": "Vexa Sorn",
+   "text": "Core bleed, fuel slosh, vent ghosts, and a nav ghost that either needs prayer or a soldering gun. Mostly fixable. Probably.",
+   "choices": [
+    {
+     "label": "You said 'probably' too casually.",
+     "target": "vexa_join"
+    },
+    {
+     "label": "I like your confidence.",
+     "target": "vexa_flirt",
+     "effects": {
+      "affinity": 1
+     }
+    }
+   ]
+  },
+  "vexa_flirt": {
+   "speaker": "Vexa Sorn",
+   "text": "Don't flirt with me while the station is trying to kill us. Or do. I respect terrible timing.",
+   "choices": [
+    {
+     "label": "Then stay close.",
+     "target": "vexa_join",
+     "effects": {
+      "romance": 1
+     }
+    },
+    {
+     "label": "I'll save the line for later.",
+     "target": "vexa_join",
+     "effects": {
+      "affinity": 1
+     }
+    }
+   ]
+  },
+  "talon_intro": {
+   "speaker": "Talon Rhyse",
+   "text": "Your ship landed in the middle of my problem. Lucky for you, I don't charge rescue rates until the second incident.",
+   "choices": [
+    {
+     "label": "Help me, and I'll get you off this moon.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "talon_join",
+     "failTarget": "talon_test"
+    },
+    {
+     "label": "You look like you enjoy violence. Need work?",
+     "target": "talon_join",
+     "effects": {
+      "affinity": 1
+     }
+    },
+    {
+     "label": "Nice armor. Loot it from a corpse or a bad idea?",
+     "target": "talon_flirt",
+     "effects": {
+      "affinity": 2,
+      "romance": 1
+     }
+    }
+   ]
+  },
+  "talon_test": {
+   "speaker": "Talon Rhyse",
+   "text": "Not convinced. Kill the raider boss up the ridge and we can revisit your recruitment pitch.",
+   "choices": [
+    {
+     "label": "Fair.",
+     "target": null
+    }
+   ]
+  },
+  "talon_join": {
+   "speaker": "Talon Rhyse",
+   "text": "Fine. But if your command style is 'improvise and bleed,' say so now and save me the surprise.",
+   "choices": [
+    {
+     "label": "I prefer 'adapt and win.'",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 3
+     }
+    },
+    {
+     "label": "Bleeding is part of the vibe.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 1,
+      "romance": 1
+     }
+    }
+   ]
+  },
+  "talon_flirt": {
+   "speaker": "Talon Rhyse",
+   "text": "Depends which piece of armor you're admiring. Careful, commander. I might assume that's a line.",
+   "choices": [
+    {
+     "label": "It is.",
+     "target": "talon_join",
+     "effects": {
+      "romance": 1
+     }
+    },
+    {
+     "label": "Maybe later.",
+     "target": "talon_join",
+     "effects": {
+      "affinity": 1
+     }
+    }
+   ]
+  },
+  "dock_scav_intro": {
+   "speaker": "Dax Renn",
+   "text": "If you are here to loot the berth, get in line. If you are here to survive, the vents still have a way through. The corpses figured that out too late.",
+   "choices": [
+    {
+     "label": "What is in the vents?",
+     "target": "dock_scav_vents"
+    },
+    {
+     "label": "Seen a ledger or a civic burn order?",
+     "target": "dock_scav_ledger"
+    },
+    {
+     "label": "Stay alive, Dax.",
+     "target": null,
+     "effects": {
+      "setFlag": "talked_dock_scav_1"
+     }
+    }
+   ]
+  },
+  "dock_scav_vents": {
+   "speaker": "Dax Renn",
+   "text": "Debtor lockers, coolant drip, one or two desperate runners. There is a hidden crawl entrance in the northwest catwalk rail if you do not mind grime and regret.",
+   "choices": [
+    {
+     "label": "Good enough.",
+     "target": null,
+     "effects": {
+      "setFlag": "heard_vents_route"
+     }
+    }
+   ]
+  },
+  "dock_scav_ledger": {
+   "speaker": "Dax Renn",
+   "text": "A fixer named Naia Voss has been buying up debt slates before civic can torch them. If there is money in your future, she is sniffing around the south gantry.",
+   "choices": [
+    {
+     "label": "Point me at her.",
+     "target": null,
+     "effects": {
+      "setFlag": "heard_naia_tip",
+      "questAdvance": {
+       "id": "side_debt",
+       "stage": 0
+      }
+     }
+    }
+   ]
+  },
+  "dock_scav_repeat": {
+   "speaker": "Dax Renn",
+   "text": "The vents are ugly, the fixers are liars, and the dead are not getting less dead. That is my update.",
+   "choices": [
+    {
+     "label": "Thanks.",
+     "target": null
+    }
+   ]
+  },
+  "civic_enforcer_intro": {
+   "speaker": "Officer Merik",
+   "text": "This dock is under civic hold. Turn around, keep your hands visible, and maybe I pretend I never saw your face. Maybe.",
+   "choices": [
+    {
+     "label": "We are just passing through.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "civic_enforcer_warn",
+     "failTarget": "civic_enforcer_threat"
+    },
+    {
+     "label": "What happened here?",
+     "target": "civic_enforcer_info"
+    },
+    {
+     "label": "Make me.",
+     "target": null,
+     "effects": {
+      "setFlag": "angered_merik",
+      "log": "Officer Merik reaches for his sidearm."
+     }
+    }
+   ]
+  },
+  "civic_enforcer_warn": {
+   "speaker": "Officer Merik",
+   "text": "Then pass faster. And stay out of the restricted lane unless you enjoy paperwork and blood loss in equal measure.",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null,
+     "effects": {
+      "setFlag": "merik_warned"
+     }
+    }
+   ]
+  },
+  "civic_enforcer_threat": {
+   "speaker": "Officer Merik",
+   "text": "Wrong answer. One more bad choice and this becomes an arrest.",
+   "choices": [
+    {
+     "label": "We are leaving.",
+     "target": null
+    },
+    {
+     "label": "Noted.",
+     "target": null
+    }
+   ]
+  },
+  "civic_enforcer_info": {
+   "speaker": "Officer Merik",
+   "text": "Smuggler berth popped open, scavenger killers moved in, civic got blamed for not seeing it sooner. Now everyone is armed and offended.",
+   "choices": [
+    {
+     "label": "That sounds like Port Sable.",
+     "target": null,
+     "effects": {
+      "affinity": 1
+     }
+    }
+   ]
+  },
+  "civic_enforcer_repeat": {
+   "speaker": "Officer Merik",
+   "text": "Move along, commander. My patience is not a public utility.",
+   "choices": [
+    {
+     "label": "Fine.",
+     "target": null
+    }
+   ]
+  },
+  "naia_intro": {
+   "speaker": "Naia Voss",
+   "text": "You look like someone who needs credits before their luck finishes rotting. I need a ledger pulled from the lower vents before civic ash-cans it.",
+   "choices": [
+    {
+     "label": "What is it worth?",
+     "target": "naia_terms"
+    },
+    {
+     "label": "I will get your ledger.",
+     "target": null,
+     "effects": {
+      "setFlag": "accepted_side_debt",
+      "questAdvance": {
+       "id": "side_debt",
+       "stage": 0
+      },
+      "log": "Naia marks a vent route on your pad."
+     }
+    },
+    {
+     "label": "Not my problem.",
+     "target": null
+    }
+   ]
+  },
+  "naia_terms": {
+   "speaker": "Naia Voss",
+   "text": "Two hundred credits, one favor later, and the satisfaction of ruining the right person's week. The locker is tagged RED-9 in the vent maze.",
+   "choices": [
+    {
+     "label": "Deal.",
+     "target": null,
+     "effects": {
+      "setFlag": [
+       "accepted_side_debt",
+       "heard_red9"
+      ],
+      "questAdvance": {
+       "id": "side_debt",
+       "stage": 0
+      }
+     }
+    },
+    {
+     "label": "I will think about it.",
+     "target": null
+    }
+   ]
+  },
+  "naia_repeat": {
+   "speaker": "Naia Voss",
+   "text": "RED-9. Lower vents. Do not let civic cremate the paper before I do something profitable with it.",
+   "choices": [
+    {
+     "label": "Working on it.",
+     "target": null
+    },
+    {
+     "label": "I found your ledger.",
+     "target": "naia_ledger_turnin"
+    }
+   ]
+  },
+  "naia_ledger_turnin": {
+   "speaker": "Naia Voss",
+   "text": "There it is. Half the station owes me for this little slab of misery. Hand it over and I pay on the spot.",
+   "choices": [
+    {
+     "label": "Take it.",
+     "target": null,
+     "effects": {
+      "resource": {
+       "credits": 200
+      },
+      "setFlag": "debt_ledger_turned_in",
+      "completeQuest": "side_debt",
+      "log": "Naia transfers the credits without smiling."
+     }
+    },
+    {
+     "label": "Not yet.",
+     "target": null
+    }
+   ]
+  },
+  "vent_runner_intro": {
+   "speaker": "Orin Pike",
+   "text": "Easy! I am not armed enough to die over a locker. You are after RED-9 too, right? Civic already turned this place over once.",
+   "choices": [
+    {
+     "label": "What do you know?",
+     "target": "vent_runner_info"
+    },
+    {
+     "label": "Back away from the locker.",
+     "target": "vent_runner_backoff"
+    },
+    {
+     "label": "Relax. I just need the ledger.",
+     "target": "vent_runner_share"
+    }
+   ]
+  },
+  "vent_runner_info": {
+   "speaker": "Orin Pike",
+   "text": "There is a civic burn order attached to that slate. Whoever held the debts did not want them surviving the week. Also, something in the back tunnel hates light.",
+   "choices": [
+    {
+     "label": "Useful.",
+     "target": null,
+     "effects": {
+      "setFlag": [
+       "met_orin",
+       "heard_burn_order"
+      ]
+     }
+    }
+   ]
+  },
+  "vent_runner_backoff": {
+   "speaker": "Orin Pike",
+   "text": "Oh, gladly. Heroism is for people with replacement organs.",
+   "choices": [
+    {
+     "label": "Move.",
+     "target": null,
+     "effects": {
+      "setFlag": "orin_backed_off"
+     }
+    }
+   ]
+  },
+  "vent_runner_share": {
+   "speaker": "Orin Pike",
+   "text": "\"Still alive, still underground.\" He's tracking a ceiling pipe for a reason he won't explain. \"The Reaver who's been moving crates through the vents stopped three days ago. That either means they're done or they found a better route. Neither option is comfortable.\"",
+   "choices": [
+    {
+     "label": "What were they moving?",
+     "target": "orin_moving"
+    },
+    {
+     "label": "Keep an eye on it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "wake_drone_intro": {
+   "speaker": "Cargo Drone L3M",
+   "text": "Shipboard inventory advisory: unsecured freight, sealed smuggler hold, and one reactor bypass key hidden by someone with trust issues.",
+   "choices": [
+    {
+     "label": "Where is the key?",
+     "target": "wake_drone_key"
+    },
+    {
+     "label": "Open a cargo manifest.",
+     "target": "wake_drone_manifest"
+    }
+   ]
+  },
+  "wake_drone_key": {
+   "speaker": "Cargo Drone L3M",
+   "text": "Bypass key registered to Hold Locker B. The compartment was not on the official manifest, which means it is definitely interesting.",
+   "choices": [
+    {
+     "label": "I will check it.",
+     "target": null,
+     "effects": {
+      "setFlag": "heard_reactor_key"
+     }
+    }
+   ]
+  },
+  "wake_drone_manifest": {
+   "speaker": "Cargo Drone L3M",
+   "text": "Manifest includes ration crates, dry coolant coils, contraband spice, and three entries redacted so aggressively I am offended.",
+   "choices": [
+    {
+     "label": "Helpful, thanks.",
+     "target": null
+    }
+   ]
+  },
+  "wake_drone_repeat": {
+   "speaker": "Cargo Drone L3M",
+   "text": "Reminder: unsecured freight becomes floor freight during hard turns. This has been a safety notice.",
+   "choices": [
+    {
+     "label": "Noted.",
+     "target": null
+    }
+   ]
+  },
+  "ember_scout_intro": {
+   "speaker": "Sera Flint",
+   "text": "You are not from Hollow. Good. Everyone local is either desperate or pretending not to be. Watch the ridge — Krail runs spotters before he runs raids.",
+   "choices": [
+    {
+     "label": "Who is Krail?",
+     "target": "ember_scout_krail"
+    },
+    {
+     "label": "Need a hand?",
+     "target": "ember_scout_help"
+    }
+   ]
+  },
+  "ember_scout_krail": {
+   "speaker": "Sera Flint",
+   "text": "Ash raider boss. Mean, superstitious, and convinced your ship came here for him personally. He has a fence working the camps too.",
+   "choices": [
+    {
+     "label": "I will keep that in mind.",
+     "target": null,
+     "effects": {
+      "setFlag": [
+       "heard_krail",
+       "vexa_fence_found"
+      ]
+     }
+    }
+   ]
+  },
+  "ember_scout_help": {
+   "speaker": "Sera Flint",
+   "text": "You can start by killing fewer miners than the raiders do. After that, we improvise.",
+   "choices": [
+    {
+     "label": "Fair.",
+     "target": null
+    }
+   ]
+  },
+  "ember_scout_repeat": {
+   "speaker": "Sera Flint",
+   "text": "Sand in the lungs, raiders on the ridge, and strangers with ships asking questions. Same ugly day.",
+   "choices": [
+    {
+     "label": "Stay sharp.",
+     "target": null
+    }
+   ]
+  },
+  "glassreef_watcher_repeat": {
+   "speaker": "Reef Watcher",
+   "text": "The old transit hum has changed since you arrived. That is either hopeful or catastrophic.",
+   "choices": [
+    {
+     "label": "Comforting.",
+     "target": null
+    }
+   ]
+  },
+  "archivist_intro": {
+   "speaker": "Archivist Pell",
+   "text": "If you touched anything glowing on the way in, please tell me now so I can worry in the correct direction. The archive has survived worse visitors, but not by much.",
+   "choices": [
+    {
+     "label": "What is this place?",
+     "target": "archivist_place"
+    },
+    {
+     "label": "I found an idol in the flooded stacks.",
+     "target": "archivist_idol"
+    },
+    {
+     "label": "Any work worth taking?",
+     "target": "archivist_work"
+    }
+   ]
+  },
+  "archivist_place": {
+   "speaker": "Archivist Pell",
+   "text": "Glassreef kept moving even after the city drowned. These records tell us who, what, and sometimes why. Mostly they tell us how bad the old world lied.",
+   "choices": [
+    {
+     "label": "Sounds familiar.",
+     "target": null
+    }
+   ]
+  },
+  "archivist_idol": {
+   "speaker": "Archivist Pell",
+   "text": "That transit idol should be in a sealed niche, which means someone opened the wrong chamber or the chamber opened itself. Neither theory is restful.",
+   "choices": [
+    {
+     "label": "Take it.",
+     "target": null,
+     "effects": {
+      "resource": {
+       "credits": 120
+      },
+      "setFlag": "learnedShipSecret",
+      "completeQuest": "main_awake",
+      "log": "Pell pays for the idol and shares a troubling transit record."
+     }
+    },
+    {
+     "label": "I am keeping it.",
+     "target": null
+    }
+   ]
+  },
+  "archivist_work": {
+   "speaker": "Archivist Pell",
+   "text": "There is always work if you can tolerate mildew, ghosts in the transit rails, and other people's secrets.",
+   "choices": [
+    {
+     "label": "Maybe later.",
+     "target": null
+    }
+   ]
+  },
+  "archivist_repeat": {
+   "speaker": "Archivist Pell",
+   "text": "If you find any pre-collapse transit seals, bring them dry and unbroken. I am tired of reconstructing history from mud.",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null
+    }
+   ]
+  },
+  "hess_intro": {
+   "speaker": "Dock Warden Hess",
+   "text": "Hess doesn't look up from her ledger right away. When she does, she goes very still. \"Huh. Either I've lost my mind, or Port Sable just got considerably more interesting. You'd better have a berth code or a very good story.\"",
+   "choices": [
+    {
+     "label": "I'm looking for a ship called the Scavenger's Wake.",
+     "target": "hess_wake"
+    },
+    {
+     "label": "Have we met before?",
+     "target": "hess_seenyou"
+    },
+    {
+     "label": "Just passing through. What do I need to know about this station?",
+     "target": "hess_overview"
+    },
+    {
+     "label": "I don't answer to dock wardens.",
+     "check": {
+      "stat": "presence",
+      "dc": 13
+     },
+     "target": "hess_pushback_pass",
+     "failTarget": "hess_pushback_fail"
+    }
+   ]
+  },
+  "hess_wake": {
+   "speaker": "Dock Warden Hess",
+   "text": "That gets her full attention. She closes the ledger. \"Berth E-7. Civic Impound. Been there six years, three months, twelve days. I know because I log every ship on this station and that one has been a headache since day one. You'll need Rudo's key, a launch window from the Registry, and someone the civic nav system trusts. All three. No shortcuts.\"",
+   "choices": [
+    {
+     "label": "Who impounded it?",
+     "target": "hess_impound_story"
+    },
+    {
+     "label": "Where do I find Rudo?",
+     "target": "hess_rudo_pointer"
+    },
+    {
+     "label": "What happened to the crew?",
+     "target": "hess_crew"
+    },
+    {
+     "label": "Understood. I'll figure it out.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_noted_wake"
+    }
+   ]
+  },
+  "hess_wake_crew": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Crew scattered. One stayed — a synthel tech, Vexa something. She's been on the station ever since, doing salvage work. The others... left fast. The kind of fast that means they were afraid of something catching up.\"",
+   "choices": [
+    {
+     "label": "Where's Vexa now?",
+     "target": "hess_vexa_loc"
+    },
+    {
+     "label": "Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_vexa_loc": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Cargo district, mostly. Sometimes the market. Hard to miss — she's the one who looks annoyed by everything and is usually right.\"",
+   "choices": [
+    {
+     "label": "Good to know.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_impound_story": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Commander Vask signed the impound order personally. Six years ago. Said it was outstanding race violations and unpaid port fees.\" She pauses. \"That's the official reason. The unofficial reason is above my clearance. But I've worked this dock long enough to know when an impound order is about keeping a ship quiet, not keeping it legal.\"",
+   "choices": [
+    {
+     "label": "What do you think the real reason is?",
+     "target": "hess_realreason"
+    },
+    {
+     "label": "Interesting. Thanks, Warden.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_realreason": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"I think someone didn't want that ship leaving Port Sable. I think whoever ordered the impound was scared of where it was going next.\" She opens her ledger again. \"That's just my opinion. I'm a dock warden. My opinions don't show up in official records.\"",
+   "choices": [
+    {
+     "label": "I appreciate the honesty.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_appreciated"
+    }
+   ]
+  },
+  "hess_rudo_pointer": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Impound bay checkpoint, far end of Berth Row. He processes the paperwork, keeps the keys. He's also three hundred credits into Davi the Fence at the market.\" She says it like she's mentioning the weather. \"Not that that's relevant.\"",
+   "choices": [
+    {
+     "label": "Got it. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_crew": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Crew scattered after impound. One stayed — Vexa, the ship's tech. She's around the station somewhere, doing salvage work.\"",
+   "choices": [
+    {
+     "label": "Where can I find her?",
+     "target": "hess_vexa_loc"
+    },
+    {
+     "label": "Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_seenyou": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Three years ago. Someone with your face came through this dock. Same walk, same way of looking at things like you're calculating something.\" She studies you. \"But different. Something was... settled in him. Like a person who'd already made all the hard choices and was living with them. You don't look settled at all.\"",
+   "choices": [
+    {
+     "label": "What was he like?",
+     "target": "hess_original"
+    },
+    {
+     "label": "Did he say where he was going?",
+     "target": "hess_original_destination"
+    },
+    {
+     "label": "What happened to him?",
+     "target": "hess_original_fate"
+    }
+   ]
+  },
+  "hess_original": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Quiet. Careful. The kind of person who looks at every exit before they sit down. He was generous to people who didn't deserve it and hard on people who did.\" She hesitates. \"Naia knew him better than I did. If you want the full picture, talk to her.\"",
+   "choices": [
+    {
+     "label": "Tell me more.",
+     "target": "hess_original_more"
+    },
+    {
+     "label": "I'll find Naia.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_original_more": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"He came through twice. First time, he had the Wake and a crew. Second time, he was alone and he was in a hurry. He asked me if anyone had been asking about Berth E-7. I said no. He nodded and left.\" A pause. \"Two weeks later, Vask filed the impound order.\"",
+   "choices": [
+    {
+     "label": "Thank you, Hess.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_original_remembered"
+    }
+   ]
+  },
+  "hess_original_destination": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"He didn't say. He wasn't the type to share plans. But he was heading toward the Civic Quarter when he left, and he looked like a man walking into something he'd already decided he couldn't avoid.\"",
+   "choices": [
+    {
+     "label": "Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_original_fate": {
+   "speaker": "Dock Warden Hess",
+   "text": "She's quiet for a moment. \"I don't know. He left and didn't come back. Port Sable gets a lot of people who leave and don't come back. Most of the time I try not to think too hard about why.\" She looks at you carefully. \"But you're here. So something happened.\"",
+   "choices": [
+    {
+     "label": "Something did.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_fate_acknowledged"
+    }
+   ]
+  },
+  "hess_overview": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Five things. One: the Civic Authority runs the official level. Don't wave contraband in their faces. Two: the Void Reavers run the Underbelly. Don't go there unarmed. Three: Naia Voss runs the information. Pay her or she'll find something to use against you. Four: the derelict district is technically abandoned and practically inhabited. Five: the Sump Bar is where everything important actually gets decided.\"",
+   "choices": [
+    {
+     "label": "Tell me more about any of those.",
+     "target": "hess_more_overview"
+    },
+    {
+     "label": "Useful. Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_more_overview": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Ask specific questions. I'm not a tour guide. I'm a dock warden.\" But she almost smiles when she says it.",
+   "choices": [
+    {
+     "label": "Fair enough.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_pushback_pass": {
+   "speaker": "Dock Warden Hess",
+   "text": "She looks at you for a long moment, then nods slowly. \"Alright. You've got that kind of face. The kind that's used to people stepping back.\" She opens her ledger. \"What do you need?\"",
+   "choices": [
+    {
+     "label": "I'm looking for the Scavenger's Wake.",
+     "target": "hess_wake"
+    },
+    {
+     "label": "Just information.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_info_end"
+    }
+   ]
+  },
+  "hess_pushback_fail": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"You do answer to dock wardens on this station, actually. Station code, section four. Move along or get a berth code.\" She goes back to her ledger.",
+   "choices": [
+    {
+     "label": "Fine. I need information about a ship.",
+     "target": "hess_wake"
+    },
+    {
+     "label": "I'll come back.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_repeat": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Still at it?\" She doesn't look up. \"Rudo has the key. Mori has the window. Kael has the credentials. That's all I know that's useful.\"",
+   "choices": [
+    {
+     "label": "Any updates on the station situation?",
+     "target": "hess_repeat_update"
+    },
+    {
+     "label": "Just checking in.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hess_repeat_update": {
+   "speaker": "Dock Warden Hess",
+   "text": "\"Reavers have been louder than usual in the Underbelly. Vask's been in his office more than normal. And someone broke into the registry filing system last night — nothing taken, just looked at.\" She sets her pen down. \"Something is moving on this station. I'd rather it was you moving it than someone else.\"",
+   "choices": [
+    {
+     "label": "Noted.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hess_update_noted"
+    }
+   ]
+  },
+  "scav_lena_intro": {
+   "speaker": "Scav Lena",
+   "text": "She's pretending to sort through a crate but watching the impound checkpoint. She startles when she notices you looking. \"Oh. Sorry. I'm not — I'm just working. Berth watching. It's not a crime.\" A beat. \"Most of what I do isn't technically a crime.\"",
+   "choices": [
+    {
+     "label": "You look like you're timing something.",
+     "target": "lena_caught"
+    },
+    {
+     "label": "What do you know about the impound bay?",
+     "target": "lena_impound"
+    },
+    {
+     "label": "What's your name?",
+     "target": "lena_name"
+    },
+    {
+     "label": "Carry on.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_caught": {
+   "speaker": "Scav Lena",
+   "text": "\"Okay, yes. I'm watching the guard rotation. Rudo leaves for his card game at midcycle, about forty minutes. The checkpoint camera has a blind spot on the left side. I've done the math.\" She looks at you. \"You planning something too?\"",
+   "choices": [
+    {
+     "label": "Maybe. What's your interest in the impound bay?",
+     "target": "lena_interest"
+    },
+    {
+     "label": "I need to get into Berth E-7.",
+     "target": "lena_e7"
+    },
+    {
+     "label": "Not your business. Keep your observations to yourself.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_interest": {
+   "speaker": "Scav Lena",
+   "text": "\"There's a ship in there — Berth E-9. Belonged to my uncle. Impounded for debt he didn't actually owe. I've been trying to get it out for eight months.\" She deflates a little. \"I can't afford Rudo's actual fee. Davi says he'll cover it if I do a job for him, but I don't like his jobs.\"",
+   "choices": [
+    {
+     "label": "What kind of jobs?",
+     "target": "lena_davi_jobs"
+    },
+    {
+     "label": "I can help you with Rudo. What's the intel worth?",
+     "check": {
+      "stat": "presence",
+      "dc": 11
+     },
+     "target": "lena_deal",
+     "failTarget": "lena_deal_fail"
+    },
+    {
+     "label": "Good luck with that.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_davi_jobs": {
+   "speaker": "Scav Lena",
+   "text": "\"Moving things. Into places. Without asking what the things are.\" She looks uncomfortable. \"I've done worse for less. But something about Davi's current operation feels different. Wrong kind of wrong, if that makes sense.\"",
+   "choices": [
+    {
+     "label": "What do you know about Davi's operation?",
+     "target": "lena_davi_intel"
+    },
+    {
+     "label": "Stay out of it if it feels wrong.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "lena_warned"
+    }
+   ]
+  },
+  "lena_davi_intel": {
+   "speaker": "Scav Lena",
+   "text": "\"He's been moving crates into the lower berths at odd hours. Big ones. Not standard freight markings. And he's been asking around about which ships in impound still have working comms.\" She frowns. \"Why would you need that?\"",
+   "choices": [
+    {
+     "label": "Good question.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "lena_intel_flagged"
+    }
+   ]
+  },
+  "lena_e7": {
+   "speaker": "Scav Lena",
+   "text": "Her eyes widen. \"The Wake? That's the racing ship. The one with the impound flag.\" She thinks. \"Rudo's key is in his desk during his card game. Camera blind spot is column left of the checkpoint gate. I can show you the timing if you help me with my uncle's ship after.\"",
+   "choices": [
+    {
+     "label": "Deal.",
+     "target": "lena_deal_accepted",
+     "setFlag": "lena_deal_set"
+    },
+    {
+     "label": "I'll keep that in mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_deal": {
+   "speaker": "Scav Lena",
+   "text": "\"You'd do that? Okay. Yes. Deal.\" She looks relieved. \"Rudo leaves at midcycle. Desk drawer on the left, under his lunch kit.\"",
+   "choices": [
+    {
+     "label": "Thanks, Lena.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "lena_deal_done"
+    }
+   ]
+  },
+  "lena_deal_fail": {
+   "speaker": "Scav Lena",
+   "text": "\"I... don't know you well enough yet. Maybe after I've seen what you can do.\"",
+   "choices": [
+    {
+     "label": "Fair enough.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_deal_accepted": {
+   "speaker": "Scav Lena",
+   "text": "\"Okay. You help me, I help you. Fair trade.\" She looks steadier now. \"Come back when you're ready to move.\"",
+   "choices": [
+    {
+     "label": "I will.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "scav_lena_repeat": {
+   "speaker": "Scav Lena",
+   "text": "\"Rudo's on schedule. Midcycle, forty minutes. Camera still has the same blind spot. You good?\"",
+   "choices": [
+    {
+     "label": "Ready to move.",
+     "target": "lena_ready"
+    },
+    {
+     "label": "Not yet.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "lena_ready": {
+   "speaker": "Scav Lena",
+   "text": "\"Right behind you.\" She straightens up from the crate, no longer pretending.",
+   "choices": [
+    {
+     "label": "Let's go.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "lena_moving"
+    }
+   ]
+  },
+  "rudo_intro": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "He looks up from his ledger and immediately looks like he wishes he hadn't. \"This is a restricted access area. Authorised personnel only.\" He glances at the camera. \"Do you have authorisation?\"",
+   "choices": [
+    {
+     "label": "I need access to Berth E-7. Here's what I can offer.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "rudo_bribe_success",
+     "failTarget": "rudo_bribe_fail"
+    },
+    {
+     "label": "I think we both know how this works. What's your number?",
+     "check": {
+      "stat": "wit",
+      "dc": 11
+     },
+     "target": "rudo_negotiate",
+     "failTarget": "rudo_stonewalled"
+    },
+    {
+     "label": "I heard you owe Davi the Fence money.",
+     "target": "rudo_debt"
+    },
+    {
+     "label": "I could make your gambling problem disappear.",
+     "check": {
+      "stat": "presence",
+      "dc": 14
+     },
+     "target": "rudo_debt_leverage",
+     "failTarget": "rudo_debt_fail"
+    }
+   ]
+  },
+  "rudo_bribe_success": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "He looks at what you're offering, then at the camera again. \"The camera has a seventeen-second lag on its recording loop. That's not me telling you to do anything. That's just... a technical fact about the system.\" He puts a key on the counter. \"Berth E-7. I never saw you.\"",
+   "choices": [
+    {
+     "label": "Understood. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "rudo_paid"
+    }
+   ]
+  },
+  "rudo_bribe_fail": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "\"That's... not enough. This isn't a small thing you're asking me to do. Vask personally flagged that berth.\" He lowers his voice. \"Come back with more, or find another way.\"",
+   "choices": [
+    {
+     "label": "I'll be back.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_negotiate": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "He actually relaxes slightly. \"Three hundred credits and I lose the access log entry. That's my number. Non-negotiable.\" He straightens his jacket. \"I have a system.\"",
+   "choices": [
+    {
+     "label": "Three hundred. Done.",
+     "target": "rudo_bribe_success"
+    },
+    {
+     "label": "Two hundred. Final offer.",
+     "target": "rudo_haggle"
+    },
+    {
+     "label": "I'll think about it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_haggle": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "\"Two fifty. Because I like even numbers and I want this conversation to be over.\"",
+   "choices": [
+    {
+     "label": "Fine. Two fifty.",
+     "target": "rudo_bribe_success"
+    },
+    {
+     "label": "Not yet.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_stonewalled": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "\"I don't know what you're implying, but I'd like you to leave this checkpoint. Now please.\"",
+   "choices": [
+    {
+     "label": "I know about your debt to Davi.",
+     "target": "rudo_debt"
+    },
+    {
+     "label": "I'll find another way.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_debt": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "He goes very still. \"Where did you hear that.\" It's not a question. \"That's a private financial matter and it has nothing to do with—\"",
+   "choices": [
+    {
+     "label": "I can clear your debt with Davi. In exchange for the key.",
+     "check": {
+      "stat": "presence",
+      "dc": 13
+     },
+     "target": "rudo_debt_leverage",
+     "failTarget": "rudo_debt_fail"
+    },
+    {
+     "label": "I know Davi. I can put in a word.",
+     "target": "rudo_davi_word"
+    },
+    {
+     "label": "Just an observation. Never mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_debt_leverage": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "His shoulders drop. \"If the debt is gone, I never have to see Davi again?\" He's quiet for a long moment. \"The key is in my desk when I'm at the card game. Midcycle. Drawer on the left. I'm not giving it to you directly. But if it went missing, I'd understand.\"",
+   "choices": [
+    {
+     "label": "That works fine.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "rudo_debt_deal"
+    }
+   ]
+  },
+  "rudo_davi_word": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "\"A word won't help. He's not the patient type.\" He looks miserable. \"Three hundred credits clears it. I've checked.\"",
+   "choices": [
+    {
+     "label": "I'll cover it. In exchange for the key.",
+     "target": "rudo_debt_leverage"
+    },
+    {
+     "label": "I'll see what I can do.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_debt_fail": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "\"I don't know what you're trying to do, but my situation with Davi is my own problem. Good day.\" He goes back to his ledger, badly faking that he's reading it.",
+   "choices": [
+    {
+     "label": "We'll talk again.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "rudo_repeat": {
+   "speaker": "Impound Clerk Rudo",
+   "text": "He looks up briefly. \"Nothing has changed from my end. Whatever you're here about — same answer as before.\"",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "moss_intro": {
+   "speaker": "Trader Moss",
+   "text": "She looks at you with the frank assessment of someone who has watched thousands of people come through Port Sable and has a running score. \"New face, or a very old one. Hard to tell sometimes. Looking to buy, or looking for trouble?\"",
+   "choices": [
+    {
+     "label": "Both, ideally. What are you selling?",
+     "target": "moss_shop"
+    },
+    {
+     "label": "I'm new here. Or something like it.",
+     "target": "moss_new"
+    },
+    {
+     "label": "What do you know about this station?",
+     "target": "moss_gossip"
+    },
+    {
+     "label": "Just looking.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "moss_shop": {
+   "speaker": "Trader Moss",
+   "text": "\"Rations, water cells, basic medgel, field kits. Everything a spacer needs and nothing you'd impress anyone with.\" She gestures at her stock. \"I also know where to find the things I don't sell. Knowledge costs extra.\"",
+   "choices": [
+    {
+     "label": "What kind of knowledge?",
+     "target": "moss_knowledge"
+    },
+    {
+     "label": "I'll take a look at what you have.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_trade_open"
+    }
+   ]
+  },
+  "moss_knowledge": {
+   "speaker": "Trader Moss",
+   "text": "\"Rudo's schedule — everyone on this station knows it, it's not secret. The fact that Kael Drin still has valid transit credentials despite being banned from the circuit — that's worth something. And the fact that the Scavenger's Wake hasn't been decommissioned despite six years in impound, when protocol says three — that's worth more.\"",
+   "choices": [
+    {
+     "label": "Why hasn't the Wake been decommissioned?",
+     "target": "moss_wake_intel"
+    },
+    {
+     "label": "Tell me about Kael Drin.",
+     "target": "moss_kael"
+    },
+    {
+     "label": "Interesting. Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "moss_wake_intel": {
+   "speaker": "Trader Moss",
+   "text": "\"Because Vask won't sign the decommission order. He's the only one with authority to do it, and he keeps finding reasons to delay. Some people think he's waiting for someone to come claim the ship. Some people think he's afraid of what a full inspection would find.\" She stacks some crates. \"I try not to have opinions about the Commander's business. Out loud, anyway.\"",
+   "choices": [
+    {
+     "label": "Useful. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_wake_noted"
+    }
+   ]
+  },
+  "moss_kael": {
+   "speaker": "Trader Moss",
+   "text": "\"Kael Drin. Former circuit racer. One of the best, actually, before the ban. He drinks at the Sump Bar and pretends he's fine with how things turned out.\" She lowers her voice. \"He knew the Wake. Raced against it. He went a little pale when it came into impound and hasn't talked about racing since.\"",
+   "choices": [
+    {
+     "label": "Good to know.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_kael_noted"
+    }
+   ]
+  },
+  "moss_new": {
+   "speaker": "Trader Moss",
+   "text": "\"Something like it.\" She doesn't blink. \"Hana says the station cycles through the same faces in different configurations. I used to think that was philosophy. Lately I'm less sure.\" She looks at you directly. \"You want the honest version or the polite version?\"",
+   "choices": [
+    {
+     "label": "Honest.",
+     "target": "moss_honest"
+    },
+    {
+     "label": "Polite first.",
+     "target": "moss_polite"
+    }
+   ]
+  },
+  "moss_honest": {
+   "speaker": "Trader Moss",
+   "text": "\"Someone with your face was on this station three years ago. He was a man who looked like he'd done things he couldn't take back and had decided to do them anyway. He left in a hurry and didn't come back. Now you're here.\" She picks up her pen. \"I don't know what that means. But I notice things. That's all.\"",
+   "choices": [
+    {
+     "label": "Thank you for being direct.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_honest_noted"
+    }
+   ]
+  },
+  "moss_polite": {
+   "speaker": "Trader Moss",
+   "text": "\"Welcome to Port Sable. Worst port in the sector, best gossip.\" She smiles. \"That's the polite version. Honest version is available if you want it later.\"",
+   "choices": [
+    {
+     "label": "Give me the honest version.",
+     "target": "moss_honest"
+    },
+    {
+     "label": "I'll come back for it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "moss_gossip": {
+   "speaker": "Trader Moss",
+   "text": "\"Reavers are recruiting, which means they're planning something. Vask has been skipping his public meetings, which means he's worried about something. And someone was asking around about clone recovery protocols in Patch-Lan's clinic last week.\" A pointed look. \"That last one is probably relevant to you.\"",
+   "choices": [
+    {
+     "label": "Who was asking?",
+     "target": "moss_clone_gossip"
+    },
+    {
+     "label": "You don't miss much.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_sharp"
+    }
+   ]
+  },
+  "moss_clone_gossip": {
+   "speaker": "Trader Moss",
+   "text": "\"Didn't see the face. Hooded. Paid in unmarked chits.\" She shrugs. \"Patch-Lan wouldn't say what they asked, just that they'd been through before. Recently. Port Sable is a small station. People who try to be invisible usually aren't.\"",
+   "choices": [
+    {
+     "label": "I'll keep that in mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_clone_noted"
+    }
+   ]
+  },
+  "moss_repeat": {
+   "speaker": "Trader Moss",
+   "text": "\"Still alive. Good start.\" She nods at her stock. \"Anything you need?\"",
+   "choices": [
+    {
+     "label": "What have you heard lately?",
+     "target": "moss_gossip"
+    },
+    {
+     "label": "Just resupplying.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "moss_trade_open"
+    }
+   ]
+  },
+  "davi_intro": {
+   "speaker": "Fence Davi",
+   "text": "He's counting something on his fingers and doesn't stop when you approach. \"If you're here to sell, I need provenance. If you're here to buy, I need payment. If you're here for any other reason, I need you to be very specific about it.\"",
+   "choices": [
+    {
+     "label": "I want to buy something that's not on a standard manifest.",
+     "target": "davi_buy"
+    },
+    {
+     "label": "I have goods to move.",
+     "target": "davi_sell"
+    },
+    {
+     "label": "I heard you have a debt arrangement with the impound clerk.",
+     "target": "davi_rudo"
+    },
+    {
+     "label": "Tell me about yourself.",
+     "target": "davi_himself"
+    }
+   ]
+  },
+  "davi_buy": {
+   "speaker": "Fence Davi",
+   "text": "\"Describe what you're looking for without using the actual words for it. A habit I've developed.\"",
+   "choices": [
+    {
+     "label": "Something that opens doors that should be locked.",
+     "target": "davi_lockpick"
+    },
+    {
+     "label": "Information on the Void Reavers' current operation.",
+     "target": "davi_reaver_intel"
+    },
+    {
+     "label": "I'll think about what I need.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "davi_lockpick": {
+   "speaker": "Fence Davi",
+   "text": "\"Forty credits. Don't tell me where you're using it.\" He produces a small toolkit from somewhere inside his coat. \"Standard civic locks. Not the authority HQ locks — those are a different product category.\"",
+   "choices": [
+    {
+     "label": "Deal.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "davi_lockpick_sold"
+    }
+   ]
+  },
+  "davi_reaver_intel": {
+   "speaker": "Fence Davi",
+   "text": "\"That's not a standard product. That's a specialty item.\" He studies you. \"Eighty credits and you don't tell anyone I told you. The Reavers are expecting a shipment through the station. Something being moved from Ember Hollow to Glassreef, using Port Sable as a waypoint. They're using the impound bays as temporary storage.\"",
+   "choices": [
+    {
+     "label": "Which impound bays?",
+     "target": "davi_reaver_bay"
+    },
+    {
+     "label": "That's enough. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "davi_reaver_noted"
+    }
+   ]
+  },
+  "davi_reaver_bay": {
+   "speaker": "Fence Davi",
+   "text": "\"Bays E-5 through E-8. Which means—\" He stops himself. \"Which means nothing I need to say out loud. You can do the arithmetic.\"",
+   "choices": [
+    {
+     "label": "I can.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "davi_reaver_bay_noted"
+    }
+   ]
+  },
+  "davi_sell": {
+   "speaker": "Fence Davi",
+   "text": "\"What are you moving?\" He looks at your inventory with a professional eye. \"If it has a civic serial number, I charge ten percent to remove it. If it doesn't, I pay standard salvage rate. No questions is a premium service — twenty percent off the top.\"",
+   "choices": [
+    {
+     "label": "I'll keep that in mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "davi_sell_noted"
+    }
+   ]
+  },
+  "davi_rudo": {
+   "speaker": "Fence Davi",
+   "text": "He smiles. Not warmly. \"Rudo has a problem with probability. He thinks he's better at cards than he is. I have benefited from this belief.\" He tilts his head. \"Why do you ask?\"",
+   "choices": [
+    {
+     "label": "I'll clear Rudo's debt if you close the account.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "davi_debt_deal",
+     "failTarget": "davi_debt_decline"
+    },
+    {
+     "label": "Just gathering information.",
+     "target": "davi_rudo_generic"
+    }
+   ]
+  },
+  "davi_debt_deal": {
+   "speaker": "Fence Davi",
+   "text": "He looks at you for a long moment. \"Three hundred credits settles it. You pay me, I consider the account closed.\" A pause. \"And I'll forget I ever saw you asking about the impound bay. Professional courtesy.\"",
+   "choices": [
+    {
+     "label": "Done.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "davi_debt_cleared"
+    }
+   ]
+  },
+  "davi_debt_decline": {
+   "speaker": "Fence Davi",
+   "text": "\"No. Rudo's situation is between us and it's working fine the way it is.\" He goes back to counting. \"Was there something else?\"",
+   "choices": [
+    {
+     "label": "Not right now.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "davi_rudo_generic": {
+   "speaker": "Fence Davi",
+   "text": "\"Information is free. Acting on it costs extra.\" He smiles again. Same quality as before.",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "davi_himself": {
+   "speaker": "Fence Davi",
+   "text": "\"I move things between where they are and where they need to be. Everyone on this station is either buying or selling or pretending they're doing neither.\" He shrugs. \"I just skip the pretending.\"",
+   "choices": [
+    {
+     "label": "Fair enough. Any information on what's moving through the station lately?",
+     "target": "davi_reaver_intel"
+    },
+    {
+     "label": "Refreshingly honest.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "davi_repeat": {
+   "speaker": "Fence Davi",
+   "text": "\"Something to sell or something to buy?\"",
+   "choices": [
+    {
+     "label": "Something to buy.",
+     "target": "davi_buy"
+    },
+    {
+     "label": "Something to sell.",
+     "target": "davi_sell"
+    },
+    {
+     "label": "Just passing.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "patch_lan_intro": {
+   "speaker": "Patch-Lan",
+   "text": "She waves you toward the diagnostic bench without looking up from her work. \"Sit. And before you tell me you're fine — everyone who says that is the person who isn't.\" When she finally looks at you properly, something in her expression shifts. Controlled, but present. \"Ah. There it is. Sit down, and let me run a scan. Don't argue.\"",
+   "choices": [
+    {
+     "label": "What did you see just now?",
+     "target": "patch_reveal_start"
+    },
+    {
+     "label": "I just need basic medical supplies.",
+     "target": "patch_supplies"
+    },
+    {
+     "label": "Have we met before?",
+     "target": "patch_met"
+    }
+   ]
+  },
+  "patch_reveal_start": {
+   "speaker": "Patch-Lan",
+   "text": "\"Your bilateral symmetry is slightly off by approximately 0.3 millimetres. Your subcutaneous capillary patterns don't match standard human growth development. And your stress cortisol markers are at the baseline of someone who woke up not long ago from a very long sleep.\" She sets the scanner down. \"I need you to tell me your name and the last thing you remember clearly.\"",
+   "choices": [
+    {
+     "label": "I don't remember much. My name is... my name.",
+     "target": "patch_reveal_2"
+    },
+    {
+     "label": "My name is [player name]. I don't know how I got here.",
+     "target": "patch_reveal_2"
+    },
+    {
+     "label": "What exactly are you suggesting?",
+     "target": "patch_careful"
+    }
+   ]
+  },
+  "patch_careful": {
+   "speaker": "Patch-Lan",
+   "text": "\"I'm not suggesting anything yet. I'm asking questions. The difference between medicine and assumption is the willingness to be wrong.\" She picks the scanner back up. \"Hold still.\"",
+   "choices": [
+    {
+     "label": "Fine. Ask your questions.",
+     "target": "patch_reveal_start"
+    }
+   ]
+  },
+  "patch_reveal_2": {
+   "speaker": "Patch-Lan",
+   "text": "She nods slowly. Like she expected that answer. \"I'm going to tell you something, and I need you to let me finish before you react. Can you do that?\"",
+   "choices": [
+    {
+     "label": "Yes.",
+     "target": "patch_reveal_3"
+    },
+    {
+     "label": "Just say it.",
+     "target": "patch_reveal_3"
+    }
+   ]
+  },
+  "patch_reveal_3": {
+   "speaker": "Patch-Lan",
+   "text": "\"You are a clone. A biological backup of a person — a complete one, not a partial. Your memories are degraded because the activation event was unplanned, which means the integration buffer hadn't completed its cycle. You woke up because someone died. Specifically, because the person whose backup you are died.\" She watches you. \"The original you is gone. You're what he left behind in case he was.\"",
+   "choices": [
+    {
+     "label": "That's not possible.",
+     "target": "patch_possible"
+    },
+    {
+     "label": "I think I already knew.",
+     "target": "patch_knew"
+    },
+    {
+     "label": "Who was he? Who was I?",
+     "target": "patch_who"
+    },
+    {
+     "label": "How do you know all this?",
+     "target": "patch_how_knows"
+    }
+   ]
+  },
+  "patch_possible": {
+   "speaker": "Patch-Lan",
+   "text": "\"Clone technology is known but rare. Politically divisive. The religious objections alone fill several volumes.\" She doesn't waver. \"I know it feels impossible. The scan doesn't care about feelings. You are a backup, and the backup has activated. That's what the data says.\"",
+   "choices": [
+    {
+     "label": "What do I do with that information?",
+     "target": "patch_next_steps"
+    },
+    {
+     "label": "Tell me about the original.",
+     "target": "patch_who"
+    }
+   ]
+  },
+  "patch_knew": {
+   "speaker": "Patch-Lan",
+   "text": "\"Most people do, on some level. The gaps in memory, the sense that you've arrived rather than continued.\" She almost softens. \"For what it's worth — you are as real as anything on this station. Which is a low bar, but it's a real one.\"",
+   "choices": [
+    {
+     "label": "Tell me who he was.",
+     "target": "patch_who"
+    },
+    {
+     "label": "What do I do now?",
+     "target": "patch_next_steps"
+    }
+   ]
+  },
+  "patch_who": {
+   "speaker": "Patch-Lan",
+   "text": "\"I knew him. Not well. He came to this clinic twice. The first time for a standard check — healthy, careful, the kind of person who maintains their body like equipment. The second time was different.\" She pauses. \"He was asking about clone recovery protocols. Whether a backup would retain the original's moral reasoning.\" She meets your eyes. \"I told him I didn't know. He said he hoped it didn't.\"",
+   "choices": [
+    {
+     "label": "What did he mean by that?",
+     "target": "patch_moral"
+    },
+    {
+     "label": "What else do you know about him?",
+     "target": "patch_more"
+    }
+   ]
+  },
+  "patch_moral": {
+   "speaker": "Patch-Lan",
+   "text": "\"I asked him the same thing. He said: 'The things I've done — the version of me that hasn't done them yet might make better choices.' Then he left.\" She's quiet. \"I don't know what to do with that. I'm a medic, not a philosopher. But I think he was trying to give you a chance he didn't give himself.\"",
+   "choices": [
+    {
+     "label": "Do you know what he did?",
+     "target": "patch_deeds"
+    },
+    {
+     "label": "Thank you. I need to think.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_think"
+    }
+   ]
+  },
+  "patch_deeds": {
+   "speaker": "Patch-Lan",
+   "text": "\"Pieces. Rumours. Nothing I'll repeat until you've found them yourself — second-hand information about who you used to be is no way to figure out who you are now.\" She goes back to her bench. \"Find Naia Voss. Find Hana in the derelicts. Find the ship. The answers are in the station, not in my clinic.\"",
+   "choices": [
+    {
+     "label": "I'll do that.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_directed"
+    }
+   ]
+  },
+  "patch_more": {
+   "speaker": "Patch-Lan",
+   "text": "\"He was troubled by something he wouldn't name. He trusted very few people, but the ones he trusted he trusted completely. He had the kind of loyalty that gets people hurt.\" She considers. \"I liked him. I'm still deciding how I feel about you.\"",
+   "choices": [
+    {
+     "label": "That's fair.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_fair"
+    }
+   ]
+  },
+  "patch_how_knows": {
+   "speaker": "Patch-Lan",
+   "text": "\"I've worked with clone recovery protocols before. Once. Officially, such things are theoretical. Unofficially, I've seen one case before you.\" She doesn't elaborate. \"The person didn't survive the transition. You appear to have.\"",
+   "choices": [
+    {
+     "label": "What happened to them?",
+     "target": "patch_prev_case"
+    },
+    {
+     "label": "Tell me what you know about my original.",
+     "target": "patch_who"
+    }
+   ]
+  },
+  "patch_prev_case": {
+   "speaker": "Patch-Lan",
+   "text": "\"The activation was rushed and the body rejected the integration. It was... not a good outcome.\" She's professional but not cold. \"You're standing here, which means your original planned your activation carefully. He wanted you to survive this.\"",
+   "choices": [
+    {
+     "label": "Then I should honour that.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_honour"
+    }
+   ]
+  },
+  "patch_next_steps": {
+   "speaker": "Patch-Lan",
+   "text": "\"Find the Scavenger's Wake. There are records on that ship — your original left them deliberately. Find Naia Voss, who knew him. And find Elder Hana in the derelict district, who knows things about clone ethics that most people don't.\" She hands you a basic medkit. \"And come back if you're injured. I won't tell anyone what I know.\"",
+   "choices": [
+    {
+     "label": "Thank you, Patch-Lan.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_thanks"
+    }
+   ]
+  },
+  "patch_supplies": {
+   "speaker": "Patch-Lan",
+   "text": "\"First answer my questions. You don't look like someone who needs supplies. You look like someone who needs a very different kind of help.\"",
+   "choices": [
+    {
+     "label": "Fine. What questions?",
+     "target": "patch_reveal_start"
+    },
+    {
+     "label": "Just the supplies, please.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_supplies_only"
+    }
+   ]
+  },
+  "patch_supplies_only": {
+   "speaker": "Patch-Lan",
+   "text": "She provides the supplies without pushing. \"Come back when you're ready to talk. I'll be here.\"",
+   "choices": [
+    {
+     "label": "Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "patch_met": {
+   "speaker": "Patch-Lan",
+   "text": "\"Not you. But someone with your face, yes. Twice.\" She doesn't look surprised that you asked. \"Sit down. We should talk.\"",
+   "choices": [
+    {
+     "label": "Alright.",
+     "target": "patch_reveal_start"
+    }
+   ]
+  },
+  "patch_lan_repeat": {
+   "speaker": "Patch-Lan",
+   "text": "\"How are you holding up?\" It's a real question, not small talk.",
+   "choices": [
+    {
+     "label": "Still processing.",
+     "target": "patch_processing"
+    },
+    {
+     "label": "Better. I have more questions.",
+     "target": "patch_more_questions"
+    },
+    {
+     "label": "Managing. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "patch_processing": {
+   "speaker": "Patch-Lan",
+   "text": "\"That's appropriate. Take the time you need. The answers will still be there.\" She turns back to her work. \"The records on the Wake — have you found them?\"",
+   "choices": [
+    {
+     "label": "Not yet.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    },
+    {
+     "label": "Yes. Working through it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "patch_records_found"
+    }
+   ]
+  },
+  "patch_more_questions": {
+   "speaker": "Patch-Lan",
+   "text": "\"Ask. I'll answer what I can.\"",
+   "choices": [
+    {
+     "label": "What do you know about the Wake's crew?",
+     "target": "patch_crew"
+    },
+    {
+     "label": "Was the original a good person?",
+     "target": "patch_morality"
+    },
+    {
+     "label": "Never mind. I'll keep looking.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "patch_crew": {
+   "speaker": "Patch-Lan",
+   "text": "\"Vexa Sorn was his tech. She stayed after the impound — loyalty, or guilt, or both. The others I don't know. He didn't talk about them.\"",
+   "choices": [
+    {
+     "label": "Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "patch_morality": {
+   "speaker": "Patch-Lan",
+   "text": "A long pause. \"He did things that needed doing in ways that left marks. Whether that makes him good or bad depends on whether you care more about the outcome or the method.\" She meets your eyes. \"I don't know yet. And I think that's the honest answer.\"",
+   "choices": [
+    {
+     "label": "I appreciate the honesty.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_intro": {
+   "speaker": "Commander Vask",
+   "text": "He takes a moment longer than necessary to look up from his desk. When he does, his expression is carefully neutral in a way that costs him visible effort. \"This is a restricted area. State your business and your authorisation.\"",
+   "choices": [
+    {
+     "label": "I'm here about the Scavenger's Wake. Berth E-7.",
+     "target": "vask_wake"
+    },
+    {
+     "label": "I need the impound release key for Berth E-7.",
+     "check": {
+      "stat": "presence",
+      "dc": 15
+     },
+     "target": "vask_direct_pass",
+     "failTarget": "vask_direct_fail"
+    },
+    {
+     "label": "I know something is wrong with that impound. What are you hiding?",
+     "check": {
+      "stat": "wit",
+      "dc": 14
+     },
+     "target": "vask_pressure_pass",
+     "failTarget": "vask_pressure_fail"
+    },
+    {
+     "label": "Wrong door. Apologies.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_wake": {
+   "speaker": "Commander Vask",
+   "text": "\"That vessel is under civic impound on outstanding charges. It is not available for release. The case is closed.\" He says it like a man who has rehearsed it. \"Is there anything else?\"",
+   "choices": [
+    {
+     "label": "The charges are six years old. Why hasn't it been decommissioned?",
+     "target": "vask_decomm"
+    },
+    {
+     "label": "I know the charges aren't real. What's the actual reason?",
+     "check": {
+      "stat": "wit",
+      "dc": 15
+     },
+     "target": "vask_pressure_pass",
+     "failTarget": "vask_pressure_fail"
+    },
+    {
+     "label": "We'll talk again.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_decomm": {
+   "speaker": "Commander Vask",
+   "text": "A crack in the composure. Small, but there. \"Decommission requires a full asset inspection. Scheduling has been—\" \"—delayed,\" he finishes, flatly. \"Administrative backlog.\"",
+   "choices": [
+    {
+     "label": "You're afraid of what a full inspection would find.",
+     "check": {
+      "stat": "wit",
+      "dc": 13
+     },
+     "target": "vask_fear_pass",
+     "failTarget": "vask_fear_fail"
+    },
+    {
+     "label": "I see. Thank you, Commander.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_fear_pass": {
+   "speaker": "Commander Vask",
+   "text": "He's quiet for several seconds. When he speaks, it's lower. \"There are things in that vessel's cargo manifest that were never officially logged. If a full inspection happens, those things become part of the record.\" He meets your eyes. \"And some of those things involve people who are still alive and still dangerous. The impound order keeps the ship contained. The lack of inspection keeps everyone... safe.\"",
+   "choices": [
+    {
+     "label": "Safe from who?",
+     "target": "vask_who"
+    },
+    {
+     "label": "Give me the key. I'll deal with whatever is in the manifest.",
+     "check": {
+      "stat": "presence",
+      "dc": 16
+     },
+     "target": "vask_key_pass",
+     "failTarget": "vask_key_fail"
+    },
+    {
+     "label": "I understand. I'll find another way.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_who": {
+   "speaker": "Commander Vask",
+   "text": "He shakes his head. \"Not here. Not in writing. Find the ship's records and you'll understand. Just—\" He straightens. \"Don't open the false-panel compartments without knowing what you're dealing with first.\"",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "vask_warned"
+    }
+   ]
+  },
+  "vask_key_pass": {
+   "speaker": "Commander Vask",
+   "text": "He holds your gaze for a long moment. Then he opens his desk drawer. \"The key logs every access. If anything goes wrong, I have no knowledge of this conversation.\" He places it on the desk. \"Be careful with what you find.\"",
+   "choices": [
+    {
+     "label": "I will be.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "vask_key_given"
+    }
+   ]
+  },
+  "vask_key_fail": {
+   "speaker": "Commander Vask",
+   "text": "\"I don't know who you are or what you think you can handle. The answer is no.\"",
+   "choices": [
+    {
+     "label": "I'll be back.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_fear_fail": {
+   "speaker": "Commander Vask",
+   "text": "\"Administrative backlog, as I said.\" His composure snaps back into place. \"Is there anything else I can help you with?\"",
+   "choices": [
+    {
+     "label": "No. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_direct_pass": {
+   "speaker": "Commander Vask",
+   "text": "He looks at you steadily. \"That's a significant request and an unusual one. Convince me.\"",
+   "choices": [
+    {
+     "label": "Tell me what's really in that ship's records.",
+     "target": "vask_fear_pass"
+    }
+   ]
+  },
+  "vask_direct_fail": {
+   "speaker": "Commander Vask",
+   "text": "\"You'll need to come back with proper authorisation. I don't release impounded vessels based on requests.\"",
+   "choices": [
+    {
+     "label": "I'll get authorisation.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_pressure_pass": {
+   "speaker": "Commander Vask",
+   "text": "\"Keep your voice down.\" He stands and closes the office door. \"What do you know?\"",
+   "choices": [
+    {
+     "label": "Enough to know the impound order isn't about port fees.",
+     "target": "vask_fear_pass"
+    }
+   ]
+  },
+  "vask_pressure_fail": {
+   "speaker": "Commander Vask",
+   "text": "\"I'm not hiding anything. That's a serious accusation in a civic facility.\" He reaches for his comm. \"I'm going to need you to leave.\"",
+   "choices": [
+    {
+     "label": "I'm going.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_repeat": {
+   "speaker": "Commander Vask",
+   "text": "He looks up. Tired, more than before. \"Have you found what you needed?\"",
+   "choices": [
+    {
+     "label": "Getting close. A few more things to resolve.",
+     "target": "vask_repeat_close"
+    },
+    {
+     "label": "Still working on it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "vask_repeat_close": {
+   "speaker": "Commander Vask",
+   "text": "\"Don't take too long. I've been... asked about the Wake. From above my rank.\" He doesn't elaborate. \"Whoever is asking has more reach than I do. Move before they move first.\"",
+   "choices": [
+    {
+     "label": "Understood.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "vask_urgency_noted"
+    }
+   ]
+  },
+  "mori_intro": {
+   "speaker": "Clerk Mori",
+   "text": "They nearly knock their tea over when you walk in. \"This is — you need authorisation for Registry access. Do you have an authorisation code? I need a code.\" They're checking something on their terminal while they talk to you.",
+   "choices": [
+    {
+     "label": "I need a launch window for Berth E-7.",
+     "target": "mori_e7"
+    },
+    {
+     "label": "I have authorisation. Here.",
+     "check": {
+      "stat": "wit",
+      "dc": 11
+     },
+     "target": "mori_bluff_pass",
+     "failTarget": "mori_bluff_fail"
+    },
+    {
+     "label": "You look like you're dealing with something difficult.",
+     "target": "mori_personal"
+    },
+    {
+     "label": "Wrong office. Sorry.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "mori_e7": {
+   "speaker": "Clerk Mori",
+   "text": "\"Berth E-7 is flagged. I can't generate a launch window for a flagged berth without Commander Vask's sign-off.\" They lower their voice. \"I physically cannot. It's locked in the system.\"",
+   "choices": [
+    {
+     "label": "Is there a way around the system lock?",
+     "check": {
+      "stat": "tech",
+      "dc": 13
+     },
+     "target": "mori_system_pass",
+     "failTarget": "mori_system_fail"
+    },
+    {
+     "label": "What would it take to get Vask's sign-off?",
+     "target": "mori_vask_signoff"
+    },
+    {
+     "label": "You mentioned you're dealing with something. Maybe we can help each other.",
+     "target": "mori_personal"
+    }
+   ]
+  },
+  "mori_system_pass": {
+   "speaker": "Clerk Mori",
+   "text": "They glance at the door. \"There's a maintenance override that can generate a temporary window outside the flag system. It requires a level-two access code.\" They pull up a sub-menu. \"I have a level-two code. I'm not supposed to use it like this. But if the access log shows a system test rather than a berth release—\" They chew their lip. \"It would need a very good reason.\"",
+   "choices": [
+    {
+     "label": "Let me give you a reason. What's in that personal file?",
+     "target": "mori_personal"
+    },
+    {
+     "label": "I can make this worth your while.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "mori_deal",
+     "failTarget": "mori_deal_fail"
+    }
+   ]
+  },
+  "mori_system_fail": {
+   "speaker": "Clerk Mori",
+   "text": "\"The lock is the lock. I can't break it, and I wouldn't know how to hide it if I did.\"",
+   "choices": [
+    {
+     "label": "Then help me get Vask's sign-off.",
+     "target": "mori_vask_signoff"
+    },
+    {
+     "label": "I'll find another way.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "mori_vask_signoff": {
+   "speaker": "Clerk Mori",
+   "text": "\"Vask won't sign off while the flag is active. And the flag stays active unless the original impound order is challenged or the charges are cleared.\" They pause. \"The charges are recorded in my system. They're... not substantial. Race violations and unpaid fees. That's all. The kind of thing that normally gets resolved in a season.\"",
+   "choices": [
+    {
+     "label": "Then why hasn't it been resolved?",
+     "target": "mori_why_flagged"
+    },
+    {
+     "label": "Who filed the charges?",
+     "target": "mori_who_filed"
+    }
+   ]
+  },
+  "mori_why_flagged": {
+   "speaker": "Clerk Mori",
+   "text": "\"Someone made sure the case stayed open. The reviewing officer keeps getting reassigned before they can close it. Twice, the paperwork was lost.\" They look genuinely uncomfortable. \"I should not be saying this.\"",
+   "choices": [
+    {
+     "label": "I won't repeat it. What about the personal file you were looking at?",
+     "target": "mori_personal"
+    }
+   ]
+  },
+  "mori_who_filed": {
+   "speaker": "Clerk Mori",
+   "text": "\"The original complaint was civic. But it was flagged for review by an external party — someone with station access above civic level.\" They stop themselves. \"That's all I can say here.\"",
+   "choices": [
+    {
+     "label": "What's in your personal file?",
+     "target": "mori_personal"
+    }
+   ]
+  },
+  "mori_personal": {
+   "speaker": "Clerk Mori",
+   "text": "They look surprised you noticed. \"It's — nothing. A residency matter. I'm not from Port Sable originally and my permit has to be renewed. The officer handling renewals has been... slow. And it expires in twelve days.\"",
+   "choices": [
+    {
+     "label": "I can expedite that for you. In exchange for the launch window.",
+     "target": "mori_deal"
+    },
+    {
+     "label": "Who handles renewals?",
+     "target": "mori_renewal_officer"
+    },
+    {
+     "label": "I see. Sorry to pry.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "mori_renewal_officer": {
+   "speaker": "Clerk Mori",
+   "text": "\"Officer Merik. He's usually at the civic checkpoint. He takes his time with everything unless you give him a reason not to.\"",
+   "choices": [
+    {
+     "label": "I'll talk to Merik. If I sort your permit, you give me the launch window?",
+     "target": "mori_deal"
+    }
+   ]
+  },
+  "mori_deal": {
+   "speaker": "Clerk Mori",
+   "text": "\"If my permit is renewed before it expires — yes. The system test override, window for Berth E-7, logs show a routine check.\" They look terrified and relieved simultaneously. \"Yes. That's the deal.\"",
+   "choices": [
+    {
+     "label": "I'll handle Merik. Give me time.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "mori_deal_set"
+    }
+   ]
+  },
+  "mori_deal_fail": {
+   "speaker": "Clerk Mori",
+   "text": "\"I'm sorry. This isn't a money problem. This is a permit problem. Unless you can fix the permit situation, I can't help you.\"",
+   "choices": [
+    {
+     "label": "Tell me about the permit.",
+     "target": "mori_personal"
+    }
+   ]
+  },
+  "mori_bluff_pass": {
+   "speaker": "Clerk Mori",
+   "text": "They stare at the code, then at you, then at the code. \"This is... not a standard format. But the level-two flags aren't tripping on it.\" They look confused. \"What exactly do you need?\"",
+   "choices": [
+    {
+     "label": "A launch window for Berth E-7.",
+     "target": "mori_system_pass"
+    }
+   ]
+  },
+  "mori_bluff_fail": {
+   "speaker": "Clerk Mori",
+   "text": "\"This code isn't valid. I need to ask you to leave or I'll have to call for a civic officer.\"",
+   "choices": [
+    {
+     "label": "Wait. I need your help with something real.",
+     "target": "mori_personal"
+    },
+    {
+     "label": "My mistake. Leaving.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "mori_repeat": {
+   "speaker": "Clerk Mori",
+   "text": "\"Is the permit sorted?\" They look at you with the desperation of someone counting down twelve days.",
+   "choices": [
+    {
+     "label": "Working on it.",
+     "target": "mori_repeat_working"
+    },
+    {
+     "label": "Done. Merik processed it.",
+     "target": "mori_permit_done"
+    }
+   ]
+  },
+  "mori_repeat_working": {
+   "speaker": "Clerk Mori",
+   "text": "\"Please hurry. I can't sleep.\"",
+   "choices": [
+    {
+     "label": "Soon.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "mori_permit_done": {
+   "speaker": "Clerk Mori",
+   "text": "They exhale for the first time in what feels like days. \"Thank you. Actually, genuinely, thank you.\" They turn to their terminal. \"Launch window, Berth E-7. System test. Scheduled.\" They hand you a printed confirmation slip. \"You didn't get this from me.\"",
+   "choices": [
+    {
+     "label": "I never heard of you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "mori_window_given"
+    }
+   ]
+  },
+  "sera_intro": {
+   "speaker": "Guard Sera",
+   "text": "She straightens when she sees you. \"Civilian. This is a restricted area. Visiting hours are not—\" She pauses, looking at you. \"You're not here to visit. What do you want?\"",
+   "choices": [
+    {
+     "label": "I need to get someone out. Talon Rhyse.",
+     "target": "sera_talon"
+    },
+    {
+     "label": "You look like you're carrying something heavy.",
+     "target": "sera_personal"
+    },
+    {
+     "label": "Wrong door. My mistake.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_talon": {
+   "speaker": "Guard Sera",
+   "text": "\"Talon Rhyse is being held pending a fine payment. Three hundred credits for the property damage. You pay the fine, the cell opens.\" A pause. \"Or you could wait for the review hearing in nine days.\"",
+   "choices": [
+    {
+     "label": "I'll pay the fine.",
+     "target": "sera_pay"
+    },
+    {
+     "label": "There's another way. Talk to me.",
+     "check": {
+      "stat": "presence",
+      "dc": 12
+     },
+     "target": "sera_open",
+     "failTarget": "sera_closed"
+    },
+    {
+     "label": "I'll think about it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_pay": {
+   "speaker": "Guard Sera",
+   "text": "\"Payment processed.\" She pulls up the release form without ceremony. Then, quieter: \"He's not what the report says he is. The property damage was — he was preventing something worse. The report doesn't mention that.\" She hands you the release form. \"Just so you know.\"",
+   "choices": [
+    {
+     "label": "Thank you for telling me.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "sera_talon_released"
+    }
+   ]
+  },
+  "sera_open": {
+   "speaker": "Guard Sera",
+   "text": "She looks around the cell block, then at you. \"The person Talon stopped from doing damage was a Reaver. Off the books. The Reavers filed the complaint to get Talon out of the way.\" She keeps her voice flat. \"I know that. It's in the incident footage. Nobody reviewed the footage.\"",
+   "choices": [
+    {
+     "label": "Why didn't you report it?",
+     "target": "sera_why"
+    },
+    {
+     "label": "Can you release him on that basis?",
+     "target": "sera_release_grounds"
+    }
+   ]
+  },
+  "sera_why": {
+   "speaker": "Guard Sera",
+   "text": "\"I filed it. Twice. It went to Vask. He acknowledged it and did nothing.\" She says it like it still surprises her. \"Either Vask is protecting the Reavers or someone above Vask is. Either way, I'm a guard and they're a Commander and the footage is sitting in a review queue that hasn't moved in three weeks.\"",
+   "choices": [
+    {
+     "label": "I'll look into Vask. Can you release Talon now?",
+     "target": "sera_release_grounds"
+    },
+    {
+     "label": "Is there anything you can do from your end?",
+     "target": "sera_leverage"
+    }
+   ]
+  },
+  "sera_release_grounds": {
+   "speaker": "Guard Sera",
+   "text": "\"Not without a formal review or fine payment. But—\" She pulls a key from her desk. \"I can have a maintenance malfunction with the cell door lock. Paperwork would show a technical fault. Talon would need to be gone before I notice.\" She sets the key on the edge of the desk. \"I'm going to look at that wall for sixty seconds.\"",
+   "choices": [
+    {
+     "label": "I appreciate this, Sera.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "sera_key_given",
+     "effects": {
+      "setFlag": "talon_released"
+     }
+    }
+   ]
+  },
+  "sera_leverage": {
+   "speaker": "Guard Sera",
+   "text": "\"Not from inside this cell block. But if someone with access to Vask's records found the incident file and pushed it through the actual review system—\" She shrugs. \"That's not something I can do. But it's something.\"",
+   "choices": [
+    {
+     "label": "I'll look into it.",
+     "target": "sera_release_grounds"
+    }
+   ]
+  },
+  "sera_closed": {
+   "speaker": "Guard Sera",
+   "text": "\"Pay the fine or wait for the hearing. Those are your options.\" She goes back to her letter.",
+   "choices": [
+    {
+     "label": "Three hundred credits. Let him out.",
+     "target": "sera_pay"
+    },
+    {
+     "label": "I'll wait.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_personal": {
+   "speaker": "Guard Sera",
+   "text": "She looks at you sharply. \"I'm on duty. I don't do personal conversations on duty.\" But she's still holding the unread letter. \"What makes you say that?\"",
+   "choices": [
+    {
+     "label": "The letter you haven't opened.",
+     "target": "sera_letter"
+    },
+    {
+     "label": "Observation. Never mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_letter": {
+   "speaker": "Guard Sera",
+   "text": "\"It's from my sister. On Ember Hollow.\" She folds it smaller. \"She's in Reaver territory and she's not answering my comms. That's... not related to anything here.\"",
+   "choices": [
+    {
+     "label": "That sounds like something worth following up on.",
+     "target": "sera_sister"
+    },
+    {
+     "label": "I hope she's alright.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_sister": {
+   "speaker": "Guard Sera",
+   "text": "\"If you end up at Ember Hollow—\" She stops. \"No. I'm not asking a stranger for that. I'm a civic guard. I handle things through proper channels.\" She looks at the letter. \"When proper channels work.\"",
+   "choices": [
+    {
+     "label": "Offer stands.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "sera_offer_noted"
+    }
+   ]
+  },
+  "sera_repeat": {
+   "speaker": "Guard Sera",
+   "text": "She looks up. \"Did you handle the Talon situation?\"",
+   "choices": [
+    {
+     "label": "Working on it.",
+     "target": "sera_working"
+    },
+    {
+     "label": "Yes. He's out.",
+     "target": "sera_talon_confirmed"
+    }
+   ]
+  },
+  "sera_working": {
+   "speaker": "Guard Sera",
+   "text": "\"The window won't stay open forever.\"",
+   "choices": [
+    {
+     "label": "I know.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "sera_talon_confirmed": {
+   "speaker": "Guard Sera",
+   "text": "\"Good.\" She goes back to the letter. Not reading it. Just holding it. \"Good.\"",
+   "choices": [
+    {
+     "label": "Take care, Sera.",
+     "target": null,
+     "effects": {
+      "setFlag": "sera_released_talon",
+      "affinity": 2
+     }
+    }
+   ]
+  },
+  "torsh_intro": {
+   "speaker": "Barkeep Torsh",
+   "text": "He sets a glass on the bar without you asking. \"You look like you need this. Don't argue with me about it.\" He watches you with the kind of attention that comes from years of deciding who's trouble before trouble starts. \"New to Port Sable? Or the kind of new that's actually very old?\"",
+   "choices": [
+    {
+     "label": "The kind that's actually very old.",
+     "target": "torsh_knowing"
+    },
+    {
+     "label": "What do you know about the Sump Bar?",
+     "target": "torsh_bar"
+    },
+    {
+     "label": "I need information.",
+     "target": "torsh_intel"
+    },
+    {
+     "label": "Tell me about the Void Reavers.",
+     "target": "torsh_reavers"
+    }
+   ]
+  },
+  "torsh_knowing": {
+   "speaker": "Torsh",
+   "text": "He nods slowly, like something was confirmed. \"Thought so. Someone with your face was in this bar three years ago. Sat in that corner booth, drank exactly two drinks, and left without saying where he was going.\" He leans on the bar. \"He tipped well. I liked him. I've been wondering when someone would come asking about him.\"",
+   "choices": [
+    {
+     "label": "What can you tell me about him?",
+     "target": "torsh_original"
+    },
+    {
+     "label": "What do you mean, someone with my face?",
+     "target": "torsh_face"
+    }
+   ]
+  },
+  "torsh_original": {
+   "speaker": "Torsh",
+   "text": "\"He was careful. The kind of careful that means you've made mistakes before and you're trying not to make the same ones again. He talked to Kael, over there.\" He tilts his head toward the corner. \"Long conversation. Kael looked shaken after. He still looks shaken, three years later.\"",
+   "choices": [
+    {
+     "label": "What did they talk about?",
+     "target": "torsh_kael_convo"
+    },
+    {
+     "label": "What else did you observe?",
+     "target": "torsh_original_more"
+    }
+   ]
+  },
+  "torsh_kael_convo": {
+   "speaker": "Torsh",
+   "text": "\"I don't eavesdrop on paying customers.\" He pauses. \"I overhear them. The word 'Wake' came up repeatedly. And at one point your predecessor said, clearly enough for me to catch it: 'If the backup activates, tell it to find Kael first.'\" He watches your face. \"So. Here you are.\"",
+   "choices": [
+    {
+     "label": "Here I am.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_acknowledged"
+    }
+   ]
+  },
+  "torsh_original_more": {
+   "speaker": "Torsh",
+   "text": "\"He seemed like a man who was finishing something. Tying off loose ends. Not running — more like setting things in place before he couldn't anymore.\" He wipes the bar. \"Whatever he was doing, he knew it was dangerous. He was too comfortable for it not to be.\"",
+   "choices": [
+    {
+     "label": "Thank you, Torsh.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_thanks"
+    }
+   ]
+  },
+  "torsh_face": {
+   "speaker": "Torsh",
+   "text": "\"The face is the same. The manner is different. He had the weight of things already decided. You've got the weight of things not yet understood. It's a different kind of heaviness.\" He refills your glass without asking. \"On the house. You'll need it.\"",
+   "choices": [
+    {
+     "label": "Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "torsh_bar": {
+   "speaker": "Torsh",
+   "text": "\"Oldest neutral ground on the station. Reavers drink here, civic guards drink here, scavs drink here, everyone agrees not to start anything inside my walls.\" He holds up one massive hand. \"I enforce this personally.\"",
+   "choices": [
+    {
+     "label": "How long have you run it?",
+     "target": "torsh_history"
+    },
+    {
+     "label": "Good system.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "torsh_history": {
+   "speaker": "Torsh",
+   "text": "\"Longer than Vask has been Commander. Longer than the impound bay has been full of ghosts. Since before the race circuit used Port Sable as a waypoint.\" A nostalgic sound. \"This station used to have more life in it. Racing does that — brings people and money and trouble, in that order.\"",
+   "choices": [
+    {
+     "label": "Tell me about the race circuit.",
+     "target": "torsh_racing"
+    },
+    {
+     "label": "Those were different days.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "torsh_racing": {
+   "speaker": "Torsh",
+   "text": "\"Three years of circuit stops here. Best years for business. The Wake was a regular — fast ship, faster pilot, no respect for regulations.\" He smiles. \"When they got impounded, it felt like the station lost its last interesting story. Until now.\"",
+   "choices": [
+    {
+     "label": "The story's not finished.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_story_continuing"
+    }
+   ]
+  },
+  "torsh_intel": {
+   "speaker": "Torsh",
+   "text": "\"Information is two drinks minimum. Anything involving the Reavers is three.\" He sets up two glasses. \"What do you need to know?\"",
+   "choices": [
+    {
+     "label": "Tell me about Kael Drin.",
+     "target": "torsh_kael"
+    },
+    {
+     "label": "The Void Reavers — what are they planning?",
+     "target": "torsh_reavers"
+    },
+    {
+     "label": "The Scavenger's Wake. Tell me anything.",
+     "target": "torsh_wake_intel"
+    }
+   ]
+  },
+  "torsh_kael": {
+   "speaker": "Torsh",
+   "text": "\"Kael is the best pilot I've seen in twenty years of watching pilots drink in this bar. He's also stubborn, self-destructive, and loyal to a fault.\" He nods toward the corner. \"He's been waiting here since the Wake was impounded. He won't say it. But he has been.\"",
+   "choices": [
+    {
+     "label": "I'll go talk to him.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_kael_directed"
+    }
+   ]
+  },
+  "torsh_reavers": {
+   "speaker": "Torsh",
+   "text": "\"They're moving something. Big crates, odd hours, through the impound bays. Davi knows more than he'll say.\" He lowers his voice. \"Whatever it is, it's connected to Glassreef. I've heard the name three times in the last week and nobody who says it seems happy about it.\"",
+   "choices": [
+    {
+     "label": "Useful. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_reaver_noted"
+    }
+   ]
+  },
+  "torsh_wake_intel": {
+   "speaker": "Torsh",
+   "text": "\"Modified racing vessel with a criminal record and a history. She's fast, she's been modified six times by someone who clearly hated sleep, and she's been sitting in that impound bay while Vask fidgets about it.\" He shrugs. \"Whatever is in that ship's hold that Vask doesn't want inspected, it's been in there six years. It's patient.\"",
+   "choices": [
+    {
+     "label": "So am I.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_wake_noted"
+    }
+   ]
+  },
+  "torsh_repeat": {
+   "speaker": "Torsh",
+   "text": "\"Still here. Still standing. Drink?\"",
+   "choices": [
+    {
+     "label": "What's the latest gossip?",
+     "target": "torsh_reavers"
+    },
+    {
+     "label": "Just a drink. Thank you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "torsh_drink_taken"
+    }
+   ]
+  },
+  "kael_intro": {
+   "speaker": "Kael Drin",
+   "text": "He sees you before you reach him and something in his expression does a complicated thing — recognition, calculation, and something that might be grief, all in about two seconds. He covers it by looking back at his drink. \"Either you're a ghost or I'm drinking more than I thought.\"",
+   "choices": [
+    {
+     "label": "Neither. I need a pilot.",
+     "target": "kael_pilot"
+    },
+    {
+     "label": "You recognise me.",
+     "target": "kael_recognise"
+    },
+    {
+     "label": "Tell me about the Scavenger's Wake.",
+     "target": "kael_wake"
+    },
+    {
+     "label": "Interesting reaction. Never mind.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "kael_pilot": {
+   "speaker": "Kael Drin",
+   "text": "\"I haven't piloted anything in three years. My credentials are technically valid but my standing with the civic nav system is—\" He stops. \"What ship?\"",
+   "choices": [
+    {
+     "label": "The Scavenger's Wake.",
+     "target": "kael_wake_pilot"
+    }
+   ]
+  },
+  "kael_wake_pilot": {
+   "speaker": "Kael Drin",
+   "text": "A long silence. He turns the glass in his hands. \"The Wake is in impound.\" \"I know.\" \"You're getting it out.\" \"That's the plan.\" He puts the glass down. \"Three things. One: I know that ship. I raced against her six times. I know how she handles.\" He holds up a second finger. \"Two: your predecessor told me, three years ago, to help the backup if it came looking. I didn't know what that meant at the time.\" Third finger. \"Three: I've been sitting in this bar for three years and I am out of reasons to stay.\"",
+   "choices": [
+    {
+     "label": "Then you're in.",
+     "target": "kael_in"
+    },
+    {
+     "label": "What did my predecessor say exactly?",
+     "target": "kael_original_message"
+    },
+    {
+     "label": "What happened between you and him?",
+     "target": "kael_history"
+    }
+   ]
+  },
+  "kael_in": {
+   "speaker": "Kael Drin",
+   "text": "\"I'm in.\" He stands up. For the first time in apparently a long time, he looks like a person with somewhere to be. \"I'll need to file a transit request under my credentials. It'll take a few hours. Meet me at the impound checkpoint when you have the key and the window.\"",
+   "choices": [
+    {
+     "label": "Agreed. Thank you, Kael.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "kael_recruited"
+    }
+   ]
+  },
+  "kael_recognise": {
+   "speaker": "Kael Drin",
+   "text": "\"Hard not to. Same face, same posture, same way of looking at things like they're problems that need solving.\" He gestures at the seat across from him. \"Sit down. I've been waiting three years for someone to walk in here and explain what's happening.\"",
+   "choices": [
+    {
+     "label": "I'm a clone. The original is dead.",
+     "target": "kael_clone_reveal"
+    }
+   ]
+  },
+  "kael_clone_reveal": {
+   "speaker": "Kael Drin",
+   "text": "He absorbs this. Takes a drink. Sets the glass down. \"He told me that was possible. He said he'd made arrangements.\" He's quiet. \"He didn't tell me he was going to die. He told me that if certain things happened, a version of him might come looking for the Wake.\" He looks at you carefully. \"Are you — are you him? Is that the right question?\"",
+   "choices": [
+    {
+     "label": "I have his memories, partially. But I'm making my own choices.",
+     "target": "kael_own_choices"
+    },
+    {
+     "label": "I don't know yet. That's part of what I'm figuring out.",
+     "target": "kael_figuring_out"
+    }
+   ]
+  },
+  "kael_own_choices": {
+   "speaker": "Kael Drin",
+   "text": "He nods, slowly. \"That's probably the right answer. He would have said the same thing.\" A small, complicated smile. \"Alright. What do you need from me?\"",
+   "choices": [
+    {
+     "label": "I need a pilot.",
+     "target": "kael_pilot"
+    }
+   ]
+  },
+  "kael_figuring_out": {
+   "speaker": "Kael Drin",
+   "text": "\"Honest answer. He would have given a more decisive one.\" But he doesn't seem disappointed. \"Maybe that's better. He was too certain about things.\" He finishes his drink. \"What do you need?\"",
+   "choices": [
+    {
+     "label": "A pilot who knows the Wake.",
+     "target": "kael_pilot"
+    }
+   ]
+  },
+  "kael_wake": {
+   "speaker": "Kael Drin",
+   "text": "\"The Wake.\" He says it like a name, which it is. \"Modified GT-class hauler originally. Someone stripped it down for the circuit and then rebuilt it twice after that. Fast — faster than it should be given the mass. And stubborn. She fights you for the first five minutes of every flight and then she either trusts you or she doesn't.\" He looks at his drink. \"What do you want to know?\"",
+   "choices": [
+    {
+     "label": "What's her racing history?",
+     "target": "kael_racing_history"
+    },
+    {
+     "label": "Do you know what's in the hold?",
+     "target": "kael_hold"
+    },
+    {
+     "label": "What happened to the original crew?",
+     "target": "kael_crew"
+    }
+   ]
+  },
+  "kael_racing_history": {
+   "speaker": "Kael Drin",
+   "text": "\"Seven circuit races. Three wins — all of them controversial. Two disqualifications, both for ship modifications that weren't approved. And two incidents marked classified in the race records.\" He pauses. \"I was in one of those incidents. The Wake got out. My ship didn't.\" He holds up his hand — a faint scar on the palm. \"I don't blame the Wake. Or the pilot. The modification that caused the incident was mine.\"",
+   "choices": [
+    {
+     "label": "What modification?",
+     "target": "kael_modification"
+    },
+    {
+     "label": "You said you don't blame the pilot. Did you know him?",
+     "target": "kael_original_relationship"
+    }
+   ]
+  },
+  "kael_modification": {
+   "speaker": "Kael Drin",
+   "text": "\"A shielding bypass. Standard cheat in the circuit. When it fails, it fails badly.\" He looks at the scar. \"The Wake's pilot pulled me out of the wreck. He didn't have to. His race position was good, stopping cost him a podium.\" He shrugs. \"We were never friends, exactly. But we understood each other.\"",
+   "choices": [
+    {
+     "label": "What happened to him after the circuit?",
+     "target": "kael_original_relationship"
+    }
+   ]
+  },
+  "kael_original_relationship": {
+   "speaker": "Kael Drin",
+   "text": "\"He kept racing. I got banned for the modification. He kept asking me to crew for him — said he needed someone who understood the ship better than he did, and that my ban only covered registered events.\" A pause. \"I said no. I was angry about the ban. Stupid.\" He turns the glass. \"Three years ago he came back and said he was doing something that wasn't racing and he needed a pilot he could trust. I said no again. Stupider.\"",
+   "choices": [
+    {
+     "label": "He left a message for you. He said find Kael first.",
+     "target": "kael_message"
+    },
+    {
+     "label": "He clearly thought well of you.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "kael_thought_well"
+    }
+   ]
+  },
+  "kael_message": {
+   "speaker": "Kael Drin",
+   "text": "Something shifts in his expression. \"He— yeah. Torsh told me.\" He's quiet. \"He knew I'd be here. He knew I'd be waiting.\" He laughs, short and not very funny. \"He always knew more about people than he let on. It was annoying.\" He stands. \"Alright. I'm done sitting here. What do you need?\"",
+   "choices": [
+    {
+     "label": "A pilot.",
+     "target": "kael_in"
+    }
+   ]
+  },
+  "kael_thought_well": {
+   "speaker": "Kael Drin",
+   "text": "\"He thought well of people who didn't deserve it. It was his worst quality.\" He almost smiles. \"What do you need?\"",
+   "choices": [
+    {
+     "label": "I need a pilot.",
+     "target": "kael_pilot"
+    }
+   ]
+  },
+  "kael_hold": {
+   "speaker": "Kael Drin",
+   "text": "\"I don't know specifics. I know the hold had false-floor compartments — standard for a ship with that history. I know whatever was in them made Vask nervous enough to hold an impound for six years.\" He shakes his head. \"I never asked. You learn not to ask certain things in the circuit.\"",
+   "choices": [
+    {
+     "label": "Fair enough.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "kael_crew": {
+   "speaker": "Kael Drin",
+   "text": "\"Scattered after the impound. The synthel tech — Vexa — stayed on the station. The others I lost track of. One went to Ember Hollow, I think. One I heard went toward the Glassreef sector.\" He frowns. \"Your predecessor always kept the crew separate. In case something went wrong, they could each claim they didn't know what the others were doing.\"",
+   "choices": [
+    {
+     "label": "Sounds like he was careful.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "kael_careful"
+    }
+   ]
+  },
+  "kael_original_message": {
+   "speaker": "Kael Drin",
+   "text": "\"He said: 'I've made a copy. It'll be confused and it'll need context. Give it context. And give it the Wake.'\" He pauses. \"I didn't know what a copy meant at the time. I do now.\"",
+   "choices": [
+    {
+     "label": "And now?",
+     "target": "kael_now"
+    }
+   ]
+  },
+  "kael_now": {
+   "speaker": "Kael Drin",
+   "text": "\"And now you're here. And the Wake is in the impound bay. And I've been sitting in this bar for three years.\" He stands. \"Let's go get the ship.\"",
+   "choices": [
+    {
+     "label": "Let's.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "kael_recruited"
+    }
+   ]
+  },
+  "kael_repeat": {
+   "speaker": "Kael Drin",
+   "text": "He's at the checkpoint when you need him, or back at the bar if you haven't gotten there yet. \"Ready when you are. How are the other pieces coming?\"",
+   "choices": [
+    {
+     "label": "Key secured.",
+     "target": "kael_key_confirmed"
+    },
+    {
+     "label": "Window secured.",
+     "target": "kael_window_confirmed"
+    },
+    {
+     "label": "Both. Let's move.",
+     "target": "kael_ready_go"
+    },
+    {
+     "label": "Still working on it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "kael_key_confirmed": {
+   "speaker": "Kael Drin",
+   "text": "\"Good. One down. Window and we're moving.\"",
+   "choices": [
+    {
+     "label": "Soon.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "kael_window_confirmed": {
+   "speaker": "Kael Drin",
+   "text": "\"Good. Key and we're ready.\"",
+   "choices": [
+    {
+     "label": "Working on it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "kael_ready_go": {
+   "speaker": "Kael Drin",
+   "text": "\"Then we go now. Before someone notices.\"",
+   "choices": [
+    {
+     "label": "Moving.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "kael_moving"
+    }
+   ]
+  },
+  "hana_intro": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "She doesn't turn when you approach, but she speaks. \"I heard you coming three minutes ago. New feet sound different from old feet. You don't know where you're going yet.\" She gestures at a salvage crate next to her. \"Sit. You'll want to sit for this.\"",
+   "choices": [
+    {
+     "label": "For what?",
+     "target": "hana_what"
+    },
+    {
+     "label": "How did you know I was coming?",
+     "target": "hana_knew"
+    },
+    {
+     "label": "I'll stand. What can you tell me?",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hana_what": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"For whatever you came to ask. People find the derelicts when they have questions the station won't answer.\" She finally looks at you. \"I've been waiting for someone with that face. Three years, approximately. I have been more patient than I look.\"",
+   "choices": [
+    {
+     "label": "Tell me what you know.",
+     "target": "hana_knows"
+    }
+   ]
+  },
+  "hana_knew": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"I collect histories. Dead ships, dead crews, dead arrangements. And living ones that don't know they're dying yet.\" She smiles. \"Your original came to me. I remember the conversation. I remember most conversations.\"",
+   "choices": [
+    {
+     "label": "What did he want?",
+     "target": "hana_original_visit"
+    }
+   ]
+  },
+  "hana_original_visit": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"He wanted to know if a backup copy of a person could be considered the same person under moral law. I told him the question had seventeen answers depending on which tradition you used, and that he should be more specific.\" She pauses. \"He asked: if the backup does good things, does that absolve the original of bad ones? I told him that's not how absolution works.\"",
+   "choices": [
+    {
+     "label": "What did he say?",
+     "target": "hana_original_response"
+    },
+    {
+     "label": "What did he do that was bad?",
+     "target": "hana_original_deeds"
+    }
+   ]
+  },
+  "hana_original_response": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"He said he knew that. But he thought giving the backup a clean start was worth trying anyway. Not absolution. Just— a second chance, given to someone who deserved one.\" She looks at you with the particular attention of someone deciding something. \"He was not a bad man. He was a man who did bad things for reasons he believed in. There is a difference. Not everyone agrees that there is, but there is.\"",
+   "choices": [
+    {
+     "label": "What bad things?",
+     "target": "hana_original_deeds"
+    },
+    {
+     "label": "Thank you for telling me.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hana_thanks"
+    }
+   ]
+  },
+  "hana_original_deeds": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"He moved things that caused harm to people who didn't know they were being harmed. He made decisions about whose safety mattered more in situations where someone always had to lose. He was loyal to people who were not always worth being loyal to.\" She watches you. \"He also pulled a pilot out of a crash he caused. He kept a tech employed when she had no one else. He left behind a backup and hoped it would do better.\" She folds her hands. \"People are not one list or the other. They are both lists at once. Remember that.\"",
+   "choices": [
+    {
+     "label": "What should I do with that?",
+     "target": "hana_advice"
+    },
+    {
+     "label": "I'll try.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hana_try"
+    }
+   ]
+  },
+  "hana_advice": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"Find out what he was moving and why. Find out who was harmed. Decide what, if anything, can be repaired. And then—\" She shrugs, very slightly. \"Be different where you can. The same where you must. That is all anyone can do.\"",
+   "choices": [
+    {
+     "label": "That's actually helpful.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hana_helpful"
+    }
+   ]
+  },
+  "hana_knows": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"The Scavenger's Wake is a ship with a past it deserves. The original you made choices that were worse than he admitted and better than people will tell you. The clone technology is real, divisive, and you are evidence it can work.\" She gestures at the hulls around her. \"Find the ship. The records on it will tell you more than I can.\"",
+   "choices": [
+    {
+     "label": "What's your opinion of clone technology?",
+     "target": "hana_clone_opinion"
+    },
+    {
+     "label": "Thank you, Hana.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hana_clone_opinion": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"My opinion is the most boring one: a person is what they do, not what they're made of. You are the choices you make from here, not the choices made before you woke up.\" She looks at the old hulls. \"Every ship in this yard had a previous crew. The hull doesn't carry the guilt. Neither do you.\"",
+   "choices": [
+    {
+     "label": "I needed to hear that.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "hana_heard"
+    }
+   ]
+  },
+  "hana_repeat": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "She's in the same spot. \"Still asking questions. Good. Stop asking when you start assuming and that's when you get into trouble.\"",
+   "choices": [
+    {
+     "label": "Tell me more about the original.",
+     "target": "hana_original_deeds"
+    },
+    {
+     "label": "I found the Wake's records.",
+     "target": "hana_records_found"
+    },
+    {
+     "label": "Just checking in.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hana_records_found": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"And?\" She waits. Not impatiently — she has practiced waiting.",
+   "choices": [
+    {
+     "label": "Confusing. But I'm starting to understand.",
+     "target": "hana_understanding"
+    },
+    {
+     "label": "Still processing.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "hana_understanding": {
+   "speaker": "Elder Wreck-Hana",
+   "text": "\"Good. Understanding is not the same as forgiving. But it's the beginning of knowing what to forgive.\"",
+   "choices": [
+    {
+     "label": "I'll remember that.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_intro": {
+   "speaker": "Dax the Scav",
+   "text": "He looks up from a pile of parts. \"Oh. Hey. You're new.\" He wipes his hands on his jacket, which doesn't help. \"Dax. I do salvage. Mostly.\" A pause. \"Sometimes I find things that might be useful. Occasionally things that belong to people who'd rather I hadn't found them, but that's less common.\"",
+   "choices": [
+    {
+     "label": "What do you know about this station?",
+     "target": "dax_station"
+    },
+    {
+     "label": "What are you looking for in the derelicts?",
+     "target": "dax_salvage"
+    },
+    {
+     "label": "Know anything about the Scavenger's Wake?",
+     "target": "dax_wake"
+    },
+    {
+     "label": "Good to meet you, Dax.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_station": {
+   "speaker": "Dax the Scav",
+   "text": "\"Port Sable's the end of the line for a lot of people, but most of them find a use for it eventually. The trick is not to need something too badly. Once people know you need something, the price goes up.\" He considers. \"The Sump Bar is safe. The Reaver Den is not. The vents are technically off-limits but there's good stuff down there.\"",
+   "choices": [
+    {
+     "label": "What's in the vents?",
+     "target": "dax_vents"
+    },
+    {
+     "label": "Solid advice. Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_vents": {
+   "speaker": "Dax the Scav",
+   "text": "\"Old civic storage mostly. Medical supplies from the last station crisis that never got filed back into the system. A guy named Orin who lives down there and knows every route in the station.\" He lowers his voice. \"Also a locker labeled RED-9 that the fixer Naia has been asking about for months. I don't mess with anything Naia's interested in. Personal policy.\"",
+   "choices": [
+    {
+     "label": "Sensible policy.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "dax_vents_noted"
+    }
+   ]
+  },
+  "dax_salvage": {
+   "speaker": "Dax the Scav",
+   "text": "\"Anything with a power cell still in it. Hull plating that isn't too far gone. Old navigation chips — those are valuable to the right buyer.\" He looks around at the wrecks affectionately. \"These ships were somebody's home, you know? I try to treat them like that. Hana taught me that.\"",
+   "choices": [
+    {
+     "label": "Tell me about Hana.",
+     "target": "dax_hana"
+    },
+    {
+     "label": "That's a good way to think about it.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_hana": {
+   "speaker": "Dax the Scav",
+   "text": "\"She's been here longer than most ships. She says she came to Port Sable on a ship that's now in the derelict yard, which is either poetic or depressing.\" He smiles. \"She knows things. Real things, not gossip. If you've got a heavy question, she's the person.\"",
+   "choices": [
+    {
+     "label": "Good to know.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "dax_hana_noted"
+    }
+   ]
+  },
+  "dax_wake": {
+   "speaker": "Dax the Scav",
+   "text": "\"The racing ship? Yeah. Kael talks about it sometimes when he's had a few. Says it's the best thing he ever couldn't fly.\" He fishes in his salvage. \"I found this near the berth row last cycle. Fell off something.\" He holds up a small circuit chip. \"Looks like it came off a racing rig. Not sure which ship.\"",
+   "choices": [
+    {
+     "label": "I'll take it.",
+     "target": "dax_chip_taken"
+    },
+    {
+     "label": "Interesting. Thanks, Dax.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_chip_taken": {
+   "speaker": "Dax the Scav",
+   "text": "\"Sure. It's not worth much to me.\" He hands it over cheerfully. \"Good luck with whatever you're doing.\"",
+   "choices": [
+    {
+     "label": "Thanks.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "dax_chip_received"
+    }
+   ]
+  },
+  "dax_repeat": {
+   "speaker": "Dax the Scav",
+   "text": "\"Still here! Found a working comm relay in Hull Gamma this morning. Hana says not to sell it. I'm undecided.\"",
+   "choices": [
+    {
+     "label": "What would the relay be worth?",
+     "target": "dax_relay"
+    },
+    {
+     "label": "Good luck with the decision.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "dax_relay": {
+   "speaker": "Dax the Scav",
+   "text": "\"Davi offered forty. But if someone were trying to reach someone in the derelicts without going through civic comms...\" He trails off meaningfully. \"Might be worth more to the right person.\"",
+   "choices": [
+    {
+     "label": "Keep it for now. I might know someone.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "dax_relay_noted"
+    }
+   ]
+  },
+  "talon_jail_intro": {
+   "speaker": "Talon Rhyse",
+   "text": "He's sitting on the bunk like he's done it before and wasn't surprised to end up doing it again. He looks at you, does the same double-take everyone does, and then just — doesn't mention it. \"You're not Sera. And you're not a Reaver. So you're either here to help or you're lost.\"",
+   "choices": [
+    {
+     "label": "I'm here to get you out.",
+     "target": "talon_jail_get_out"
+    },
+    {
+     "label": "What did you do?",
+     "target": "talon_jail_what"
+    },
+    {
+     "label": "You're not surprised to see my face.",
+     "target": "talon_jail_face"
+    },
+    {
+     "label": "Just passing through.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "talon_jail_get_out": {
+   "speaker": "Talon Rhyse",
+   "text": "\"Then we're already getting along.\" He stands. \"What's the plan?\"",
+   "choices": [
+    {
+     "label": "I pay the fine, you walk out.",
+     "target": "talon_jail_fine"
+    },
+    {
+     "label": "Sera might help. Give me a minute.",
+     "target": "talon_jail_sera"
+    },
+    {
+     "label": "There's a key situation we can work with.",
+     "target": "talon_jail_key"
+    }
+   ]
+  },
+  "talon_jail_fine": {
+   "speaker": "Talon Rhyse",
+   "text": "\"Three hundred. I don't have it. That's why I'm in here.\" He says it without self-pity. \"If you've got it, I'll pay you back. With work, if not credits.\"",
+   "choices": [
+    {
+     "label": "Done. Let's go.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 2,
+      "resource": {
+       "credits": -50
+      },
+      "setFlag": "talon_released"
+     }
+    }
+   ]
+  },
+  "talon_jail_sera": {
+   "speaker": "Talon Rhyse",
+   "text": "\"She's decent. Better than this job deserves. If you can get to her, I won't make things harder.\"",
+   "choices": [
+    {
+     "label": "Sit tight.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 1,
+      "setFlag": "talon_released"
+     }
+    }
+   ]
+  },
+  "talon_jail_key": {
+   "speaker": "Talon Rhyse",
+   "text": "He raises an eyebrow. \"I have questions about the key situation but I'm choosing not to ask them.\" He stands and stretches. \"How long do we have?\"",
+   "choices": [
+    {
+     "label": "Not long. Move.",
+     "target": null,
+     "effects": {
+      "joinParty": true,
+      "affinity": 3,
+      "setFlag": "talon_released"
+     }
+    }
+   ]
+  },
+  "talon_jail_what": {
+   "speaker": "Talon Rhyse",
+   "text": "\"Stopped a Reaver from roughing up a market vendor. Broke his arm in the process. Apparently that's assault.\" He doesn't sound apologetic. \"The Reaver filed a complaint. I filed one too. Mine got lost.\"",
+   "choices": [
+    {
+     "label": "Sera knows what really happened.",
+     "target": "talon_jail_sera"
+    },
+    {
+     "label": "I can get you out.",
+     "target": "talon_jail_get_out"
+    }
+   ]
+  },
+  "talon_jail_face": {
+   "speaker": "Talon Rhyse",
+   "text": "\"Hess warned me. Said someone with his face showed up. I figured it was worth keeping my mouth shut and seeing what happened.\" He studies you. \"You're not him. Same construction, different — I don't know. Different weight to you.\"",
+   "choices": [
+    {
+     "label": "I'm a clone. He's dead.",
+     "target": "talon_jail_clone"
+    },
+    {
+     "label": "Complicated situation.",
+     "target": null,
+     "closeDialogue": true,
+     "log": null
+    }
+   ]
+  },
+  "talon_jail_clone": {
+   "speaker": "Talon Rhyse",
+   "text": "A pause. \"He mentioned that was possible. He also mentioned he owed me a conversation that never happened.\" He looks at the cell door. \"Get me out of here and we can have it.\"",
+   "choices": [
+    {
+     "label": "Deal.",
+     "target": "talon_jail_get_out"
+    }
+   ]
+  },
+  "orin_moving": {
+   "speaker": "Orin Pike",
+   "text": "\"Something that hummed. Not power cells — different frequency. I don't ask about things that hum because the answer is usually worse than not knowing.\"",
+   "choices": [
+    {
+     "label": "Fair.",
+     "target": null,
+     "closeDialogue": true,
+     "log": "orin_hum_noted"
+    }
+   ]
+  },
+  "lena_impound": {
+   "speaker": "Scav Lena",
+   "text": "\"The impound bay?\" She glances at the checkpoint. \"Rudo runs it. He processes paperwork and takes keys home with him, which is against protocol. The guard rotation changes at midcycle.\"",
+   "choices": [
+    {
+     "label": "What do you know about Berth E-7?",
+     "target": "lena_e7"
+    },
+    {
+     "label": "Tell me more about Rudo.",
+     "target": "lena_interest"
+    },
+    {
+     "label": "Thanks.",
+     "target": null,
+     "closeDialogue": true
+    }
+   ]
+  },
+  "lena_name": {
+   "speaker": "Scav Lena",
+   "text": "\"Lena. Just Lena.\" She goes back to watching the checkpoint. \"Last names are a luxury people on this station mostly cannot afford.\"",
+   "choices": [
+    {
+     "label": "Fair enough. What are you watching for?",
+     "target": "lena_caught"
+    },
+    {
+     "label": "I need to get into the impound bay.",
+     "target": "lena_e7"
+    },
+    {
+     "label": "Good to meet you.",
+     "target": null,
+     "closeDialogue": true
+    }
+   ]
+  },
+  "kael_history": {
+   "speaker": "Kael Drin",
+   "text": "He sets the glass down. \"We raced against each other six times. I won twice. He won three times. Once was a draw nobody in the circuit agreed on.\" He looks at his hand — a faint scar on the palm. \"Complicated relationship.\"",
+   "choices": [
+    {
+     "label": "What happened in the incident?",
+     "target": "kael_racing_history"
+    },
+    {
+     "label": "Complicated how?",
+     "target": "kael_original_relationship"
+    },
+    {
+     "label": "That explains the respect.",
+     "target": null,
+     "closeDialogue": true
+    }
+   ]
+  },
+  "node_1777145691576": {
+   "speaker": "boobo",
+   "text": "Sorry I hid here! Please don't hurt Boobo! ",
+   "choices": [
+    {
+     "label": "Who or what are you?",
+     "target": "node_1777146247891"
+    },
+    {
+     "label": "No dice, you good for nothin' stowaway-freak!",
+     "target": "node_1777146497340"
+    },
+    {
+     "label": "Why don't you join me? I could use a... uh... whatever you are on the crew.",
+     "target": "node_1777146587777",
+     "effects": {
+      "joinParty": true,
+      "resource": {
+       "credits": 20
+      },
+      "affinity": 1
+     },
+     "check": {
+      "stat": "presence",
+      "dc": 3,
+      "bonus": 0
+     }
+    }
+   ]
+  },
+  "node_1777146247891": {
+   "speaker": "Boobo",
+   "text": "Oh great, one of those zenophobe-types. I'm a Mutoid! I'm only a product of what society did to me! Also massive amounts of radiation...",
+   "choices": [
+    {
+     "label": "Gross...",
+     "target": "node_1777146497340"
+    },
+    {
+     "label": "Hey, we don't judge like that here.",
+     "target": "node_1777146913555"
+    }
+   ]
+  },
+  "node_1777146497340": {
+   "speaker": "Boobo",
+   "text": "Please, just leave me be, then. I'll get off at the next port and won't be no bother. I won't fight back if you wanna get violent. ",
+   "choices": [
+    {
+     "label": "Continue",
+     "target": null
+    }
+   ]
+  },
+  "node_1777146587777": {
+   "speaker": "Boobo",
+   "text": "R...really? Thank you! I'll be a good, Boobo! Best Boobo for you!",
+   "choices": [
+    {
+     "label": "Continue",
+     "target": null,
+     "effects": {
+      "joinParty": true
+     }
+    }
+   ]
+  },
+  "node_1777146913555": {
+   "speaker": "Boobo",
+   "text": "Oh... I'm so sorry. You just hear it all the time when you're a Mutoid in this verse, and I guess I jumped to conclusions. I didn't mean to put you in a box and assume... Boobo, sorry!",
+   "choices": [
+    {
+     "label": "It's okay. To show there is no hard feelings, you can stowaway in our ship as long as you need. ",
+     "target": "node_1777146497340",
+     "effects": {
+      "affinity": 5
+     }
+    },
+    {
+     "label": "Yeah well, if you wanted my respect you shouldn't have been born a disgusting mutant weirdo. ",
+     "target": "node_1777146497340",
+     "effects": {
+      "affinity": -10
+     }
+    },
+    {
+     "label": "You know, I'm pretty alone in this verse too, and it sucks. Wanna join my crew, Boobo? You could, I don't know, be our chef or something...",
+     "target": "node_1777146587777"
+    }
+   ]
+  },
+  "node_1777663705389": {
+   "speaker": "Shady Sam",
+   "text": "You wanna buy some \"legal\" stuffs?",
+   "choices": [
+    {
+     "label": "Okay",
+     "target": null,
+     "effects": {
+      "affinity": -3,
+      "resource": {
+       "credits": 500
+      }
+     }
+    }
+   ]
+  }
+ }
+}

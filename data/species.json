@@ -1,0 +1,91 @@
+[
+ {
+  "id": "human",
+  "name": "Human (Earthian)",
+  "summary": "Adaptable survivors from too many failed worlds. Jack-of-all-trades, stubborn by tradition.",
+  "statMods": {
+   "might": 1,
+   "presence": 1
+  },
+  "hpBonus": 1,
+  "moveBonus": 0,
+  "abilities": [
+   "push_past_pain"
+  ]
+ },
+ {
+  "id": "vaylen",
+  "name": "Vaylen",
+  "summary": "Low-gravity tunnel dwellers with uncanny balance, lean frames, and a habit of never giving straight answers.",
+  "statMods": {
+   "agility": 2,
+   "wit": 1,
+   "grit": -1
+  },
+  "hpBonus": 0,
+  "moveBonus": 1,
+  "abilities": [
+   "ghost_step"
+  ]
+ },
+ {
+  "id": "synthel",
+  "name": "Clone",
+  "summary": "Lab-grown near-humans with embedded bio-circuit lattices and uneasy legal status.",
+  "statMods": {
+   "tech": 2,
+   "presence": -1,
+   "wit": 1
+  },
+  "hpBonus": 0,
+  "moveBonus": 0,
+  "abilities": [
+   "overclock_nerves"
+  ]
+ },
+ {
+  "id": "karrox",
+  "name": "Karrox",
+  "summary": "Massive heat-adapted frontier folk with plated hides, industrial lungs, and very little patience.",
+  "statMods": {
+   "might": 2,
+   "grit": 2,
+   "agility": -1
+  },
+  "hpBonus": 2,
+  "moveBonus": 0,
+  "abilities": [
+   "bulwark_stance"
+  ]
+ },
+ {
+  "id": "morrowkin",
+  "name": "Morrowkin",
+  "summary": "Nocturnal void-nomads who shape memory through ritual light and can read fear in microexpressions.",
+  "statMods": {
+   "presence": 2,
+   "wit": 1,
+   "grit": -1
+  },
+  "hpBonus": 0,
+  "moveBonus": 0,
+  "abilities": [
+   "eclipse_gaze"
+  ]
+ },
+ {
+  "id": "mutoid",
+  "name": "Mutoid",
+  "summary": "Radioactivity caused this abomination of a humanoid.",
+  "hpBonus": 0,
+  "moveBonus": 2,
+  "statMods": {
+   "agility": 1,
+   "grit": 1,
+   "wit": 1
+  },
+  "abilities": [
+   "drain_essence"
+  ]
+ }
+]

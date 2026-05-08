@@ -1,0 +1,118 @@
+[
+  {
+    "id": "port_sable_industrial",
+    "name": "Port Sable Industrial",
+    "description": "Rusted trade station built into a canyon asteroid. Corrugated metal, exposed pipes, neon signage, grime.",
+    "biome": "industrial_station",
+
+    "floors": {
+      "metal_plate":    { "label": "Metal Plate",      "css": "vs-floor-metal",    "desc": "Riveted steel deck plating, worn smooth by decades of boot traffic." },
+      "metal_grate":    { "label": "Metal Grate",      "css": "vs-floor-grate",    "desc": "Open grate flooring. You can see the conduit bundles underneath." },
+      "concrete":       { "label": "Concrete",         "css": "vs-floor-concrete", "desc": "Poured asteroid-dust concrete, cracked at the seams." },
+      "stained":        { "label": "Stained Metal",    "css": "vs-floor-stained",  "desc": "Dark stains and oil patches. Nobody cleans this side of the dock." },
+      "civic_tile":     { "label": "Civic Tile",       "css": "vs-floor-civic",    "desc": "Official station floor tile. Still clean. Somehow." },
+      "void":           { "label": "Void/Space",       "css": "vs-floor-void",     "desc": "Open space between sections. Cold and honest about it." }
+    },
+
+    "walls": {
+      "hull_plate":     { "label": "Hull Plate",       "css": "vs-wall-hull",      "desc": "Thick outer hull plating, bolted and welded." },
+      "corrugated":     { "label": "Corrugated",       "css": "vs-wall-corrugated","desc": "Corrugated metal dividers, cheap and effective." },
+      "pipe_bundle":    { "label": "Pipe Bundle",      "css": "vs-wall-pipes",     "desc": "A dense cluster of pipes, conduits, and ductwork forming a wall." },
+      "rock":           { "label": "Rock/Asteroid",    "css": "vs-wall-rock",      "desc": "Raw asteroid rock, reinforced with spray-foam seal." },
+      "civic_block":    { "label": "Civic Block",      "css": "vs-wall-civic",     "desc": "Poured authority-issue concrete with worn civic markings." }
+    },
+
+    "props": {
+      "barrel":         { "label": "Barrel",           "icon": "⬡", "css": "vs-prop-barrel",   "desc": "A sealed industrial drum. Could be fuel, waste, or something else." },
+      "crate":          { "label": "Crate",            "icon": "▩", "css": "vs-prop-crate",    "desc": "A stamped cargo crate. Marked with a destination nobody can read anymore." },
+      "terminal":       { "label": "Terminal",         "icon": "▦", "css": "vs-prop-terminal", "desc": "A wall-mounted data terminal. Screen flickers between info and static." },
+      "pipe_vent":      { "label": "Pipe Vent",        "icon": "◎", "css": "vs-prop-vent",     "desc": "A large steam vent. Hisses periodically." },
+      "cable_bundle":   { "label": "Cable Bundle",     "icon": "≋", "css": "vs-prop-cables",   "desc": "Bundles of power and data cables zip-tied to the wall." },
+      "bunk":           { "label": "Bunk",             "icon": "▭", "css": "vs-prop-bunk",     "desc": "A fold-down bunk, stained and utilitarian." },
+      "counter":        { "label": "Counter/Bar",      "icon": "▬", "css": "vs-prop-counter",  "desc": "A long service counter, scratched and worn." },
+      "locker":         { "label": "Locker",           "icon": "▪", "css": "vs-prop-locker",   "desc": "A bolted storage locker with a cheap padlock." },
+      "sign_neon":      { "label": "Neon Sign",        "icon": "◈", "css": "vs-prop-sign",     "desc": "A hand-wired neon sign. Half the letters still work." },
+      "debris":         { "label": "Debris",           "icon": "·", "css": "vs-prop-debris",   "desc": "Scattered scrap, broken components, and general station grime." },
+      "chem_tank":      { "label": "Chem Tank",        "icon": "◉", "css": "vs-prop-chemtank", "desc": "A pressurized chemical tank, labeled with faded hazard marks." }
+    },
+
+    "fx": {
+      "steam_vent":     { "label": "Steam Vent",       "css": "vs-fx-steam",       "desc": "Periodic steam release from overhead ductwork." },
+      "neon_glow":      { "label": "Neon Glow",        "css": "vs-fx-neon",        "desc": "Ambient neon light bleed from nearby signage." },
+      "flicker":        { "label": "Flickering Light", "css": "vs-fx-flicker",     "desc": "An overhead light cycling between dim and functional." },
+      "haze":           { "label": "Smoke Haze",       "css": "vs-fx-haze",        "desc": "Thin atmospheric haze, part chemical, part cigarette." },
+      "drip":           { "label": "Water Drip",       "css": "vs-fx-drip",        "desc": "A slow drip from a ceiling seal. The station is not watertight." },
+      "sparks":         { "label": "Sparks",           "css": "vs-fx-sparks",      "desc": "Occasional electrical sparks from damaged conduit." },
+      "red_light":      { "label": "Red Warning Light","css": "vs-fx-redlight",    "desc": "A pulsing red warning light in restricted zones." }
+    },
+
+    "decals": {
+      "worn_number":    { "label": "Worn Number",      "css": "vs-decal-number",   "desc": "A faded berth or section number stenciled on the floor." },
+      "civic_stripe":   { "label": "Civic Stripe",     "css": "vs-decal-civic",    "desc": "An authority yellow stripe marking jurisdiction." },
+      "blood_stain":    { "label": "Blood Stain",      "css": "vs-decal-blood",    "desc": "Something happened here. Nobody filed a report." },
+      "graffiti":       { "label": "Graffiti",         "css": "vs-decal-graffiti", "desc": "Hand-tagged letters, a symbol, or a threat." },
+      "hazard_strip":   { "label": "Hazard Strip",     "css": "vs-decal-hazard",   "desc": "Black-and-yellow hazard marking, faded but legible." },
+      "boot_prints":    { "label": "Boot Prints",      "css": "vs-decal-boots",    "desc": "Repeated footprints worn into grime." }
+    }
+  },
+
+  {
+    "id": "ember_hollow_ash",
+    "name": "Ember Hollow Ash Fields",
+    "description": "Scorched mining moon. Plasma dust, ash plains, reinforced outpost walls.",
+    "biome": "ash_frontier",
+    "floors": {
+      "ash_dirt":  { "label": "Ash Dirt",   "css": "vs-floor-ash",   "desc": "Compacted ash and mineral dust." },
+      "sand_rock": { "label": "Sand Rock",  "css": "vs-floor-sand",  "desc": "Loose rock and sand, unstable underfoot." },
+      "outpost":   { "label": "Outpost",    "css": "vs-floor-metal", "desc": "Prefab outpost decking, bolted to the rock." }
+    },
+    "walls": {
+      "rock":      { "label": "Rock",       "css": "vs-wall-rock",   "desc": "Hollow rock face, heat-scored." },
+      "outpost":   { "label": "Outpost",    "css": "vs-wall-hull",   "desc": "Prefab reinforced outpost wall." }
+    },
+    "props": {},
+    "fx": {
+      "ash_drift": { "label": "Ash Drift",  "css": "vs-fx-haze",     "desc": "Drifting ash particles in the wind." }
+    },
+    "decals": {}
+  },
+
+  {
+    "id": "glassreef_flooded",
+    "name": "Glassreef Flooded Arcology",
+    "description": "Sunken city. Standing water, bioluminescent growth, crumbling transit infrastructure.",
+    "biome": "sunken_arcology",
+    "floors": {
+      "wet_tile":  { "label": "Wet Tile",   "css": "vs-floor-stained","desc": "Flooded pre-collapse tile, algae-coated." },
+      "toxic":     { "label": "Toxic Pool", "css": "vs-floor-void",   "desc": "Standing toxic water. Don't wade through it." }
+    },
+    "walls": {
+      "ruin":      { "label": "Ruin Wall",  "css": "vs-wall-rock",    "desc": "Crumbled arcology structure, half-collapsed." }
+    },
+    "props": {},
+    "fx": {
+      "biolume":   { "label": "Bioluminescence","css": "vs-fx-neon",  "desc": "Glowing biological growth on submerged surfaces." }
+    },
+    "decals": {}
+  },
+
+  {
+    "id": "wake_interior_ship",
+    "name": "Scavenger's Wake Interior",
+    "description": "Cramped modular smuggler ship. Patched hull, narrow corridors, salvaged fittings.",
+    "biome": "ship_interior",
+    "floors": {
+      "deck":      { "label": "Ship Deck",  "css": "vs-floor-metal",  "desc": "Textured anti-slip ship decking." },
+      "grate":     { "label": "Grate",      "css": "vs-floor-grate",  "desc": "Grate flooring over the ship's cable runs." }
+    },
+    "walls": {
+      "hull":      { "label": "Hull",       "css": "vs-wall-hull",    "desc": "Inner hull plating, patched in several places." },
+      "pipes":     { "label": "Pipes",      "css": "vs-wall-pipes",   "desc": "Exposed ship piping and conduit." }
+    },
+    "props": {},
+    "fx": {
+      "hum":       { "label": "Engine Hum", "css": "vs-fx-flicker",   "desc": "The low vibration of the ship's drives." }
+    },
+    "decals": {}
+  }
+]

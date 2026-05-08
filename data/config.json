@@ -1,0 +1,56 @@
+{
+ "title": "Spaced ",
+ "map": {
+  "tileSize": 56
+ },
+ "party": {
+  "defaultMax": 5,
+  "adminMax": 10
+ },
+ "sectorNodes": [
+  {
+   "id": "port_sable",
+   "name": "Port Sable",
+   "type": "Dustport Station",
+   "danger": "Medium",
+   "description": "A rusted trade station built into a canyon asteroid. Smuggling, debt, bad coffee, and bad decisions.",
+   "fuelCost": 0,
+   "travelHours": 0,
+   "encounterChance": 0,
+   "mapId": "port_sable"
+  },
+  {
+   "id": "wake_interior",
+   "name": "Scavenger's Wake",
+   "type": "Ship Interior",
+   "danger": "Low",
+   "description": "Your patched-together modular smuggler vessel. It doubles as camp, sanctuary, and rolling problem magnet.",
+   "fuelCost": 0,
+   "travelHours": 0,
+   "encounterChance": 0,
+   "mapId": "wake_interior"
+  },
+  {
+   "id": "ember_hollow",
+   "name": "Ember Hollow",
+   "type": "Ash Frontier",
+   "danger": "High",
+   "description": "A mining moon where plasma dust storms strip skin and truth in equal measure.",
+   "fuelCost": 1,
+   "travelHours": 3,
+   "encounterChance": 55,
+   "mapId": "ember_hollow"
+  },
+  {
+   "id": "glassreef",
+   "name": "Glassreef",
+   "type": "Sunken Arcology",
+   "danger": "Medium",
+   "description": "A flooded pre-collapse city whose dead transit grid still hums under brine.",
+   "fuelCost": 2,
+   "travelHours": 4,
+   "encounterChance": 45,
+   "mapId": "glassreef"
+  }
+ ]
+}
