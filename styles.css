@@ -214,12 +214,331 @@ button:disabled  { opacity: 0.45; cursor: not-allowed; filter: none; }
 .tile:not(.wall):not(.fogged):hover { filter: brightness(1.14); cursor: pointer; }
 
 /* Tile types */
-.tile.floor  { background: radial-gradient(circle at 38% 28%, rgba(255,255,255,0.03), transparent 48%), #172433; }
-.tile.metal  { background: linear-gradient(135deg, #253e58, #1b2e42); }
-.tile.dirt   { background: linear-gradient(135deg, #453929, #322a1f); }
-.tile.sand   { background: linear-gradient(135deg, #5e5338, #454026); }
-.tile.toxic  { background: linear-gradient(135deg, #243c30, #182b22); }
-.tile.wall   { background: linear-gradient(135deg, #0c1520, #111d2c); cursor: default !important; }
+/* ─── TILE BASE TYPES (fallback when no visual kit assigned) ─ */
+.tile.floor  { background: radial-gradient(circle at 38% 28%, rgba(255,255,255,0.03), transparent 48%), #131c28; }
+.tile.metal  { background: linear-gradient(160deg, #1e2e3e 0%, #151f2c 100%); }
+.tile.dirt   { background: linear-gradient(135deg, #3a2e1e, #281e13); }
+.tile.sand   { background: linear-gradient(135deg, #4a4028, #38321a); }
+.tile.toxic  { background: linear-gradient(135deg, #1a3020, #101e16); }
+.tile.wall   { background: #090d12; cursor: default !important; }
+
+/* ─── VISUAL KIT — FLOOR TYPES ───────────────────────────── */
+
+/* Metal plate — riveted steel deck */
+.vs-floor-metal {
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 13px, rgba(0,0,0,0.18) 14px),
+    repeating-linear-gradient(0deg, transparent, transparent 13px, rgba(0,0,0,0.18) 14px),
+    linear-gradient(160deg, #1e2e3e 0%, #141e2a 100%);
+}
+.vs-floor-metal::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 30%, rgba(100,150,200,0.04), transparent 60%);
+  pointer-events: none;
+}
+
+/* Metal grate — open grid flooring */
+.vs-floor-grate {
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,0.4) 6px),
+    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0,0,0,0.4) 6px),
+    linear-gradient(160deg, #172030 0%, #0e1520 100%);
+}
+.vs-floor-grate::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 80%, rgba(0,180,255,0.04), transparent 60%);
+  pointer-events: none;
+}
+
+/* Concrete — cracked asteroid-dust poured */
+.vs-floor-concrete {
+  background:
+    radial-gradient(circle at 20% 70%, rgba(0,0,0,0.12), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(0,0,0,0.08), transparent 35%),
+    linear-gradient(160deg, #1e2430 0%, #151c26 100%);
+}
+.vs-floor-concrete::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(37deg, transparent, transparent 20px, rgba(0,0,0,0.07) 21px);
+  pointer-events: none;
+}
+
+/* Stained — oil and grime */
+.vs-floor-stained {
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(60,30,0,0.25), transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(0,20,40,0.2), transparent 40%),
+    linear-gradient(160deg, #1a1e28, #111520);
+}
+
+/* Civic tile — clean authority floor */
+.vs-floor-civic {
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(100,120,160,0.08) 28px),
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(100,120,160,0.08) 28px),
+    linear-gradient(160deg, #1a2240, #111830);
+}
+
+/* Void — open space between sections */
+.vs-floor-void {
+  background: radial-gradient(ellipse at 50% 50%, #060a12, #020408);
+}
+.vs-floor-void::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(40,60,120,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+/* ─── VISUAL KIT — WALL TYPES ────────────────────────────── */
+
+/* Shared wall base */
+.tile.wall {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hull plate — thick outer hull */
+.vs-wall-hull {
+  background: linear-gradient(180deg, #0e161e 0%, #060c12 100%);
+}
+.vs-wall-hull .vs-wall-top {
+  background: linear-gradient(90deg, #1e2e3e, #182430, #1e2e3e);
+}
+.vs-wall-hull .vs-wall-depth {
+  background: linear-gradient(180deg, rgba(0,100,180,0.08), rgba(0,0,0,0.4));
+  box-shadow: inset -2px 0 6px rgba(0,0,0,0.5);
+}
+
+/* Corrugated metal dividers */
+.vs-wall-corrugated {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, transparent 2px, transparent 10px, rgba(255,255,255,0.03) 11px),
+    linear-gradient(180deg, #0d1620 0%, #060e16 100%);
+}
+.vs-wall-corrugated .vs-wall-top { background: linear-gradient(90deg, #1a2636, #121e2c, #1a2636); }
+
+/* Pipe bundle wall */
+.vs-wall-pipes {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(0,80,120,0.2), transparent 30%),
+    radial-gradient(circle at 70% 30%, rgba(0,60,100,0.15), transparent 25%),
+    linear-gradient(180deg, #0a1420, #050a10);
+}
+.vs-wall-pipes .vs-wall-top { background: linear-gradient(90deg, #152030, #0e1828, #152030); }
+.vs-wall-pipes::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 60%, rgba(0,120,180,0.12), transparent 20%),
+    radial-gradient(ellipse at 65% 40%, rgba(0,100,160,0.1), transparent 18%);
+  pointer-events: none;
+}
+
+/* Raw rock / asteroid */
+.vs-wall-rock {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(80,50,20,0.18), transparent 40%),
+    radial-gradient(ellipse at 70% 70%, rgba(40,30,15,0.15), transparent 35%),
+    linear-gradient(160deg, #1a1408, #0e0c06);
+}
+.vs-wall-rock .vs-wall-top { background: linear-gradient(90deg, #2a2010, #1a1608, #2a2010); }
+
+/* Civic block */
+.vs-wall-civic {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 11px, rgba(80,100,140,0.06) 12px),
+    linear-gradient(180deg, #0e1630, #080e20);
+}
+.vs-wall-civic .vs-wall-top { background: linear-gradient(90deg, #1a2448, #101838, #1a2448); }
+
+/* ── Wall depth pseudo-elements (isometric illusion) ──────── */
+.vs-wall-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  pointer-events: none;
+  z-index: 2;
+}
+.vs-wall-depth {
+  position: absolute;
+  top: 6px; bottom: 0; right: 0;
+  width: 5px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.35));
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── VISUAL KIT — PROPS ─────────────────────────────────── */
+.vs-prop {
+  position: absolute;
+  bottom: 6px; right: 6px;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.7;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  user-select: none;
+}
+.vs-prop-barrel   { color: #7a8090; }
+.vs-prop-crate    { color: #8a7040; }
+.vs-prop-terminal { color: #40a0ff; }
+.vs-prop-vent     { color: #9090a0; }
+.vs-prop-cables   { color: #506070; }
+.vs-prop-bunk     { color: #705060; }
+.vs-prop-counter  { color: #806040; }
+.vs-prop-locker   { color: #607080; }
+.vs-prop-sign     { color: #ff6090; animation: sign-flicker 4s step-end infinite; }
+.vs-prop-debris   { color: #50505a; }
+.vs-prop-chemtank { color: #60a060; }
+
+@keyframes sign-flicker {
+  0%,85%,87%,100% { opacity: 0.7; }
+  86%             { opacity: 0.1; }
+}
+
+/* ─── VISUAL KIT — FX LAYERS ─────────────────────────────── */
+.vs-fx-layer {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 4;
+}
+
+/* Steam vent */
+.tile.vs-fx-steam .vs-fx-layer::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 30%;
+  width: 40%; height: 60%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(200,220,255,0.18), transparent 80%);
+  animation: steam-rise 2.5s ease-in-out infinite;
+}
+@keyframes steam-rise {
+  0%   { transform: translateY(0)   scaleX(1);   opacity: 0.18; }
+  50%  { transform: translateY(-8px) scaleX(1.2); opacity: 0.1;  }
+  100% { transform: translateY(-14px) scaleX(0.8); opacity: 0;   }
+}
+
+/* Neon glow */
+.tile.vs-fx-neon .vs-fx-layer {
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,20,120,0.1), transparent 70%);
+  animation: neon-pulse 2s ease-in-out infinite alternate;
+}
+@keyframes neon-pulse {
+  from { opacity: 0.6; }
+  to   { opacity: 1.0; }
+}
+
+/* Flickering light */
+.tile.vs-fx-flicker .vs-fx-layer {
+  background: radial-gradient(ellipse at 50% 0%, rgba(200,200,140,0.12), transparent 80%);
+  animation: light-flicker 3s step-end infinite;
+}
+@keyframes light-flicker {
+  0%,80%,82%,84%,100% { opacity: 1;   }
+  81%,83%             { opacity: 0.1; }
+}
+
+/* Smoke haze */
+.tile.vs-fx-haze .vs-fx-layer {
+  background: rgba(60,60,80,0.2);
+  animation: haze-drift 5s ease-in-out infinite alternate;
+}
+@keyframes haze-drift {
+  from { opacity: 0.5; }
+  to   { opacity: 0.9; }
+}
+
+/* Water drip */
+.tile.vs-fx-drip .vs-fx-layer::after {
+  content: '';
+  position: absolute; top: 0; left: 45%;
+  width: 3px; height: 8px;
+  background: linear-gradient(180deg, rgba(100,150,255,0.5), transparent);
+  animation: drip-fall 2s linear infinite;
+}
+@keyframes drip-fall {
+  0%   { transform: translateY(-4px); opacity: 0;   }
+  20%  { opacity: 0.7; }
+  100% { transform: translateY(60px); opacity: 0;   }
+}
+
+/* Sparks */
+.tile.vs-fx-sparks .vs-fx-layer {
+  animation: spark-flash 3.5s step-end infinite;
+}
+.tile.vs-fx-sparks .vs-fx-layer::before {
+  content: '';
+  position: absolute; top: 30%; left: 40%;
+  width: 8px; height: 8px;
+  background: radial-gradient(circle, rgba(255,200,50,0.8), transparent 70%);
+  animation: spark-flash 3.5s step-end infinite;
+}
+@keyframes spark-flash {
+  0%,92%,94%,100% { opacity: 0;   }
+  93%             { opacity: 1;   }
+}
+
+/* Red warning light */
+.tile.vs-fx-redlight .vs-fx-layer {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,30,30,0.15), transparent 70%);
+  animation: red-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes red-pulse {
+  from { opacity: 0.4; }
+  to   { opacity: 1.0; }
+}
+
+/* ─── VISUAL KIT — DECALS ────────────────────────────────── */
+.tile.vs-decal-number::before {
+  content: '';
+  position: absolute; bottom: 3px; left: 4px;
+  width: 14px; height: 10px;
+  border: 1px solid rgba(100,130,180,0.2);
+  border-radius: 1px;
+  pointer-events: none; z-index: 3;
+}
+.tile.vs-decal-civic::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255,210,60,0.25), transparent);
+  pointer-events: none; z-index: 3;
+}
+.tile.vs-decal-blood::before {
+  content: '';
+  position: absolute; bottom: 6px; left: 8px;
+  width: 18px; height: 12px;
+  background: radial-gradient(ellipse at 40% 60%, rgba(140,20,20,0.35), transparent 70%);
+  pointer-events: none; z-index: 3;
+}
+.tile.vs-decal-graffiti::after {
+  content: '';
+  position: absolute; top: 6px; right: 4px;
+  width: 20px; height: 14px;
+  background: radial-gradient(ellipse, rgba(200,60,200,0.15), transparent 80%);
+  pointer-events: none; z-index: 3;
+}
+.tile.vs-decal-hazard::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    rgba(255,200,0,0.3) 0px, rgba(255,200,0,0.3) 5px,
+    rgba(0,0,0,0.25) 5px, rgba(0,0,0,0.25) 10px);
+  pointer-events: none; z-index: 3;
+}
+.tile.vs-decal-boots::after {
+  content: '';
+  position: absolute; bottom: 4px; left: 12px;
+  width: 8px; height: 10px;
+  background: radial-gradient(ellipse, rgba(40,40,50,0.4), transparent 70%);
+  pointer-events: none; z-index: 3;
+}
 
 /* Cover object shadow */
 .tile.cover::after {
@@ -297,60 +616,122 @@ button:disabled  { opacity: 0.45; cursor: not-allowed; filter: none; }
 .tile.fogged .tile-icon { display: none !important; }
 
 /* ─── ENTITIES ────────────────────────────────────────────── */
+/*
+ * Entities are now layered:
+ *   .entity
+ *     .actor-body         — the SVG silhouette + hp bar wrapper
+ *       .actor-silhouette — SVG glyph (role/class-specific)
+ *       .actor-hp-bar     — thin HP strip below silhouette
+ *         .actor-hp-fill
+ *     .bubble             — name, shown on hover
+ */
+
 .entity {
   position: absolute;
-  width: calc(var(--tile) - 6px);
-  height: calc(var(--tile) - 6px);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
-  border: 2px solid rgba(255,255,255,0.2);
-  transform: translate(3px, 3px);
-  pointer-events: auto;
-  cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
+  width: calc(var(--tile) - 4px);
+  height: calc(var(--tile) - 4px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  transform: translate(2px, 2px);
+  pointer-events: auto; cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  z-index: 2;
 }
-.entity:hover { transform: translate(3px, 3px) scale(1.1); }
+.entity:hover { transform: translate(2px, -1px) scale(1.08); z-index: 10; }
 
-.entity.player  { background: radial-gradient(circle at 35% 30%, #5ba3ff, #1e48b0); border-color: #6fb3ff; box-shadow: 0 3px 12px rgba(111,179,255,0.35); }
-.entity.ally    { background: radial-gradient(circle at 35% 30%, #56d08a, #1b8950); border-color: #7ed9a0; box-shadow: 0 3px 12px rgba(126,217,160,0.25); }
-.entity.enemy   { background: radial-gradient(circle at 35% 30%, #ff8c7a, #a82c40); border-color: #ff6464; box-shadow: 0 3px 12px rgba(255,80,80,0.25); }
-.entity.neutral { background: radial-gradient(circle at 35% 30%, #d4c17a, #9a7b32); border-color: #ccaa55; }
-.entity.down    { filter: grayscale(0.8) brightness(0.65); }
-.entity.stealthed { opacity: 0.45; border-style: dashed; }
-
-/* Selected */
-.entity.selected {
-  outline: 3px solid rgba(111,179,255,0.85);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(111,179,255,0.18), 0 4px 18px rgba(111,179,255,0.4);
+/* ── Actor body + silhouette ─────────────────────────────── */
+.actor-body {
+  width: 100%; flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  padding-bottom: 2px;
+  position: relative;
 }
 
-/* Current turn indicator — subtle glow ring */
-.entity.current-turn {
+.actor-silhouette {
+  width: 100%; flex: 1;
+  display: flex; align-items: flex-end; justify-content: center;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.7));
+}
+.actor-silhouette svg {
+  width: 70%; height: 70%;
+  display: block;
+}
+
+/* Role colors — applied to the SVG fill via currentColor */
+.entity.player  .actor-silhouette { color: #6fb3ff; filter: drop-shadow(0 0 6px rgba(111,179,255,0.7)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+.entity.ally    .actor-silhouette { color: #7ed9a0; filter: drop-shadow(0 0 5px rgba(126,217,160,0.6)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+.entity.enemy   .actor-silhouette { color: #ff6464; filter: drop-shadow(0 0 5px rgba(255,80,80,0.55)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+.entity.neutral .actor-silhouette { color: #ccaa55; filter: drop-shadow(0 0 4px rgba(204,170,85,0.5)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+
+/* Class-specific tint overrides */
+.entity.actor-voidseer  .actor-silhouette { color: #c97aff; filter: drop-shadow(0 0 8px rgba(180,0,255,0.6)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+.entity.actor-raider.enemy .actor-silhouette { color: #ff8040; filter: drop-shadow(0 0 6px rgba(255,80,0,0.55)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+
+/* Down / downed state */
+.entity.down { filter: grayscale(0.7) brightness(0.5); }
+.entity.down .actor-silhouette { color: #666; filter: none; }
+
+/* Stealthed */
+.entity.stealthed { opacity: 0.38; }
+.entity.stealthed .actor-silhouette { filter: drop-shadow(0 0 4px rgba(0,200,255,0.4)); }
+
+/* ── HP bar ──────────────────────────────────────────────── */
+.actor-hp-bar {
+  width: 80%; height: 3px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 2px; overflow: hidden;
+  margin-top: 2px;
+}
+.actor-hp-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* ── Selection ring ──────────────────────────────────────── */
+.entity.selected::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid rgba(111,179,255,0.85);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(111,179,255,0.4);
+  pointer-events: none;
+  animation: select-pulse 1.4s ease-in-out infinite;
+}
+@keyframes select-pulse {
+  0%,100% { box-shadow: 0 0 6px rgba(111,179,255,0.3); }
+  50%      { box-shadow: 0 0 14px rgba(111,179,255,0.7); }
+}
+
+/* ── Current turn ────────────────────────────────────────── */
+.entity.current-turn .actor-silhouette {
   animation: turn-glow 1.2s ease-in-out infinite alternate;
 }
 @keyframes turn-glow {
-  from { box-shadow: 0 0 4px 1px rgba(111,179,255,0.3); }
-  to   { box-shadow: 0 0 12px 3px rgba(111,179,255,0.7); }
+  from { filter: drop-shadow(0 0 4px rgba(111,179,255,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+  to   { filter: drop-shadow(0 0 12px rgba(111,179,255,0.9)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
 }
 
-/* AI acting — amber bob + glow */
+/* ── AI acting ───────────────────────────────────────────── */
 .entity.ai-acting {
   animation: ai-bob 0.55s ease-in-out infinite alternate;
-  border-color: var(--warn) !important;
-  box-shadow: 0 0 10px 2px rgba(255,204,90,0.5) !important;
   z-index: 5;
 }
+.entity.ai-acting .actor-silhouette {
+  filter: drop-shadow(0 0 8px rgba(255,204,90,0.8)) drop-shadow(0 2px 4px rgba(0,0,0,0.8)) !important;
+  color: #ffcc5a !important;
+}
 @keyframes ai-bob {
-  from { transform: translate(3px, 3px) scale(1);    }
-  to   { transform: translate(3px, -1px) scale(1.08); }
+  from { transform: translate(2px, 2px) scale(1);    }
+  to   { transform: translate(2px, -2px) scale(1.06); }
 }
 
-/* Name bubble — appears on hover */
+/* ── Name bubble ─────────────────────────────────────────── */
 .entity .bubble {
   position: absolute;
-  bottom: 110%; left: 50%; transform: translateX(-50%);
+  bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%);
   white-space: nowrap;
   background: rgba(5,9,15,0.95);
   padding: 2px 8px; border-radius: 6px;
@@ -358,10 +739,16 @@ button:disabled  { opacity: 0.45; cursor: not-allowed; filter: none; }
   font-size: 10px; color: var(--muted);
   pointer-events: none;
   opacity: 0; transition: opacity 0.15s;
+  z-index: 20;
 }
 .entity:hover .bubble { opacity: 1; }
 
-.entity .icon { font-size: 15px; line-height: 1; pointer-events: none; user-select: none; }
+/* ── SVG glyph classes ───────────────────────────────────── */
+.glyph-player { }
+.glyph-ally   { }
+.glyph-enemy  { }
+.glyph-neutral{ }
+.glyph-downed { opacity: 0.5; }
 
 /* ─── SELECTION RING ──────────────────────────────────────── */
 #selectionRing {
